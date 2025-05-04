@@ -706,9 +706,7 @@ body {
 
 
 
-<audio autoplay loop style="display: none;">
-  <source src="public/islamic-background.mp3" type="audio/mp3">
-</audio>
+
 
 <div id="splash" class="splash">
   <h1 style="font-family:'Great Vibes', cursive; font-size: 5em;">Devi & Sandro</h1>
@@ -1101,6 +1099,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
   slider.addEventListener("input", function () {
     wrapper.style.width = this.value + "%";
+  });
+</script>
+
+<script>
+  const bgm = document.getElementById("bgm");
+
+  // Pause ketika user keluar dari tab
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      bgm.pause();
+    } else {
+      // Mainkan lagi hanya jika sebelumnya sudah main
+      if (sessionStorage.getItem("invitationOpened") === "true") {
+        bgm.play().catch(err => {
+          console.warn("Autoplay gagal saat kembali ke tab:", err);
+        });
+      }
+    }
   });
 </script>
 
