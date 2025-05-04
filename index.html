@@ -369,6 +369,7 @@ body {
   justify-content: center;
   align-items: center;
   color: white;
+  background-position: center 65%;
 }
 
 .weddingdate-title {
@@ -628,17 +629,20 @@ body {
 
 
 
+
+
 #thanks-section {
-  padding: 0 !important;
-  margin: 0 !important;
-  width: 100vw;
-  height: 30vh;
-  background: url('https://i.imgur.com/WardSOa.jpeg') center center / cover no-repeat;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  padding: 4em 1em;
+  background: url('https://i.imgur.com/WardSOa.jpeg') no-repeat center center / cover;
+  background-position: center 65%; /* ⬅️ atur posisi vertikal ke tengah */
   color: white;
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+  position: relative;
+  
 }
+
+
 
 .thanks-title {
   font-size: 2.5em;
@@ -657,6 +661,38 @@ body {
   color: #555;
   margin-left: 0.3em;
 }
+
+
+
+.thanks-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: rgba(0, 0, 0, 0.4); /* semi-transparent background */
+  padding: 3em 2em;
+  border-radius: 10px;
+}
+
+
+
+
+
+
+
+.thanks-opening,
+.thanks-middle,
+.thanks-closing,
+.thanks-footer {
+  font-size: 1em;
+  line-height: 1.6;
+  margin: 1.2em 0;
+}
+
+.thanks-footer {
+  font-size: 0.85em;
+  margin-top: 2em;
+  opacity: 0.8;
+}
+
 	
   </style>
 </head>
@@ -752,11 +788,17 @@ body {
     <p>Jumat, 13 Juni 2025<br>Akad: 10.00 WIB | Resepsi: 13.00 WIB</p>
     <p>Paragraph Coffee and Eatery</p>
     <p>Jl. Nanas No.13, Cihapit, Kec. Bandung Wetan, Kota Bandung, Jawa Barat 40114</p>
+	
     <a href="https://maps.app.goo.gl/fHxLopzy8KhSEneRA" target="_blank">
   <i class="fas fa-map-marker-alt"></i> Google Maps
 </a>
+<p style="margin-top: 1.5em; font-weight: bold;">Dresscode:</p>
+  <p>Putih / Sage Green / Beige</p>
 
   </section>
+  
+  
+
 
 <section id="gallery-section">
   <div class="gallery-wrapper">
