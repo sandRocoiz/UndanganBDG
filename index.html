@@ -703,6 +703,9 @@ body {
 </head>
 <body>
 
+
+
+
 <audio autoplay loop style="display: none;">
   <source src="public/islamic-background.mp3" type="audio/mp3">
 </audio>
@@ -745,21 +748,26 @@ body {
   </div>
 </section>
 
+
+
 <section id="couple-section">
   <div class="couple-container">
     <!-- Mempelai Wanita -->
     <div class="couple-block">
-      <div class="photo-group kiri">
-        <img src="https://i.imgur.com/WardSOa.jpeg" class="photo main-photo" alt="Devi">
-        <img src="https://i.imgur.com/WWF9npo.jpeg" class="photo overlay-photo" alt="Devi 2">
-      </div>
-      <div class="couple-desc">
-        <h3 class="role">Mempelai Wanita</h3>
-        <h2 class="name">Devi Desviani</h2>
-        <p>Putri dari pasangan Bapak Bambang Pratioto & Ibu Linna Nurliana</p>
-        <div class="social">@devidesviani</div>
-      </div>
+  <div class="reveal-container">
+    <img src="https://i.imgur.com/WardSOa.jpeg" class="foto-belakang" />
+    <div class="reveal-wrapper">
+      <img src="https://i.imgur.com/40hYGRP.jpeg" class="foto-depan" />
     </div>
+    <input type="range" min="0" max="100" value="50" class="slider" />
+  </div>
+  <div class="couple-desc">
+    <h3 class="role">Mempelai Wanita</h3>
+    <h2 class="name">Devi Desviani</h2>
+    <p>Putri dari pasangan Bapak Bambang Pratioto & Ibu Linna Nurliana</p>
+    <div class="social">@devidesviani</div>
+  </div>
+</div>
 
     <!-- Mempelai Pria -->
     <div class="couple-block reverse">
@@ -1086,6 +1094,16 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 </script>
+
+<script>
+  const slider = document.querySelector(".slider");
+  const wrapper = document.querySelector(".reveal-wrapper");
+
+  slider.addEventListener("input", function () {
+    wrapper.style.width = this.value + "%";
+  });
+</script>
+
 </body>
 
 </html>

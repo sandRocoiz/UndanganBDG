@@ -1,5 +1,15 @@
 /* ========== Responsive Styles for Mobile ========== */
 @media screen and (max-width: 768px) {
+  
+  .photo-group .overlay-photo {
+    position: absolute;
+    bottom: -50px;
+    left: 0;
+    z-index: 1;
+    opacity: 1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
   .gallery-wrapper {
     flex-direction: column;
     align-items: center;
@@ -9,14 +19,25 @@
 
   .couple-block,
   .couple-block.reverse {
-    flex-direction: column !important;
-    text-align: center;
+    flex-direction: column;
+    align-items: center;
   }
 
   .photo-group {
-    width: 90% !important;
+    position: relative;
+    width: 90%; /* biar fleksibel & konsisten */
+    max-width: 320px;
+    margin: 0 auto;
   }
-
+  
+  .photo-group .main-photo,
+.photo-group .overlay-photo {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+}
   .photo-group.kiri .overlay-photo,
   .photo-group.kanan .overlay-photo {
     position: static;
@@ -25,8 +46,8 @@
   }
 
   .couple-desc {
-    max-width: 90%;
-    text-align: center !important;
+    text-align: center;
+    max-width: 100%;
   }
 
   .carousel-track img,
@@ -69,7 +90,48 @@
     font-size: 0.9em;
     padding: 0.6em 1.8em;
   }
+  
+  .reveal-container {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 4 / 5;
+  margin: auto;
+  overflow: hidden;
 }
+
+.foto-belakang,
+.foto-depan {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.reveal-wrapper {
+  overflow: hidden;
+  width: 50%;
+  height: 100%;
+}
+
+.slider {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+  -webkit-appearance: none;
+  height: 6px;
+  background: #ccc;
+  outline: none;
+  cursor: pointer;
+}
+
+  
+}
+
 
 
 @media screen and (max-width: 480px) {

@@ -1,4 +1,15 @@
 
+document.addEventListener("DOMContentLoaded", function () {
+  const slider = document.querySelector(".slider");
+  const wrapper = document.querySelector(".reveal-wrapper");
+
+  if (slider && wrapper) {
+    slider.addEventListener("input", function () {
+      wrapper.style.width = this.value + "%";
+    });
+  }
+});
+
 function openInvitation() {
   sessionStorage.setItem("invitationOpened", "true");
   document.getElementById('splash').style.display = 'none';

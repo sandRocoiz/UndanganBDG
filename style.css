@@ -4,6 +4,55 @@
   box-sizing: border-box;
 }
 
+body, html {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+.reveal-container {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 4 / 5;
+  margin: auto;
+  overflow: hidden;
+}
+
+.foto-belakang,
+.foto-depan {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.reveal-wrapper {
+  overflow: hidden;
+  width: 50%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
+.slider {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  width: 100%;
+  z-index: 3;
+  -webkit-appearance: none;
+  height: 6px;
+  background: #ccc;
+  outline: none;
+  cursor: pointer;
+}
+
+
 html, body {
   margin: 0;
   padding: 0;
