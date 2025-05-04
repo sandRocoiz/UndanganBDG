@@ -1,0 +1,99 @@
+/* ========== Responsive Styles for Mobile ========== */
+@media screen and (max-width: 768px) {
+  .gallery-wrapper {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1em;
+  }
+
+  .couple-block,
+  .couple-block.reverse {
+    flex-direction: column !important;
+    text-align: center;
+  }
+
+  .photo-group {
+    width: 90% !important;
+  }
+
+  .photo-group.kiri .overlay-photo,
+  .photo-group.kanan .overlay-photo {
+    position: static;
+    width: 100%;
+    margin-top: 1em;
+  }
+
+  .couple-desc {
+    max-width: 90%;
+    text-align: center !important;
+  }
+
+  .carousel-track img,
+  .gallery-static img {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .gallery-title-container {
+    text-align: center;
+    margin-bottom: 1em;
+  }
+
+  .splash h1 {
+    font-size: 3em;
+  }
+
+  .thanks-container {
+    padding: 2em 1em;
+  }
+
+  .weddingdate-title {
+    font-size: 1.5em;
+  }
+
+  #countdown-section .overlay h1 {
+    font-size: 2.5em;
+  }
+
+  .form-doa {
+    padding: 1em;
+  }
+
+  .form-doa input,
+  .form-doa textarea {
+    font-size: 0.9em;
+  }
+
+  .form-doa button {
+    font-size: 0.9em;
+    padding: 0.6em 1.8em;
+  }
+}
+
+
+@media screen and (max-width: 480px) {
+  .judul-wedding, .nama-pasangan, .tanggal-acara,
+  .doa-title, .gift-title, .thanks-title {
+    font-size: 1.6em;
+  }
+
+  .thanks-container {
+    padding: 2em 1em;
+  }
+
+  .form-doa {
+    padding: 1.2em;
+  }
+
+  .form-doa input,
+  .form-doa textarea {
+    font-size: 0.95em;
+  }
+
+  .splash button {
+    padding: 0.5em 1em;
+    font-size: 0.85em;
+  }
+}
+
