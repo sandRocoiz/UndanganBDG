@@ -196,7 +196,7 @@ body {
 }
 
 .bubble-thread {
-  margin-bottom: 1.5em;
+  margin-bottom: 2em;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
@@ -205,12 +205,14 @@ body {
 .bubble {
   padding: 0.9em 1.2em;
   border-radius: 20px;
-  margin-bottom: 0.4em;
+  margin-bottom: 0.6em;
   display: inline-block;
   position: relative;
   font-size: 1em;
   line-height: 1.5;
   box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  word-wrap: break-word;
+  max-width: 90%;
 }
 
 .bubble.user {
@@ -234,5 +236,28 @@ body {
   background: #fff4e0;
   border-left: 4px solid #ffaf4f;
   color: #333;
+}
+
+.form-reply-thread {
+  margin-top: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.form-reply-thread textarea {
+  padding: 0.8em;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  resize: vertical;
+}
+
+.form-reply-thread button {
+  padding: 0.6em 1.5em;
+  border: none;
+  background: #2c3e50;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
 }
 

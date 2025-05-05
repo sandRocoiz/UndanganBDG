@@ -56,53 +56,65 @@ function renderUcapan(data) {
   const daftar = document.getElementById("daftarUcapan");
   daftar.innerHTML = "";
 
-  // Group by thread
   const threadMap = {};
 
+  // 1. Kelompokkan berdasarkan thread ID
   data.forEach(item => {
     const threadId = item.threads;
     if (!threadMap[threadId]) threadMap[threadId] = [];
     threadMap[threadId].push(item);
   });
 
-  Object.entries(threadMap).forEach(([threadId, items]) => {
-    const head = items.find(i => i.is_ucapan === "TRUE");
-    if (!head || head.approved !== "Y") return;
-
+  // 2. Tampilkan per thread
+  Object.entries(threadMap).forEach(([threadId, messages]) => {
     const wrapper = document.createElement("div");
     wrapper.className = "ucapan-thread";
 
-    // HEAD
+    const head = messages.find(m => m.is_ucapan === "TRUE");
+    if (!head || head.approved !== "Y") return;
+
+    // Bubble utama
     wrapper.innerHTML += `
-      <div class="ucapan-card">
+      <div class="bubble">
         <strong>${head.nama}</strong>
         <div>${head.ucapan}</div>
-        ${head.reply ? `<div class="balasan-card"><div class="balasan-label">Balasan:</div><div class="balasan-teks">${head.reply}</div></div>` : ""}
       </div>
     `;
 
-    // Sub Replies
-    const replies = items.filter(i => i.is_ucapan === "FALSE");
-    replies.forEach(reply => {
+    // Balasan dari admin
+    if (head.reply) {
       wrapper.innerHTML += `
-        <div class="ucapan-card sub-reply">
-          <div><strong>${reply.nama}</strong> membalas:</div>
-          <div>${reply.ucapan}</div>
+        <div class="bubble reply-admin">
+          <strong>Admin</strong>
+          <div>${head.reply}</div>
         </div>
       `;
-    });
+    }
 
-    // Form reply user
-    if (head.user_id === currentUserId && head.reply) {
+    // Balasan lanjutan dari user (jika ada)
+    messages
+      .filter(m => m.is_ucapan === "FALSE")
+      .forEach(reply => {
+        wrapper.innerHTML += `
+          <div class="bubble sub-user">
+            <strong>${reply.nama}</strong>
+            <div>${reply.ucapan}</div>
+          </div>
+        `;
+      });
+
+    // Jika user yg sama ingin balas lagi
+    if (head.user_id === getUserId() && head.reply) {
       const form = document.createElement("form");
+      form.className = "form-reply-thread";
       form.innerHTML = `
-        <textarea placeholder="Balas balasan admin..." required></textarea>
-        <button type="submit">Kirim Balasan</button>
+        <textarea required placeholder="Balas admin..."></textarea>
+        <button type="submit">Kirim</button>
       `;
-      form.onsubmit = function(e) {
+      form.onsubmit = function (e) {
         e.preventDefault();
         const ucapan = form.querySelector("textarea").value;
-        kirimBalasanLanjutan(head.threads, ucapan);
+        kirimBalasanLanjutan(threadId, ucapan);
       };
       wrapper.appendChild(form);
     }
@@ -110,6 +122,7 @@ function renderUcapan(data) {
     daftar.appendChild(wrapper);
   });
 }
+
 
 function kirimBalasanLanjutan(threadId, ucapan) {
   const payload = {
@@ -236,63 +249,12 @@ function ambilUcapan() {
   fetch(endpoint)
     .then(res => res.json())
     .then(data => {
-      const container = document.getElementById('daftarUcapan');
-      const pagination = document.getElementById('pagination') || document.createElement('div');
-      pagination.id = 'pagination';
-      container.innerHTML = '';
-
-      const filtered = data.filter(item => item.approved === "Y");
-      const sorted = filtered.reverse();
-      const totalPages = Math.ceil(sorted.length / perPage);
-      const start = (currentPage - 1) * perPage;
-      const end = start + perPage;
-      const pageData = sorted.slice(start, end);
-
-      pageData.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'ucapan-card animate-fade-in';
-        card.innerHTML = `
-          <strong>${item.nama}</strong>
-          <div>${item.ucapan}</div>
-          <div class="ucapan-time">${formatWaktuIndo(item.timestamp)}</div>
-          ${item.reply ? `
-            <div class="balasan-card">
-              <div class="balasan-label">Balasan:</div>
-              <div class="balasan-teks">${item.reply}</div>
-              ${item.reply_timestamp ? `<div class="balasan-time">${formatWaktuIndo(item.reply_timestamp)}</div>` : ''}
-            </div>
-          ` : ''}
-        `;
-		
-		if (item.reply && item.userId === getUserId()) {
-    const balasBtn = document.createElement("button");
-    balasBtn.textContent = "Balas Admin";
-    balasBtn.className = "btn-balas-admin";
-    balasBtn.onclick = () => bukaFormBalas(item.id);
-    card.appendChild(balasBtn);
-  }
-		
-        container.appendChild(card);
-      });
-
-      pagination.innerHTML = '';
-      for (let i = 1; i <= totalPages; i++) {
-        const btn = document.createElement('button');
-        btn.textContent = i;
-        if (i === currentPage) btn.disabled = true;
-        btn.onclick = () => {
-          currentPage = i;
-          ambilUcapan();
-        };
-        pagination.appendChild(btn);
-      }
-
-      container.appendChild(pagination);
+      const approvedOnly = data.filter(item => item.approved === "Y");
+      renderUcapan(approvedOnly); // panggil fungsi bubble thread
     })
-    .catch(err => {
-      console.error('Gagal ambil ucapan:', err);
-    });
+    .catch(err => console.error("Gagal ambil ucapan:", err));
 }
+
 
 
 

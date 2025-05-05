@@ -192,5 +192,23 @@
     font-size: 0.85em;
     padding: 0.4em 1em;
   }
+  
+  .ucapan-thread {
+    padding: 1em 0.8em;
+  }
+
+  .bubble {
+    font-size: 0.95em;
+    padding: 0.7em 1em;
+  }
+
+  .form-reply-thread textarea {
+    font-size: 0.95em;
+  }
+
+  .form-reply-thread button {
+    font-size: 0.9em;
+  }
+  
 }
 
