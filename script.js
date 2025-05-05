@@ -1,14 +1,136 @@
 
-document.addEventListener("DOMContentLoaded", function () {
-  const slider = document.querySelector(".slider");
-  const wrapper = document.querySelector(".reveal-wrapper");
+function generateUserId() {
+  // bikin ID random, misalnya: usr_5f1e8b3a2d
+  const id = "usr_" + Math.random().toString(36).substring(2, 11);
+  localStorage.setItem("userId", id);
+  return id;
+}
 
-  if (slider && wrapper) {
-    slider.addEventListener("input", function () {
-      wrapper.style.width = this.value + "%";
-    });
+function getUserId() {
+  let id = localStorage.getItem("userId");
+  if (!id) {
+    id = generateUserId();
   }
-});
+  return id;
+}
+
+
+
+function bukaFormBalas(id) {
+  document.getElementById("balasIdTarget").value = id;
+  document.getElementById("modalBalas").style.display = "flex";
+}
+
+function tutupModalBalas() {
+  document.getElementById("modalBalas").style.display = "none";
+}
+
+function kirimBalasanAdmin() {
+  const replyText = document.getElementById("inputBalasanAdmin").value;
+  const idTarget = document.getElementById("balasIdTarget").value;
+  const userId = getUserId();
+
+  if (!replyText.trim()) {
+    alert("Isi balasan dulu dong fren");
+    return;
+  }
+
+  fetch(endpoint, {
+    method: "POST",
+    mode: "no-cors",
+    body: JSON.stringify({ replyToAdmin: replyText, id: idTarget, userId }),
+    headers: { "Content-Type": "application/json" }
+  }).then(() => {
+    alert("Balasan berhasil dikirim ke admin!");
+    tutupModalBalas();
+    ambilUcapan();
+  }).catch(err => {
+    alert("Gagal kirim balasan.");
+    console.error(err);
+  });
+}
+
+const currentUserId = getUserId(); // dari localStorage
+
+function renderUcapan(data) {
+  const daftar = document.getElementById("daftarUcapan");
+  daftar.innerHTML = "";
+
+  // Group by thread
+  const threadMap = {};
+
+  data.forEach(item => {
+    const threadId = item.threads;
+    if (!threadMap[threadId]) threadMap[threadId] = [];
+    threadMap[threadId].push(item);
+  });
+
+  Object.entries(threadMap).forEach(([threadId, items]) => {
+    const head = items.find(i => i.is_ucapan === "TRUE");
+    if (!head || head.approved !== "Y") return;
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "ucapan-thread";
+
+    // HEAD
+    wrapper.innerHTML += `
+      <div class="ucapan-card">
+        <strong>${head.nama}</strong>
+        <div>${head.ucapan}</div>
+        ${head.reply ? `<div class="balasan-card"><div class="balasan-label">Balasan:</div><div class="balasan-teks">${head.reply}</div></div>` : ""}
+      </div>
+    `;
+
+    // Sub Replies
+    const replies = items.filter(i => i.is_ucapan === "FALSE");
+    replies.forEach(reply => {
+      wrapper.innerHTML += `
+        <div class="ucapan-card sub-reply">
+          <div><strong>${reply.nama}</strong> membalas:</div>
+          <div>${reply.ucapan}</div>
+        </div>
+      `;
+    });
+
+    // Form reply user
+    if (head.user_id === currentUserId && head.reply) {
+      const form = document.createElement("form");
+      form.innerHTML = `
+        <textarea placeholder="Balas balasan admin..." required></textarea>
+        <button type="submit">Kirim Balasan</button>
+      `;
+      form.onsubmit = function(e) {
+        e.preventDefault();
+        const ucapan = form.querySelector("textarea").value;
+        kirimBalasanLanjutan(head.threads, ucapan);
+      };
+      wrapper.appendChild(form);
+    }
+
+    daftar.appendChild(wrapper);
+  });
+}
+
+function kirimBalasanLanjutan(threadId, ucapan) {
+  const payload = {
+    user_id: getUserId(),
+    nama: localStorage.getItem("nama") || "Anonim",
+    ucapan,
+    is_ucapan: false,
+    threads: threadId
+  };
+
+  fetch(endpoint, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  }).then(() => {
+    alert("Balasan terkirim!");
+    ambilUcapan();
+  });
+}
+
 
 function openInvitation() {
   sessionStorage.setItem("invitationOpened", "true");
@@ -25,10 +147,25 @@ function openInvitation() {
 }
 
 window.onload = () => {
+  // Generate userId kalau belum ada
+  let userId = localStorage.getItem("userId");
+  if (!userId) {
+    userId = crypto.randomUUID(); // Bisa juga pakai random string
+    localStorage.setItem("userId", userId);
+    alert("ID baru dibuat untuk Anda: " + userId);
+  }
+
+  // Tampilkan ID di halaman jika elemen tersedia
+  const idDiv = document.getElementById("userIdDisplay");
+  if (idDiv) idDiv.textContent = "ID Anda: " + userId;
+
+  // Splash logic
   document.getElementById('splash').style.display = 'flex';
   document.getElementById('mainContent').style.display = 'none';
+
   ambilUcapan(); 
 };
+
 
 function startCountdown() {
   const countdownEl = document.getElementById('countdown');
@@ -62,12 +199,13 @@ function submitUcapan(e) {
   }
   
   const nama = e.target.nama.value;
-  const ucapan = e.target.ucapan.value;
+const ucapan = e.target.ucapan.value;
+const userId = localStorage.getItem("userId"); // ambil user ID dari localStorage
 
   fetch(endpoint, {
     method: "POST",
     mode: "no-cors",
-    body: JSON.stringify({ nama, ucapan }),
+    body: JSON.stringify({ nama, ucapan, userId }),
     headers: { "Content-Type": "application/json" }
   }).then(() => {
     alert("Ucapan berhasil dikirim!");
@@ -80,7 +218,7 @@ function submitUcapan(e) {
 }
 
 let currentPage = 1;
-const perPage = 3;
+const perPage = 5;
 
 function formatWaktuIndo(isoStr) {
   const date = new Date(isoStr);
@@ -125,6 +263,15 @@ function ambilUcapan() {
             </div>
           ` : ''}
         `;
+		
+		if (item.reply && item.userId === getUserId()) {
+    const balasBtn = document.createElement("button");
+    balasBtn.textContent = "Balas Admin";
+    balasBtn.className = "btn-balas-admin";
+    balasBtn.onclick = () => bukaFormBalas(item.id);
+    card.appendChild(balasBtn);
+  }
+		
         container.appendChild(card);
       });
 
@@ -147,7 +294,31 @@ function ambilUcapan() {
     });
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+
+
+window.addEventListener("DOMContentLoaded", () => {
+  // ========== 1. Generate / tampilkan user ID ==========
+  const userId = getUserId();
+  const display = document.getElementById("userIdValue");
+  if (display) display.textContent = userId;
+
+  const idDiv = document.getElementById("userIdDisplay");
+  if (idDiv) idDiv.textContent = "ID Anda: " + userId;
+
+  // ========== 2. Splash screen ==========
+  document.getElementById('splash').style.display = 'flex';
+  document.getElementById('mainContent').style.display = 'none';
+
+  // ========== 3. Reveal slider logic ==========
+  const slider = document.querySelector(".slider");
+  const wrapper = document.querySelector(".reveal-wrapper");
+  if (slider && wrapper) {
+    slider.addEventListener("input", function () {
+      wrapper.style.width = this.value + "%";
+    });
+  }
+
+  // ========== 4. Fade-in Observer ==========
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -161,35 +332,40 @@ document.addEventListener("DOMContentLoaded", function () {
     observer.observe(el);
   });
 
+  // ========== 5. Carousel drag scroll ==========
   const track = document.getElementById('carouselTrack');
-  if (!track) return;
+  if (track) {
+    let isDown = false;
+    let startX;
+    let scrollLeft;
 
-  let isDown = false;
-  let startX;
-  let scrollLeft;
+    track.addEventListener('mousedown', (e) => {
+      isDown = true;
+      track.classList.add('active');
+      startX = e.pageX - track.offsetLeft;
+      scrollLeft = track.scrollLeft;
+    });
 
-  track.addEventListener('mousedown', (e) => {
-    isDown = true;
-    track.classList.add('active');
-    startX = e.pageX - track.offsetLeft;
-    scrollLeft = track.scrollLeft;
-  });
+    track.addEventListener('mouseleave', () => {
+      isDown = false;
+      track.classList.remove('active');
+    });
 
-  track.addEventListener('mouseleave', () => {
-    isDown = false;
-    track.classList.remove('active');
-  });
+    track.addEventListener('mouseup', () => {
+      isDown = false;
+      track.classList.remove('active');
+    });
 
-  track.addEventListener('mouseup', () => {
-    isDown = false;
-    track.classList.remove('active');
-  });
+    track.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - track.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      track.scrollLeft = scrollLeft - walk;
+    });
+  }
 
-  track.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX - track.offsetLeft;
-    const walk = (x - startX) * 1.5;
-    track.scrollLeft = scrollLeft - walk;
-  });
+  // ========== 6. Ambil ucapan awal ==========
+  ambilUcapan();
 });
+

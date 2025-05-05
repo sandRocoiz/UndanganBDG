@@ -157,5 +157,40 @@
     padding: 0.5em 1em;
     font-size: 0.85em;
   }
+  
+  #userIdDisplay {
+    font-size: 0.75em;
+    text-align: center;
+  }
+  
+  .btn-balas-admin {
+  background: #e0e0e0;
+  border: none;
+  padding: 0.4em 1em;
+  margin-top: 1em;
+  cursor: pointer;
+  border-radius: 5px;
+  font-family: 'Playfair Display', serif;
+  font-size: 0.9em;
+  transition: background 0.3s ease;
+}
+
+.btn-balas-admin:hover {
+  background: #ccc;
+}
+
+  .btn-balas-admin {
+    font-size: 0.8em;
+    padding: 0.3em 0.8em;
+  }
+
+  .reply-form textarea {
+    font-size: 0.9em;
+  }
+
+  .reply-form button {
+    font-size: 0.85em;
+    padding: 0.4em 1em;
+  }
 }
 
