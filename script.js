@@ -60,7 +60,7 @@ function renderUcapan(data) {
 
   // 1. Kelompokkan berdasarkan thread ID
   data.forEach(item => {
-    const threadId = item.threads;
+    const threadId = item.thread;
     if (!threadMap[threadId]) threadMap[threadId] = [];
     threadMap[threadId].push(item);
   });
@@ -70,7 +70,7 @@ function renderUcapan(data) {
     const wrapper = document.createElement("div");
     wrapper.className = "ucapan-thread";
 
-    const head = messages.find(m => m.is_ucapan === "TRUE");
+    const head = messages.find(m => m.is_ucapan === true);
     if (!head || head.approved !== "Y") return;
 
     // Bubble utama
@@ -93,7 +93,7 @@ function renderUcapan(data) {
 
     // Balasan lanjutan dari user (jika ada)
     messages
-      .filter(m => m.is_ucapan === "FALSE")
+      .filter(m => m.is_ucapan === false
       .forEach(reply => {
         wrapper.innerHTML += `
           <div class="bubble sub-user">
@@ -130,7 +130,7 @@ function kirimBalasanLanjutan(threadId, ucapan) {
     nama: localStorage.getItem("nama") || "Anonim",
     ucapan,
     is_ucapan: false,
-    threads: threadId
+    thread: threadId
   };
 
   fetch(endpoint, {
