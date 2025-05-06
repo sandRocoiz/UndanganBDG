@@ -100,27 +100,18 @@ function renderUcapan(data) {
       </div>
     `;
 
-    if (head.reply) {
-      wrapper.innerHTML += `
-        <div class="bubble reply-admin">
-          <strong>Admin</strong>
-          <div>${head.reply}</div>
-          <div class="ucapan-time">${formatWaktuIndo(head.reply_timestamp)}</div>
-        </div>
-      `;
-    }
-
-    messages.filter(m => m.is_ucapan === "FALSE" || m.is_ucapan === false)
+    messages
+      .filter(m => m !== head) // selain ucapan utama
       .forEach(reply => {
+        const isAdmin = reply.nama.toLowerCase() === "admin";
         wrapper.innerHTML += `
-          <div class="bubble reply-user">
+          <div class="bubble ${isAdmin ? 'reply-admin' : 'reply-user'}">
             <strong>${reply.nama}</strong>
             <div>${reply.ucapan}</div>
             <div class="ucapan-time">${formatWaktuIndo(reply.timestamp)}</div>
           </div>
         `;
       });
-
     if (head.userId === userId && head.reply) {
       const form = document.createElement("form");
       form.className = "form-reply-thread";
