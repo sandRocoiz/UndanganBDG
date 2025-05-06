@@ -1,13 +1,9 @@
+// === KONSTANTA ===
 const endpoint = "https://script.google.com/macros/s/AKfycbzJ4GIWbHa8PfbZPAa5pNlqVTRpcEA3Pzd7BSCz86FIzENiBBi6JT38xSFRzbmUuOzkng/exec";
 let currentPage = 1;
 const perPage = 5;
 
-
-
-
-
-
-// ID User
+// === USER ID ===
 function generateUserId() {
   const id = "usr_" + Math.random().toString(36).substring(2, 11);
   localStorage.setItem("userId", id);
@@ -18,10 +14,9 @@ function getUserId() {
   return localStorage.getItem("userId") || generateUserId();
 }
 
-// Submit Ucapan
+// === SUBMIT UCAPAN ===
 function submitUcapan(e) {
   e.preventDefault();
-
   const nama = e.target.nama.value.trim();
   const ucapan = e.target.ucapan.value.trim();
   const userId = getUserId();
@@ -31,13 +26,18 @@ function submitUcapan(e) {
 
   localStorage.setItem("nama", nama);
 
+  const form = new URLSearchParams();
+  form.append("nama", nama);
+  form.append("ucapan", ucapan);
+  form.append("userId", userId);
+
   fetch(endpoint, {
     method: "POST",
     mode: "no-cors",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
     },
-    body: `nama=${encodeURIComponent(nama)}&ucapan=${encodeURIComponent(ucapan)}&userId=${encodeURIComponent(userId)}`
+    body: form.toString()
   })
   .then(() => {
     alert("Ucapan berhasil dikirim!");
@@ -50,27 +50,20 @@ function submitUcapan(e) {
   });
 }
 
-
-
-
-// Ambil Data Ucapan
+// === AMBIL UCAPAN ===
 function ambilUcapan() {
   fetch(endpoint)
-  .then(res => {
-    if (!res.ok) throw new Error("Server tidak merespons.");
-    return res.json();
-  })
+  .then(res => res.json())
   .then(data => {
     const approved = data.filter(d => d.approved === "Y");
     renderUcapan(approved);
   })
   .catch(err => {
     console.error("Gagal ambil ucapan:", err);
-    alert("Gagal mengambil data ucapan dari server.");
   });
 }
 
-// Render Ucapan
+// === RENDER UCAPAN ===
 function renderUcapan(data) {
   const daftar = document.getElementById("daftarUcapan");
   const userId = getUserId();
@@ -93,13 +86,11 @@ function renderUcapan(data) {
   const shown = filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
 
   daftar.innerHTML = "";
-
   shown.forEach(([threadId, messages]) => {
     const wrapper = document.createElement("div");
     wrapper.className = "ucapan-thread";
 
     const head = messages.find(m => m.is_ucapan === "TRUE" || m.is_ucapan === true);
-
     wrapper.innerHTML += `
       <div class="bubble head-ucapan">
         <strong>${head.nama}</strong>
@@ -118,8 +109,7 @@ function renderUcapan(data) {
       `;
     }
 
-    messages
-      .filter(m => m.is_ucapan === "FALSE" || m.is_ucapan === false)
+    messages.filter(m => m.is_ucapan === "FALSE" || m.is_ucapan === false)
       .forEach(reply => {
         wrapper.innerHTML += `
           <div class="bubble reply-user">
@@ -150,36 +140,35 @@ function renderUcapan(data) {
   renderPagination(totalPages);
 }
 
-// Kirim Balasan Lanjutan
+// === KIRIM BALASAN LANJUTAN ===
 function kirimBalasanLanjutan(threadId, ucapan, nama) {
   if (!ucapan.trim()) return alert("Balasan tidak boleh kosong!");
-  const payload = {
-    userId: getUserId(),
-    nama: localStorage.getItem("nama") || nama,
-    ucapan,
-    is_ucapan: false,
-    thread: threadId
-  };
+  const form = new URLSearchParams();
+  form.append("userId", getUserId());
+  form.append("nama", localStorage.getItem("nama") || nama);
+  form.append("ucapan", ucapan);
+  form.append("is_ucapan", "false");
+  form.append("thread", threadId);
 
   fetch(endpoint, {
     method: "POST",
-    mode: "cors",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: form.toString()
   })
-.then(res => res.text())
-.then((result) => {
-  console.log("Balasan response:", result);
-  alert("Balasan terkirim!");
-  ambilUcapan();
-})
-.catch(err => {
-  console.error("Gagal kirim balasan:", err);
-  alert("Gagal kirim balasan.");
-});
+  .then(() => {
+    alert("Balasan terkirim!");
+    ambilUcapan();
+  })
+  .catch(err => {
+    console.error("Gagal kirim balasan:", err);
+    alert("Gagal kirim balasan.");
+  });
 }
 
-// Pagination
+// === PAGINATION ===
 function renderPagination(totalPages) {
   const paginationDiv = document.getElementById("pagination") || document.createElement("div");
   paginationDiv.id = "pagination";
@@ -200,46 +189,36 @@ function renderPagination(totalPages) {
   if (!document.getElementById("pagination")) daftar.appendChild(paginationDiv);
 }
 
-// Format Waktu Indonesia
+// === FORMAT WAKTU ===
 function formatWaktuIndo(dateStr) {
   const date = new Date(dateStr);
   if (isNaN(date.getTime())) return "Waktu tidak diketahui";
-
-  const tanggal = date.toLocaleDateString('id-ID', {
-    day: '2-digit', month: 'long', year: 'numeric'
-  });
-  const waktu = date.toLocaleTimeString('id-ID', {
-    hour: '2-digit', minute: '2-digit', hour12: false
-  });
-
+  const tanggal = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+  const waktu = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
   return `${tanggal}, ${waktu} WIB`;
 }
 
-// Countdown
+// === COUNTDOWN ===
 function startCountdown() {
   const countdownEl = document.getElementById('countdown');
   const target = new Date('2025-06-13T10:00:00').getTime();
-
   const interval = setInterval(() => {
     const now = Date.now();
     const diff = target - now;
-
     if (diff <= 0) {
       clearInterval(interval);
       countdownEl.innerHTML = "Countdown telah berakhir.";
       return;
     }
-
     const d = Math.floor(diff / (1000 * 60 * 60 * 24));
     const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const s = Math.floor((diff % (1000 * 60)) / 1000);
-
     countdownEl.innerHTML = `${d} hari ${h} jam ${m} menit ${s} detik`;
   }, 1000);
 }
 
-// Splash screen logic
+// === SPLASH SCREEN ===
 function openInvitation() {
   sessionStorage.setItem("invitationOpened", "true");
   document.getElementById('splash').style.display = 'none';
@@ -247,16 +226,14 @@ function openInvitation() {
 
   const bgm = document.getElementById('bgm');
   if (bgm && typeof bgm.play === 'function') {
-    bgm.play().catch(err => {
-      console.warn("Autoplay gagal:", err);
-    });
+    bgm.play().catch(err => console.warn("Autoplay gagal:", err));
   }
 
   startCountdown();
   ambilUcapan();
 }
 
-// Init saat DOM siap
+// === INISIALISASI ===
 document.addEventListener("DOMContentLoaded", () => {
   const userId = getUserId();
   const display = document.getElementById("userIdValue");
@@ -279,56 +256,51 @@ document.addEventListener("DOMContentLoaded", () => {
   ambilUcapan();
 });
 
+// === GALERI FOTO INTERAKTIF ===
+const track = document.getElementById('carouselTrack');
+let isDown = false;
+let startX;
+let scrollLeft;
 
-  const track = document.getElementById('carouselTrack');
-  let isDown = false;
-  let startX;
-  let scrollLeft;
+track.addEventListener('mousedown', (e) => {
+  isDown = true;
+  track.classList.add('active');
+  startX = e.pageX - track.offsetLeft;
+  scrollLeft = track.scrollLeft;
+});
 
-  track.addEventListener('mousedown', (e) => {
-    isDown = true;
-    track.classList.add('active');
-    startX = e.pageX - track.offsetLeft;
-    scrollLeft = track.scrollLeft;
-  });
+track.addEventListener('mouseleave', () => {
+  isDown = false;
+  track.classList.remove('active');
+});
 
-  track.addEventListener('mouseleave', () => {
-    isDown = false;
-    track.classList.remove('active');
-  });
+track.addEventListener('mouseup', () => {
+  isDown = false;
+  track.classList.remove('active');
+});
 
-  track.addEventListener('mouseup', () => {
-    isDown = false;
-    track.classList.remove('active');
-  });
+track.addEventListener('mousemove', (e) => {
+  if (!isDown) return;
+  e.preventDefault();
+  const x = e.pageX - track.offsetLeft;
+  const walk = (x - startX) * 1.5;
+  track.scrollLeft = scrollLeft - walk;
+});
 
-  track.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX - track.offsetLeft;
-    const walk = (x - startX) * 1.5;
-    track.scrollLeft = scrollLeft - walk;
-  });
-  
-  document.querySelectorAll(".slider").forEach(slider => {
+document.querySelectorAll(".slider").forEach(slider => {
   const wrapper = slider.previousElementSibling;
   slider.addEventListener("input", function () {
     wrapper.style.width = this.value + "%";
   });
 });
-  
-  const bgm = document.getElementById("bgm");
 
-  // Pause ketika user keluar dari tab
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-      bgm.pause();
-    } else {
-      // Mainkan lagi hanya jika sebelumnya sudah main
-      if (sessionStorage.getItem("invitationOpened") === "true") {
-        bgm.play().catch(err => {
-          console.warn("Autoplay gagal saat kembali ke tab:", err);
-        });
-      }
+const bgm = document.getElementById("bgm");
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    bgm.pause();
+  } else {
+    if (sessionStorage.getItem("invitationOpened") === "true") {
+      bgm.play().catch(err => console.warn("Autoplay gagal saat kembali ke tab:", err));
     }
-  });
+  }
+});
