@@ -33,28 +33,24 @@ function submitUcapan(e) {
 
   fetch(endpoint, {
     method: "POST",
-    mode: "cors",
+    mode: "no-cors",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/x-www-form-urlencoded"
     },
-    body: JSON.stringify({ nama, ucapan, userId })
+    body: `nama=${encodeURIComponent(nama)}&ucapan=${encodeURIComponent(ucapan)}&userId=${encodeURIComponent(userId)}`
   })
-  .then(res => res.text()) // ambil response teks dari server
-  .then(result => {
-    console.log("Response dari server:", result);
-    if (result.trim().toUpperCase() === "OK") {
-      alert("Ucapan berhasil dikirim!");
-      e.target.reset();
-      ambilUcapan();
-    } else {
-      alert("Server membalas dengan pesan: " + result);
-    }
+  .then(() => {
+    alert("Ucapan berhasil dikirim!");
+    e.target.reset();
+    ambilUcapan();
   })
   .catch(err => {
     console.error("Gagal mengirim ucapan:", err);
-    alert("Gagal mengirim ucapan. Silakan coba lagi.");
+    alert("Gagal mengirim ucapan. Coba lagi ya!");
   });
 }
+
+
 
 
 // Ambil Data Ucapan
