@@ -30,6 +30,7 @@ function submitUcapan(e) {
   form.append("nama", nama);
   form.append("ucapan", ucapan);
   form.append("userId", userId);
+  form.append("is_ucapan", "true"); // hanya ucapan yang dianggap TRUE
 
   fetch(endpoint, {
     method: "POST",
@@ -147,7 +148,7 @@ function kirimBalasanLanjutan(threadId, ucapan, nama) {
   form.append("userId", getUserId());
   form.append("nama", localStorage.getItem("nama") || nama);
   form.append("ucapan", ucapan);
-  form.append("is_ucapan", "false");
+  form.append("is_ucapan", "false"); // balasan dianggap bukan ucapan utama
   form.append("thread", threadId);
 
   fetch(endpoint, {
