@@ -82,7 +82,7 @@ body {
 }
 
 .splash {
-  background: url('https://i.imgur.com/JaO8Pi8.jpeg') no-repeat center/cover;
+  background: url('https://i.imgur.com/h0TAxeb.jpeg') no-repeat center/cover;
   color: white;
   height: 100vh;
   justify-content: center;
@@ -110,16 +110,58 @@ body {
   background-color: #f0f0f0;
 }
 
-@media (max-width: 480px) {
-  .splash button {
-    padding: 0.5em 1em;
-    font-size: 0.85em;
-  }
-  
-  .btn-balas-admin {
-    font-size: 0.8em;
-    padding: 0.3em 0.8em;
-  }
+.judul-wedding {
+  font-family: 'Great Vibes', cursive;
+  font-size: 2em;
+  font-weight: normal;
+  margin: 0;
+}
+
+.nama-pasangan {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.2em;
+  font-weight: bold;
+  margin: 0.2em 0;
+}
+
+.tanggal-acara {
+  font-family: 'Playfair Display', serif;
+  font-size: 1em;
+  font-weight: normal;
+  margin-bottom: 1em;
+}
+
+    section {
+  padding: 3em 1em;
+  box-sizing: border-box;
+}
+    iframe { width: 100%; height: 300px; border: none; }
+    img { max-width: 300px; margin: 1em; border-radius: 10px; }
+    .thanks { background-color: #f9f9f9; padding: 4em 2em; }
+	
+body {
+  overflow-x: hidden;
+}
+
+#countdown-section {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100vw;
+  height: 100vh;
+  background: url('https://i.imgur.com/mnubXkZ.jpeg') center center / cover no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+#countdown-section .overlay {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 2em;
+  border-radius: 10px;
+  text-align: center;
+  width: 100%;
+  max-width: 600px;
 }
 
 /* ANIMASI FADE-IN */
@@ -134,17 +176,437 @@ body {
   transform: translateY(0);
 }
 
-/* Tambahkan style tambahan sesuai kebutuhan. */
-@media (max-width: 768px) {
-  .photo-group.kiri .overlay-photo,
-  .photo-group.kanan .overlay-photo {
-    left: 0 !important;
-    right: 0 !important;
-    bottom: -30px !important;
-    width: 70%;
-    margin: 0 auto;
-  }
+.ayat-frame {
+  text-align: center;
+  padding: 2em 1em;
+  background: linear-gradient(to bottom, #fdf5f1, #ffffff);
 }
+
+.ayat-box {
+  border: 2px solid #ddd;
+  padding: 1.5em;
+  border-radius: 12px;
+  background-color: #fff;
+  max-width: 800px;
+  margin: 1.5em auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.arabic {
+  font-family: 'Scheherazade', serif;
+  font-size: 1.7em;
+  direction: rtl;
+  margin-bottom: 1em;
+  line-height: 2em;
+}
+
+.latin {
+  font-style: italic;
+  font-size: 1em;
+  color: #444;
+  margin-bottom: 1em;
+}
+
+.translation {
+  font-size: 1em;
+  color: #555;
+}
+
+#couple-section {
+  padding: 5em 1em;
+  background: linear-gradient(to bottom, #fdf5f1, #ffffff);
+  
+}
+
+.couple-container {
+  max-width: 1100px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5em;
+}
+
+.couple-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3em;
+  flex-wrap: wrap;
+}
+
+.couple-block.reverse {
+  flex-direction: row-reverse;
+}
+
+.photo-group {
+  position: relative;
+  width: 280px;
+}
+
+.photo-group .main-photo {
+  width: 100%;
+  border-radius: 10px;
+  z-index: 1;
+  position: relative;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+}
+
+.photo-group.kiri .overlay-photo {
+  width: 80%;
+  position: absolute;
+  bottom: -100px; /* Tambah jarak ke bawah */
+  left: -200px;  /* Tambah jarak ke samping */
+  border-radius: 10px;
+  opacity: 0.9;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.photo-group.kanan .overlay-photo {
+  width: 80%;
+  position: absolute;
+  bottom: -100px; /* Tambah jarak ke bawah */
+  right: -200px;  /* Tambah jarak ke samping */
+  border-radius: 10px;
+  opacity: 0.9;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+
+
+.couple-desc {
+  max-width: 400px;
+  text-align: left;
+}
+
+.couple-block.reverse .couple-desc {
+  text-align: right;
+}
+
+.role {
+  font-family: 'Great Vibes', cursive;
+  font-size: 1.6em;
+  color: #777;
+  margin-bottom: 0;
+}
+
+.name {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2em;
+  margin: 0.1em 0 0.4em;
+  color: #111;
+}
+
+.couple-desc p {
+  font-size: 1em;
+  line-height: 1.6;
+  color: #444;
+}
+
+.social {
+  margin-top: 1em;
+  background: #2c3e50;
+  color: #fff;
+  padding: 0.4em 1em;
+  display: inline-block;
+  border-radius: 6px;
+  font-size: 0.9em;
+}
+
+#gallery-section {
+  padding: 4em 1em;
+  background: #f9f9f9;
+}
+
+.gallery-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 2em;
+  max-width: 900px;
+  margin: auto;
+  overflow: hidden;
+}
+
+.gallery-title-container {
+  flex: 0 0 150px;
+}
+
+.gallery-title {
+  font-size: 2.5em;
+  line-height: 1.2;
+}
+
+.title-main {
+  font-family: 'Playfair Display', serif;
+  font-weight: bold;
+  color: #111;
+}
+
+.title-sub {
+  font-family: 'Great Vibes', cursive;
+  font-size: 0.7em;
+  color: #555;
+  margin-left: 0.3em;
+}
+
+.gallery-carousel {
+  overflow: hidden;
+  cursor: grab;
+}
+
+.carousel-track {
+  display: flex;
+  gap: 1em;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 1em 0;
+}
+
+.carousel-track img {
+  width: 250px;
+  height: auto;
+  border-radius: 10px;
+  flex: 0 0 auto;
+}
+
+.gallery-static {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  flex-wrap: wrap;
+  padding-top: 1em;
+}
+
+.gallery-static img {
+  width: 280px;
+  height: auto;
+  border-radius: 10px;
+}
+
+#weddingdate-section {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100vw;
+  height: 30vh;
+  background: url('https://i.imgur.com/40hYGRP.jpeg') center center / cover no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  background-position: center 65%;
+}
+
+.weddingdate-title {
+  font-size: 2.5em;
+  line-height: 1.2;
+}
+
+.weddingdate-title-main {
+  font-family: 'Playfair Display', serif;
+  font-weight: bold;
+  color: white
+}
+
+.weddingdate-title-sub {
+  font-family: 'Great Vibes', cursive;
+  font-size: 0.7em;
+  color: white
+  margin-left: 0.3em;
+}
+
+#unduhmantu-section {
+  padding: 4em 1em;
+  background: #f9f9f9;
+}
+
+.unduhmantu-title {
+  font-size: 2.5em;
+  line-height: 1.2;
+}
+
+.unduhmantu-title-main {
+  font-family: 'Playfair Display', serif;
+  font-weight: bold;
+  color: #111;
+}
+
+.unduhmantu-title-sub {
+  font-family: 'Great Vibes', cursive;
+  font-size: 0.7em;
+  color: #555;
+  margin-left: 0.3em;
+}
+
+#doa-section {
+  padding: 4em 1em;
+  background: linear-gradient(to bottom, #f8f4f0, #fff);
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+}
+
+.doa-title {
+  font-size: 2.8em;
+  margin-bottom: 1.2em;
+}
+
+.doa-title-main {
+  font-family: 'Playfair Display', serif;
+  font-weight: bold;
+  color: #8B5E3C;
+}
+
+.doa-title-sub {
+  font-family: 'Great Vibes', cursive;
+  font-size: 0.8em;
+  color: #B58E6F;
+  margin-left: 0.4em;
+}
+
+.form-doa {
+  max-width: 600px;
+  margin: 0 auto 3em;
+  background: #fffaf5;
+  padding: 2em;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+.form-doa h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5em;
+  margin-bottom: 1em;
+  color: #5c4436;
+}
+
+.form-doa input,
+.form-doa textarea {
+  width: 100%;
+  padding: 1em 1.2em;
+  font-size: 1em;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: 'Playfair Display', serif;
+  background-color: #fff;
+  transition: 0.3s ease;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.form-doa input:focus,
+.form-doa textarea:focus {
+  outline: none;
+  border-color: #c9a27e;
+  box-shadow: 0 0 0 3px rgba(201, 162, 126, 0.2);
+}
+
+.form-doa textarea {
+  resize: vertical;
+  height: 120px;
+}
+
+.form-doa button {
+  margin-top: 1em;
+  padding: 0.75em 2.5em;
+  background-color: #5c4436;
+  color: white;
+  font-weight: bold;
+  font-size: 1em;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  font-family: 'Playfair Display', serif;
+}
+
+.form-doa button:hover {
+  background-color: #3e2d23;
+}
+
+.ucapan-card {
+  max-width: 600px;
+  margin: 1.5em auto;
+  padding: 1.5em;
+  border-radius: 12px;
+  border: 1px solid #f0e6dc;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  text-align: left;
+  font-family: 'Playfair Display', serif;
+  position: relative;
+  card.className = 'ucapan-card fade-in';
+  balasanDiv.className = 'balasan-card fade-in';
+}
+
+.ucapan-card strong {
+  display: block;
+  font-size: 1.1em;
+  color: #8B5E3C;
+  margin-bottom: 0.4em;
+}
+
+.ucapan-time {
+  font-size: 0.85em;
+  color: #999;
+  margin-top: 0.8em;
+  font-style: italic;
+  text-align: right;
+}
+
+#pagination {
+  text-align: center;
+  margin-top: 2.5em;
+}
+
+#pagination button {
+  margin: 0 6px;
+  padding: 6px 12px;
+  font-size: 0.9em;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background: #f5f5f5;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#pagination button:hover:not(:disabled) {
+  background: #ddd;
+}
+
+#pagination button:disabled {
+  background: #eee;
+  color: #aaa;
+  cursor: default;
+}
+
+.balasan-card {
+  margin-top: 1em;
+  padding: 0.8em 1em;
+  background-color: #f0f0f0;
+  border-left: 4px solid #2c3e50;
+  border-radius: 6px;
+  font-size: 0.95em;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+  card.className = 'ucapan-card fade-in';
+  balasanDiv.className = 'balasan-card fade-in';
+}
+
+.balasan-label {
+  font-weight: bold;
+  margin-bottom: 0.3em;
+  color: #2c3e50;
+}
+
+.balasan-teks {
+  color: #333;
+}
+
+.balasan-time {
+  font-size: 0.8em;
+  font-style: italic;
+  color: #777;
+  margin-top: 0.5em;
+}
+
+
+
 
 .btn-balas-admin {
   margin-top: 0.8em;
@@ -195,54 +657,65 @@ body {
   background-color: #1a252f;
 }
 
-.bubble-thread {
-  margin-bottom: 2em;
+.ucapan-thread {
   max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 2em auto;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 1.2em;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
 }
 
 .bubble {
-  padding: 0.9em 1.2em;
-  border-radius: 20px;
-  margin-bottom: 0.6em;
-  display: inline-block;
-  position: relative;
-  font-size: 1em;
-  line-height: 1.5;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-  word-wrap: break-word;
-  max-width: 90%;
+  padding: 1em;
+  border-radius: 10px;
+  margin: 0.5em 0;
+  background: #f9f9f9;
+  font-family: 'Playfair Display', serif;
 }
 
-.bubble.user {
+.bubble strong {
+  color: #5c4436;
+}
+
+.reply-admin {
+  background-color: #eee;
+  font-weight: bold;
+}
+
+.sub-user {
+  background-color: #e4f7e8;
+}
+
+.head-ucapan {
+  background: #fff;
+  border-left: 5px solid #8B5E3C;
+}
+
+.reply-admin {
   background: #f0f0f0;
-  color: #000;
-  text-align: left;
-  border-bottom-left-radius: 0;
-  margin-right: auto;
+  border-left: 5px solid #2c3e50;
 }
 
-.bubble.admin {
-  background: #2c3e50;
-  color: #fff;
-  text-align: left;
-  border-bottom-right-radius: 0;
-  margin-left: auto;
+.reply-user {
+  background: #fdf1e6;
+  border-left: 5px solid #b68550;
 }
 
-.bubble.reply {
-  margin-left: 2em;
-  background: #fff4e0;
-  border-left: 4px solid #ffaf4f;
-  color: #333;
+.ucapan-time {
+  font-size: 0.85em;
+  color: #999;
+  margin-top: 0.5em;
+  font-style: italic;
+  text-align: right;
 }
 
 .form-reply-thread {
-  margin-top: 1em;
   display: flex;
   flex-direction: column;
   gap: 0.5em;
+  margin-top: 1em;
 }
 
 .form-reply-thread textarea {
@@ -253,11 +726,119 @@ body {
 }
 
 .form-reply-thread button {
-  padding: 0.6em 1.5em;
+  align-self: flex-end;
+  background: #5c4436;
+  color: white;
+  padding: 0.6em 1.4em;
   border: none;
-  background: #2c3e50;
-  color: #fff;
   border-radius: 6px;
   cursor: pointer;
 }
+
+#gift-section {
+  background-color: #f9f9f9;
+  padding: 4em 1em;
+  text-align: center;
+}
+
+.gift-title {
+  font-size: 2.5em;
+  line-height: 1.2;
+}
+
+.gift-title-main {
+  font-family: 'Playfair Display', serif;
+  font-weight: bold;
+  color: #111;
+}
+
+.gift-title-sub {
+  font-family: 'Great Vibes', cursive;
+  font-size: 0.7em;
+  color: #555;
+  margin-left: 0.3em;
+}
+
+.btn-saweria {
+  display: inline-block;
+  padding: 0.7em 1.5em;
+  background: #f8e9d2;
+  color: #5a3e2b;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 30px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  font-family: 'Playfair Display', serif;
+}
+
+.btn-saweria:hover {
+  background: #f2d4a6;
+  color: #4a321f;
+}
+
+
+#thanks-section {
+  padding: 4em 1em;
+  background: url('https://i.imgur.com/WardSOa.jpeg') no-repeat center center / cover;
+  background-position: center 65%; /* ⬅️ atur posisi vertikal ke tengah */
+  color: white;
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+  position: relative;
+  
+}
+
+
+
+.thanks-title {
+  font-size: 2.5em;
+  line-height: 1.2;
+}
+
+.thanks-title-main {
+  font-family: 'Playfair Display', serif;
+  font-weight: bold;
+  color: #111;
+}
+
+.thanks-title-sub {
+  font-family: 'Great Vibes', cursive;
+  font-size: 0.7em;
+  color: #555;
+  margin-left: 0.3em;
+}
+
+
+
+.thanks-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: rgba(0, 0, 0, 0.4); /* semi-transparent background */
+  padding: 3em 2em;
+  border-radius: 10px;
+}
+
+
+
+
+
+
+
+.thanks-opening,
+.thanks-middle,
+.thanks-closing,
+.thanks-footer {
+  font-size: 1em;
+  line-height: 1.6;
+  margin: 1.2em 0;
+}
+
+.thanks-footer {
+  font-size: 0.85em;
+  margin-top: 2em;
+  opacity: 0.8;
+}
+
+
 
