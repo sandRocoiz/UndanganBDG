@@ -1,4 +1,4 @@
-const endpoint = "https://script.google.com/macros/s/AKfycbypZbnVQ1RzjFGXpvTecG-YIvOod4_4oA-fSUl_sCo79LDe_UbU0jgP6vOrzrGpAJKE/exec";
+const endpoint = "https://script.google.com/macros/s/AKfycbzJ4GIWbHa8PfbZPAa5pNlqVTRpcEA3Pzd7BSCz86FIzENiBBi6JT38xSFRzbmUuOzkng/exec";
 let currentPage = 1;
 const perPage = 5;
 
@@ -21,6 +21,7 @@ function getUserId() {
 // Submit Ucapan
 function submitUcapan(e) {
   e.preventDefault();
+
   const nama = e.target.nama.value.trim();
   const ucapan = e.target.ucapan.value.trim();
   const userId = getUserId();
@@ -33,29 +34,44 @@ function submitUcapan(e) {
   fetch(endpoint, {
     method: "POST",
     mode: "cors",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({ nama, ucapan, userId })
   })
-    .then(() => {
+  .then(res => res.text()) // ambil response teks dari server
+  .then(result => {
+    console.log("Response dari server:", result);
+    if (result.trim().toUpperCase() === "OK") {
       alert("Ucapan berhasil dikirim!");
       e.target.reset();
       ambilUcapan();
-    })
-    .catch(err => {
-      alert("Gagal mengirim ucapan.");
-      console.error(err);
-    });
+    } else {
+      alert("Server membalas dengan pesan: " + result);
+    }
+  })
+  .catch(err => {
+    console.error("Gagal mengirim ucapan:", err);
+    alert("Gagal mengirim ucapan. Silakan coba lagi.");
+  });
 }
+
 
 // Ambil Data Ucapan
 function ambilUcapan() {
   fetch(endpoint)
-    .then(res => res.json())
-    .then(data => {
-      const approved = data.filter(d => d.approved === "Y");
-      renderUcapan(approved);
-    })
-    .catch(err => console.error("Gagal ambil ucapan:", err));
+  .then(res => {
+    if (!res.ok) throw new Error("Server tidak merespons.");
+    return res.json();
+  })
+  .then(data => {
+    const approved = data.filter(d => d.approved === "Y");
+    renderUcapan(approved);
+  })
+  .catch(err => {
+    console.error("Gagal ambil ucapan:", err);
+    alert("Gagal mengambil data ucapan dari server.");
+  });
 }
 
 // Render Ucapan
@@ -154,10 +170,17 @@ function kirimBalasanLanjutan(threadId, ucapan, nama) {
     mode: "cors",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload)
-  }).then(() => {
-    alert("Balasan terkirim!");
-    ambilUcapan();
-  });
+  })
+.then(res => res.text())
+.then((result) => {
+  console.log("Balasan response:", result);
+  alert("Balasan terkirim!");
+  ambilUcapan();
+})
+.catch(err => {
+  console.error("Gagal kirim balasan:", err);
+  alert("Gagal kirim balasan.");
+});
 }
 
 // Pagination
