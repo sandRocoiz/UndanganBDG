@@ -16,19 +16,26 @@ html, body {
   margin: 0;
   padding: 0;
   font-family: 'Playfair Display', serif;
-  background: #0f0f0f;
-  color: #e0e0e0;
+  background: #FAF3EA;
+  color: #333;
   overflow-x: hidden;
+  height: 100%;
+}
+
+#userIdDisplay {
+  margin-top: 1em;
+  font-size: 0.85em;
+  color: #6B4F2B;
 }
 
 /* === FUTURISTIC BUBBLE THREAD === */
 .ucapan-thread {
-  background: #1c1c1c;
-  border: 1px solid #333;
+  background: #fff;
+  border: 1px solid #f0e6dc;
   border-radius: 12px;
   padding: 1.2em;
   margin: 2em auto;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
   max-width: 700px;
 }
 
@@ -181,10 +188,7 @@ body {
 
 /* ANIMASI FADE-IN */
 .fade-in {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.7s ease-out, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform;
+  animation: fadeIn 0.5s ease-in-out;
 }
 .fade-in.show {
   opacity: 1;
@@ -683,14 +687,13 @@ body {
 }
 
 .bubble {
-  background: #222;
-  color: #ccc;
-  padding: 1em;
-  border-radius: 10px;
-  margin: 0.5em 0;
-  position: relative;
-  border-left: 4px solid #555;
-  transition: background 0.3s;
+  background-color: #FDF9F4;
+  color: #6B4F2B;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-left: 4px solid #E6DCD1;
+  animation: fadeIn 0.4s ease-in-out;
 }
 
 .bubble:hover {
@@ -702,8 +705,8 @@ body {
 }
 
 .reply-admin {
-  background-color: #eee;
-  font-weight: bold;
+  background-color: #f7e7e7;
+  border-left-color: #D36464;
 }
 
 .sub-user {
@@ -711,26 +714,22 @@ body {
 }
 
 .head-ucapan {
-  border-left-color: #00ffff;
-  background: #121212;
-}
-
-.reply-admin {
-  border-left-color: #ff5b5b;
-  background: #2c2c2c;
+  border-left-color: #C9A27E;
 }
 
 .reply-user {
-  border-left-color: #b68550;
-  background: #1f1f1f;
+  background-color: #f0f0f0;
+  border-left-color: #A9745F;
 }
 
 .ucapan-time {
-  font-size: 0.8em;
+  font-size: 0.85em;
   color: #999;
+  margin-top: 0.8em;
   text-align: right;
-  margin-top: 0.5em;
+  font-style: italic;
 }
+
 
 .form-reply-thread {
   display: flex;
@@ -742,20 +741,22 @@ body {
 .form-reply-thread textarea {
   padding: 0.8em;
   border-radius: 8px;
-  border: 1px solid #555;
-  background: #1a1a1a;
-  color: #eee;
+  border: 1px solid #ccc;
+  background: #fff;
+  color: #333;
+  font-family: 'Playfair Display', serif;
 }
 
 .form-reply-thread button {
   align-self: flex-end;
-  background: #00ffff;
-  color: #000;
+  background: #A9745F;
+  color: white;
   padding: 0.6em 1.2em;
   border: none;
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
+  font-family: 'Playfair Display', serif;
 }
 
 /* === LIKE BUTTON === */
@@ -767,14 +768,15 @@ body {
 .like-btn {
   background: none;
   border: none;
-  color: #888;
+  color: #aaa;
   font-size: 0.9em;
   cursor: pointer;
   transition: transform 0.2s;
 }
 .like-btn.liked {
-  color: #ff5b5b;
+  color: #D36464;
 }
+
 .like-btn:hover {
   transform: scale(1.1);
 }
@@ -888,23 +890,43 @@ body {
 body.loading-filter::before {
   content: "";
   position: fixed;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  background: linear-gradient(135deg, #FAF3EA, #E6DCD1, #FAF3EA);
   opacity: 0.7;
   z-index: 9998;
   animation: shimmer 2s infinite;
 }
 
-@keyframes shimmer {
-  0% { background-position: -1000px 0; }
-  100% { background-position: 1000px 0; }
+.shimmer-wrapper {
+  margin-top: 1rem;
 }
+
+.shimmer-card {
+  background: linear-gradient(90deg, #f3f3f3 25%, #ececec 50%, #f3f3f3 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  height: 100px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
 
 body.loading-filter {
   pointer-events: none;
   background-size: 200% 200%;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 

@@ -53,16 +53,31 @@ function submitUcapan(e) {
 
 // === AMBIL UCAPAN ===
 function ambilUcapan() {
+  document.getElementById("ucapanLoading").style.display = "block";
+  document.getElementById("daftarUcapan").style.display = "none";
+
   fetch(endpoint)
-  .then(res => res.json())
-  .then(data => {
-    const approved = data.filter(d => d.approved === "Y");
-    renderUcapan(approved);
-  })
-  .catch(err => {
-    console.error("Gagal ambil ucapan:", err);
-  });
+    .then(res => res.json())
+    .then(data => {
+      const approved = data.filter(d => d.approved === "Y");
+      renderUcapan(approved);
+    })
+    .catch(err => {
+      console.error("Gagal ambil ucapan:", err);
+    })
+    .finally(() => {
+      document.getElementById("ucapanLoading").style.display = "none";
+      document.getElementById("daftarUcapan").style.display = "block";
+    });
+	
+
 }
+
+
+
+
+
+
 
 // === RENDER UCAPAN ===
 function renderUcapan(data) {
@@ -87,6 +102,10 @@ function renderUcapan(data) {
   const shown = filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
 
   daftar.innerHTML = "";
+  
+  daftar.classList.remove("show");
+  void daftar.offsetWidth;
+  daftar.classList.add("fade-in", "show");
 
   shown.forEach(([threadId, messages]) => {
     const wrapper = document.createElement("div");
@@ -133,6 +152,11 @@ function renderUcapan(data) {
 
     daftar.appendChild(wrapper);
   });
+  
+   
+
+
+
 
   renderPagination(totalPages);
 }
