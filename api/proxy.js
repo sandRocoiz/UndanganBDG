@@ -1,6 +1,7 @@
 export default async function handler(req, res) {
-  const url = 'https://script.google.com/macros/s/AKfycbzJ4GIWbHa8PfbZPAa5pNlqVTRpcEA3Pzd7BSCz86FIzENiBBi6JT38xSFRzbmUuOzkng/exec';
+  const baseUrl = 'https://script.google.com/macros/s/AKfycbzJ4GIWbHa8PfbZPAa5pNlqVTRpcEA3Pzd7BSCz86FIzENiBBi6JT38xSFRzbmUuOzkng/exec';
 
+  // Handle preflight
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -8,6 +9,7 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
+  let url = baseUrl;
   const fetchOptions = {
     method: req.method,
     headers: {
@@ -15,6 +17,7 @@ export default async function handler(req, res) {
     },
   };
 
+  // For POST: forward the body
   if (req.method === 'POST') {
     let body = '';
     for await (const chunk of req) {
@@ -23,10 +26,27 @@ export default async function handler(req, res) {
     fetchOptions.body = body;
   }
 
-  const response = await fetch(url, fetchOptions);
-  const text = await response.text();
+  // For GET: forward query parameters
+  if (req.method === 'GET' && Object.keys(req.query).length > 0) {
+    const queryString = new URLSearchParams(req.query).toString();
+    url += `?${queryString}`;
+  }
 
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Content-Type', 'application/json');
-  res.status(200).send(text);
+  try {
+    const response = await fetch(url, fetchOptions);
+    const contentType = response.headers.get('content-type');
+    const text = await response.text();
+
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    if (contentType && contentType.includes('application/json')) {
+      res.setHeader('Content-Type', 'application/json');
+      res.status(200).send(text);
+    } else {
+      res.setHeader('Content-Type', 'text/plain');
+      res.status(200).send(text);
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Proxy failed', message: err.message });
+  }
 }
