@@ -1,5 +1,6 @@
 export default async function handler(req, res) {
-  const baseUrl = 'https://script.google.com/macros/s/AKfycbzJ4GIWbHa8PfbZPAa5pNlqVTRpcEA3Pzd7BSCz86FIzENiBBi6JT38xSFRzbmUuOzkng/exec';
+  const baseUrl = 'https://script.google.com/macros/s/AKfycby7srw_3_m0VFOAqmvg-lxT1lvSWjwuvsTe2JN9zS1u-e75BQXm2uns8S0PI1Rt07HFCQ/exec';
+
 
   // Handle preflight
   if (req.method === 'OPTIONS') {
