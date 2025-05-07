@@ -413,5 +413,51 @@ function animateLetterDrop(targetSelector) {
 document.addEventListener("DOMContentLoaded", () => {
   // ... existing logic
   animateLetterDrop("#countdown-section");
+  
+  const scrollElements = document.querySelectorAll(".scroll-reveal");
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("active");
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  scrollElements.forEach((el) => observer.observe(el));
+});
+
+document.getElementById("formReservasi")?.addEventListener("submit", function(e) {
+  e.preventDefault();
+  const nama = this.nama.value.trim();
+  const status = this.status.value;
+
+  if (!nama || !status) return alert("Nama dan status wajib diisi.");
+
+  const form = new URLSearchParams();
+  form.append("nama", nama);
+  form.append("status", status);
+  form.append("action", "reservasi");
+
+  fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: form.toString()
+  })
+  .then(res => res.text())
+  .then(res => {
+    if (res === "OK") {
+      alert("Konfirmasi kehadiran berhasil dikirim!");
+      this.reset();
+    } else {
+      console.warn("Respon gagal:", res);
+      alert("Gagal mengirim reservasi. Coba lagi ya.");
+    }
+  })
+  .catch(err => {
+    console.error("Gagal kirim reservasi:", err);
+    alert("Gagal mengirim reservasi.");
+  });
 });
 
