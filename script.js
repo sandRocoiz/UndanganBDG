@@ -30,7 +30,7 @@ function submitUcapan(e) {
   form.append("nama", nama);
   form.append("ucapan", ucapan);
   form.append("userId", userId);
-  form.append("is_ucapan", "true"); // hanya ucapan yang dianggap TRUE
+  form.append("is_ucapan", "true");
 
   fetch(endpoint, {
     method: "POST",
@@ -72,9 +72,9 @@ function renderUcapan(data) {
   const threads = {};
 
   data.forEach(item => {
-    const thread = item.thread || item.id;
-    if (!threads[thread]) threads[thread] = [];
-    threads[thread].push(item);
+    const threadId = item.thread ?? item.id;
+    if (!threads[threadId]) threads[threadId] = [];
+    threads[threadId].push(item);
   });
 
   const filtered = Object.entries(threads).filter(([_, messages]) => {
@@ -87,32 +87,37 @@ function renderUcapan(data) {
   const shown = filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
 
   daftar.innerHTML = "";
+
   shown.forEach(([threadId, messages]) => {
     const wrapper = document.createElement("div");
     wrapper.className = "ucapan-thread";
 
-    const head = messages.find(m => m.is_ucapan === "TRUE" || m.is_ucapan === true);
-    wrapper.innerHTML += `
-      <div class="bubble head-ucapan">
-        <strong>${head.nama}</strong>
-        <div>${head.ucapan}</div>
-        <div class="ucapan-time">${formatWaktuIndo(head.timestamp)}</div>
-      </div>
-    `;
+    messages.sort((a, b) => new Date(a.timestamp || a.reply_timestamp || 0) - new Date(b.timestamp || b.reply_timestamp || 0));
 
-    messages
-      .filter(m => m !== head) // selain ucapan utama
-      .forEach(reply => {
-        const isAdmin = reply.nama.toLowerCase() === "admin";
-        wrapper.innerHTML += `
-          <div class="bubble ${isAdmin ? 'reply-admin' : 'reply-user'}">
-            <strong>${reply.nama}</strong>
-            <div>${reply.ucapan}</div>
-            <div class="ucapan-time">${formatWaktuIndo(reply.timestamp)}</div>
-          </div>
-        `;
-      });
-    if (head.userId === userId && head.reply) {
+    messages.forEach((msg) => {
+      const isHead = msg.is_ucapan === "TRUE" || msg.is_ucapan === true;
+      const isAdmin = msg.nama.toLowerCase() === "admin";
+      const bubbleClass = isHead ? "head-ucapan" : isAdmin ? "reply-admin" : "reply-user";
+
+      const bubble = document.createElement("div");
+      bubble.className = `bubble ${bubbleClass}`;
+      bubble.innerHTML = `
+        <strong>${msg.nama}</strong>
+        <div>${msg.ucapan}</div>
+        <div class="ucapan-time">
+          ${msg.timestamp ? formatWaktuIndo(msg.timestamp) : '<em>Waktu tidak diketahui</em>'}
+        </div>
+      `;
+      wrapper.appendChild(bubble);
+
+      if (isHead) {
+        const likeDiv = renderLikes(msg.id, msg.likes || []);
+        wrapper.appendChild(likeDiv);
+      }
+    });
+
+    const main = messages.find(m => m.is_ucapan === "TRUE" || m.is_ucapan === true);
+    if (main && main.userId === userId && messages.some(msg => msg.nama.toLowerCase() === "admin")) {
       const form = document.createElement("form");
       form.className = "form-reply-thread";
       form.innerHTML = `
@@ -121,7 +126,7 @@ function renderUcapan(data) {
       `;
       form.onsubmit = function (e) {
         e.preventDefault();
-        kirimBalasanLanjutan(threadId, form.querySelector("textarea").value, head.nama);
+        kirimBalasanLanjutan(threadId, form.querySelector("textarea").value, main.nama);
       };
       wrapper.appendChild(form);
     }
@@ -135,11 +140,12 @@ function renderUcapan(data) {
 // === KIRIM BALASAN LANJUTAN ===
 function kirimBalasanLanjutan(threadId, ucapan, nama) {
   if (!ucapan.trim()) return alert("Balasan tidak boleh kosong!");
+
   const form = new URLSearchParams();
   form.append("userId", getUserId());
   form.append("nama", localStorage.getItem("nama") || nama);
   form.append("ucapan", ucapan);
-  form.append("is_ucapan", "false"); // balasan dianggap bukan ucapan utama
+  form.append("is_ucapan", "false");
   form.append("thread", threadId);
 
   fetch(endpoint, {
@@ -159,6 +165,57 @@ function kirimBalasanLanjutan(threadId, ucapan, nama) {
     alert("Gagal kirim balasan.");
   });
 }
+
+function renderLikes(ucapanId, likeList) {
+  // Jika bukan array, ubah jadi array kosong
+  if (!Array.isArray(likeList)) {
+    try {
+      likeList = JSON.parse(likeList);
+      if (!Array.isArray(likeList)) likeList = [];
+    } catch {
+      likeList = [];
+    }
+  }
+
+  const likeContainer = document.createElement("div");
+  likeContainer.className = "like-container";
+  const likedByUser = likeList.some(like => like.userId === getUserId());
+  const likeCount = likeList.length;
+
+  likeContainer.innerHTML = `
+    <button class="like-btn ${likedByUser ? 'liked' : ''}" data-id="${ucapanId}">
+      ❤️ ${likeCount}
+    </button>
+  `;
+  likeContainer.querySelector("button").onclick = () => toggleLike(ucapanId, likedByUser);
+  return likeContainer;
+}
+
+
+function toggleLike(ucapanId, alreadyLiked) {
+  const form = new URLSearchParams();
+  form.append("action", alreadyLiked ? "unlike" : "like");
+  form.append("id_ucapan", ucapanId);
+  form.append("userId", getUserId());
+  form.append("nama", localStorage.getItem("nama") || "Anonim");
+
+  fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: form.toString()
+  })
+  .then(res => res.text())
+  .then(res => {
+    if (res === "OK") ambilUcapan();
+    else console.warn("Respon server:", res);
+  })
+  .catch(err => {
+    console.error("Gagal like/unlike:", err);
+  });
+}
+
 
 // === PAGINATION ===
 function renderPagination(totalPages) {
@@ -254,24 +311,24 @@ let isDown = false;
 let startX;
 let scrollLeft;
 
-track.addEventListener('mousedown', (e) => {
+track?.addEventListener('mousedown', (e) => {
   isDown = true;
   track.classList.add('active');
   startX = e.pageX - track.offsetLeft;
   scrollLeft = track.scrollLeft;
 });
 
-track.addEventListener('mouseleave', () => {
+track?.addEventListener('mouseleave', () => {
   isDown = false;
   track.classList.remove('active');
 });
 
-track.addEventListener('mouseup', () => {
+track?.addEventListener('mouseup', () => {
   isDown = false;
   track.classList.remove('active');
 });
 
-track.addEventListener('mousemove', (e) => {
+track?.addEventListener('mousemove', (e) => {
   if (!isDown) return;
   e.preventDefault();
   const x = e.pageX - track.offsetLeft;
@@ -289,10 +346,10 @@ document.querySelectorAll(".slider").forEach(slider => {
 const bgm = document.getElementById("bgm");
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
-    bgm.pause();
+    bgm?.pause();
   } else {
     if (sessionStorage.getItem("invitationOpened") === "true") {
-      bgm.play().catch(err => console.warn("Autoplay gagal saat kembali ke tab:", err));
+      bgm?.play().catch(err => console.warn("Autoplay gagal saat kembali ke tab:", err));
     }
   }
 });
