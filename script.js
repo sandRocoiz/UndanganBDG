@@ -1,5 +1,5 @@
 // === KONSTANTA ===
-const endpoint = "https://script.google.com/macros/s/AKfycbzJ4GIWbHa8PfbZPAa5pNlqVTRpcEA3Pzd7BSCz86FIzENiBBi6JT38xSFRzbmUuOzkng/exec";
+const endpoint = "const endpoint = "https://undangan-bdg.vercel.app/api/proxy";
 let currentPage = 1;
 const perPage = 5;
 
