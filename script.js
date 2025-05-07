@@ -1,5 +1,5 @@
 // === KONSTANTA ===
-const endpoint = "const endpoint = "https://undangan-bdg.vercel.app/api/proxy";
+const endpoint = "https://undangan-bdg.vercel.app/api/proxy";
 let currentPage = 1;
 const perPage = 5;
 
