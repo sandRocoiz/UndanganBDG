@@ -929,5 +929,19 @@ body.loading-filter {
   to { opacity: 1; transform: translateY(0); }
 }
 
+.letter-drop span {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(-40px);
+  animation: dropLetter 0.6s forwards;
+}
+
+@keyframes dropLetter {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 

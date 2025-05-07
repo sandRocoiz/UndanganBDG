@@ -377,3 +377,41 @@ document.addEventListener("visibilitychange", () => {
     }
   }
 });
+
+function animateLetterDrop(targetSelector) {
+  const target = document.querySelector(targetSelector);
+  if (!target) return;
+
+  const h1 = target.querySelector("h1");
+  if (!h1) return;
+
+  const text = h1.textContent.trim();
+  h1.innerHTML = "";
+  [...text].forEach((char, i) => {
+    const span = document.createElement("span");
+    span.textContent = char;
+    span.style.display = "inline-block";
+    span.style.transform = "translateY(-50px)";
+    span.style.opacity = "0";
+    span.style.transition = `transform 0.5s ease-out ${i * 80}ms, opacity 0.5s ease-out ${i * 80}ms`;
+    h1.appendChild(span);
+  });
+
+  const observer = new IntersectionObserver(([entry]) => {
+    if (entry.isIntersecting) {
+      h1.querySelectorAll("span").forEach(span => {
+        span.style.transform = "translateY(0)";
+        span.style.opacity = "1";
+      });
+      observer.unobserve(target);
+    }
+  }, { threshold: 0.4 });
+
+  observer.observe(target);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  // ... existing logic
+  animateLetterDrop("#countdown-section");
+});
+
