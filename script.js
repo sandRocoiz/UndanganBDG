@@ -333,6 +333,36 @@ function startCountdown() {
   }, 1000);
 }
 
+function animateLetterDropById(id) {
+  const h1 = document.getElementById(id);
+  if (!h1) return;
+
+  const text = h1.textContent.trim();
+  h1.innerHTML = "";
+  [...text].forEach((char, i) => {
+    const span = document.createElement("span");
+    span.textContent = char;
+    span.style.display = "inline-block";
+    span.style.transform = "translateY(-50px)";
+    span.style.opacity = "0";
+    span.style.transition = `transform 0.5s ease-out, opacity 0.5s ease-out`;
+    span.style.transitionDelay = `${i * 70 + 300}ms`;
+    h1.appendChild(span);
+  });
+
+  const observer = new IntersectionObserver(([entry]) => {
+    if (entry.isIntersecting) {
+      h1.querySelectorAll("span").forEach(span => {
+        span.style.transform = "translateY(0)";
+        span.style.opacity = "1";
+      });
+      observer.unobserve(h1);
+    }
+  }, { threshold: 0.4 });
+
+  observer.observe(h1);
+}
+
 // === SPLASH SCREEN ===
 function openInvitation() {
   sessionStorage.setItem("invitationOpened", "true");
@@ -346,7 +376,12 @@ function openInvitation() {
 
   startCountdown();
   ambilUcapan();
+  
+  animateLetterDropById("weddingNames");
 }
+
+
+
 
 // === INISIALISASI ===
 document.addEventListener("DOMContentLoaded", () => {
@@ -369,7 +404,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   startCountdown();
   ambilUcapan();
+
+  
+
+  const scrollElements = document.querySelectorAll(".scroll-reveal");
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("active");
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  scrollElements.forEach((el) => observer.observe(el));
 });
+
 
 // === GALERI FOTO INTERAKTIF ===
 const track = document.getElementById('carouselTrack');
@@ -420,55 +469,9 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-function animateLetterDrop(targetSelector) {
-  const target = document.querySelector(targetSelector);
-  if (!target) return;
 
-  const h1 = target.querySelector("h1");
-  if (!h1) return;
 
-  const text = h1.textContent.trim();
-  h1.innerHTML = "";
-  [...text].forEach((char, i) => {
-    const span = document.createElement("span");
-    span.textContent = char;
-    span.style.display = "inline-block";
-    span.style.transform = "translateY(-50px)";
-    span.style.opacity = "0";
-    span.style.transition = `transform 0.5s ease-out ${i * 80}ms, opacity 0.5s ease-out ${i * 80}ms`;
-    h1.appendChild(span);
-  });
 
-  const observer = new IntersectionObserver(([entry]) => {
-    if (entry.isIntersecting) {
-      h1.querySelectorAll("span").forEach(span => {
-        span.style.transform = "translateY(0)";
-        span.style.opacity = "1";
-      });
-      observer.unobserve(target);
-    }
-  }, { threshold: 0.4 });
-
-  observer.observe(target);
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  // ... existing logic
-  animateLetterDrop("#countdown-section");
-  
-  const scrollElements = document.querySelectorAll(".scroll-reveal");
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("active");
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1 });
-
-  scrollElements.forEach((el) => observer.observe(el));
-});
 
 document.getElementById("formReservasi").addEventListener("submit", async function (e) {
   e.preventDefault();
