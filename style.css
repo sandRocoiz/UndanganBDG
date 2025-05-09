@@ -1023,12 +1023,24 @@ body.loading-filter {
 
 .star-bg {
   min-height: 100vh; /* supaya tidak collapse sebelum gambar muncul */
-  background-image: url('https://i.imgur.com/mnubXkZ.jpeg');
+  background-image: url('https://undangan-bdg.vercel.app/Asset/bg-countdown.webp');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
   background-repeat: no-repeat;
   position: relative;
+  animation: fadeInBg 1.2s ease-out;
+}
+
+@keyframes fadeInBg {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes starScroll {
@@ -1189,6 +1201,42 @@ body.loading-filter {
 #pageInfo {
   font-family: 'Playfair Display', serif;
   color: #444;
+}
+
+.parallax-wrapper {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.parallax-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: url('https://undangan-bdg.vercel.app/Asset/bg-countdown.webp'); /* Ganti sesuai foto kamu */
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+.parallax-content {
+  position: relative;
+  z-index: 1;
+  background-color: rgba(0,0,0,0.4);
+  padding: 40px 20px;
+  border-radius: 12px;
+  backdrop-filter: blur(4px);
+  color: white;
+}
+
+.letter-drop span {
+  display: inline-block;
+  transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+  opacity: 0;
+  transform: translateY(-50px);
 }
 
 

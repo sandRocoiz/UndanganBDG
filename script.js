@@ -401,11 +401,15 @@ document.addEventListener("DOMContentLoaded", () => {
       ambilUcapan();
     });
   }
+  
+
 
   startCountdown();
   ambilUcapan();
 
-  
+    const rellax = new Rellax('.parallax-bg', {
+  speed: window.innerWidth > 768 ? -4 : -1
+});
 
   const scrollElements = document.querySelectorAll(".scroll-reveal");
   const observer = new IntersectionObserver((entries) => {

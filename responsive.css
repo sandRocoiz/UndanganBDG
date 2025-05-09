@@ -144,7 +144,11 @@
     font-size: 0.9em;
   }
 
-  
+  .parallax-bg {
+    background-attachment: scroll !important;
+    background-position: center center;
+    background-size: cover;
+  }
 }
 
 
