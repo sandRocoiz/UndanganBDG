@@ -263,45 +263,61 @@ function renderPagination(totalPages) {
   paginationDiv.id = "pagination";
   paginationDiv.innerHTML = "";
 
-const pageInfo = document.getElementById("pageInfo");
-if (pageInfo) {
-  pageInfo.textContent = `Halaman ${currentPage} dari ${totalPages}`;
-}
+  const pageInfo = document.getElementById("pageInfo");
+  if (pageInfo) pageInfo.textContent = `Halaman ${currentPage} dari ${totalPages}`;
 
-  // Tombol Prev
-  const prevBtn = document.createElement("button");
-  prevBtn.textContent = "← Sebelumnya";
-  prevBtn.disabled = currentPage === 1;
-  prevBtn.onclick = () => {
+  const createBtn = (label, disabled = false, onClick = null) => {
+    const btn = document.createElement("button");
+    btn.textContent = label;
+    btn.disabled = disabled;
+    if (onClick) btn.onclick = onClick;
+    return btn;
+  };
+
+  // Tombol Sebelumnya
+  paginationDiv.appendChild(createBtn("←", currentPage === 1, () => {
     currentPage--;
     ambilUcapan();
-  };
-  paginationDiv.appendChild(prevBtn);
+  }));
 
-  // Tombol Angka Halaman
-  for (let i = 1; i <= totalPages; i++) {
-    const btn = document.createElement("button");
-    btn.textContent = i;
-    btn.disabled = i === currentPage;
-    btn.onclick = () => {
-      currentPage = i;
-      ambilUcapan();
-    };
-    paginationDiv.appendChild(btn);
+  const pages = [];
+  if (totalPages <= 5) {
+    for (let i = 1; i <= totalPages; i++) pages.push(i);
+  } else {
+    if (currentPage <= 3) {
+      pages.push(1, 2, 3, "...", totalPages);
+    } else if (currentPage >= totalPages - 2) {
+      pages.push(1, "...", totalPages - 2, totalPages - 1, totalPages);
+    } else {
+      pages.push(1, "...", currentPage, "...", totalPages);
+    }
   }
 
-  // Tombol Next
-  const nextBtn = document.createElement("button");
-  nextBtn.textContent = "Berikutnya →";
-  nextBtn.disabled = currentPage === totalPages;
-  nextBtn.onclick = () => {
+  pages.forEach(p => {
+    if (p === "...") {
+      const span = document.createElement("span");
+      span.textContent = "...";
+      span.className = "ellipsis";
+      paginationDiv.appendChild(span);
+    } else {
+      const btn = createBtn(p, p === currentPage, () => {
+        currentPage = p;
+        ambilUcapan();
+      });
+      paginationDiv.appendChild(btn);
+    }
+  });
+
+  // Tombol Berikutnya
+  paginationDiv.appendChild(createBtn("→", currentPage === totalPages, () => {
     currentPage++;
     ambilUcapan();
-  };
-  paginationDiv.appendChild(nextBtn);
+  }));
 
   const daftar = document.getElementById("daftarUcapan");
-  if (!document.getElementById("pagination")) daftar.appendChild(paginationDiv);
+  const existingPagination = document.getElementById("pagination");
+if (existingPagination) existingPagination.remove();
+daftar.appendChild(paginationDiv);
 }
 
 // === FORMAT WAKTU ===

@@ -1225,10 +1225,10 @@ body.loading-filter {
 .parallax-content {
   position: relative;
   z-index: 1;
-  background-color: rgba(0,0,0,0.4);
   padding: 40px 20px;
   border-radius: 12px;
-  backdrop-filter: blur(4px);
+  background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.3));
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
   color: white;
 }
 
@@ -1239,5 +1239,101 @@ body.loading-filter {
   transform: translateY(-50px);
 }
 
+.ayat-section {
+  height: 60vh;
+  text-align: center;
+}
+
+.ayat-section .parallax-content {
+  max-width: 800px;
+  margin: auto;
+  padding: 40px 30px;
+  border-radius: 12px;
+  font-family: 'Playfair Display', serif;
+  background: rgba(0, 0, 0, 0.35); /* lebih dark biar font terang makin kontras */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  color: #fff;
+}
+
+.ayat-section h2 {
+  font-family: 'Scheherazade', serif;
+  font-size: 1.6rem;
+  line-height: 1.8;
+  font-weight: normal;
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.ayat-section .latin {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-style: italic;
+  color: #e0e0e0;
+  margin-bottom: 0.5rem;
+}
+
+.ayat-section .translation {
+  font-size: 0.95rem;
+  color: #ddd;
+  line-height: 1.6;
+  margin-top: 0.3rem;
+}
+
+.ayat-text {
+  font-size: 1.5rem;
+  font-style: italic;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.ayat-ref {
+  font-size: 1rem;
+  font-weight: 300;
+}
+
+.rsvp-heading {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.rsvp-heading h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: #5a4231; /* warna rustic elegan */
+  margin-bottom: 10px;
+}
+
+.rsvp-heading p {
+  font-size: 0.95rem;
+  color: #7a6a58;
+  font-style: italic;
+}
+
+.handwrite-effect {
+  font-family: 'Great Vibes', cursive;
+  font-size: 1.8rem;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 2px solid #fff;
+  animation: typing 3.5s steps(40, end), blink 0.75s step-end infinite;
+  color: #fff;
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink {
+  50% { border-color: transparent }
+}
+
+#pagination span.ellipsis {
+  display: inline-block;
+  padding: 8px 10px;
+  color: #999;
+  font-weight: bold;
+  font-family: monospace;
+}
 
 

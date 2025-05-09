@@ -235,5 +235,24 @@
   #formReservasi {
     padding: 2em 1.2em;
   }
+  
+  .ayat-section h2 {
+    font-size: 1.3rem;
+    line-height: 1.6;
+  }
+
+  .ayat-section .latin {
+    font-size: 0.9rem;
+  }
+
+  .ayat-section .translation {
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  .ayat-section .parallax-content {
+    padding: 30px 20px;
+    border-radius: 10px;
+  }
 }
 

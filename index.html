@@ -37,7 +37,7 @@
 
 <div id="splash" class="splash">
   <h1 style="font-family:'Great Vibes', cursive; font-size: 2em;">Devi & Sandro</h1>
-  <p>Special Invitation to</p>
+  <p class="handwrite-effect">Special Invitation to</p>
   <p>Tanpa mengurangi rasa hormat, kami mengundang Bapak/Ibu/Saudara/i untuk hadir di acara pernikahan kami</p>
   <button onclick="openInvitation()">🎉 Open Invitationn</button>
 </div>
@@ -61,18 +61,18 @@
 
 
 
-<section class="ayat-frame">
-  <h2 style="font-family: 'Scheherazade', serif; font-size: 2em; margin-bottom: 0.5em;">
-    بَارَكَ اللَّهُ لَك، وَبَارَكَ عَلَيْك، وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ
-  </h2>
-  <div class="ayat-box">
-    <p class="latin" style="font-style: italic;">
-      Bārakallāhu laka, wa bāraka ‘alaika, wa jama‘a bainakumā fī khair.
-    </p>
-    <p class="translation">
-      Semoga Allah memberkahimu, memberkahi atasmu, dan mempersatukan kalian berdua dalam kebaikan.
-      <br><em>(HR. Abu Dawud, At-Tirmidzi)</em>
-    </p>
+
+
+
+<section class="parallax-wrapper ayat-section">
+  <div class="parallax-bg" data-rellax-speed="-5" style="background-image: url('https://undangan-bdg.vercel.app/Asset/daun.jpg');"></div>
+  <div class="parallax-content scroll-reveal">
+  <h2>بَارَكَ اللَّهُ لَك، وَبَارَكَ عَلَيْك، وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ</h2>
+<p class="latin">Bārakallāhu laka, wa bāraka ‘alaika, wa jama‘a bainakumā fī khair.</p>
+<p class="translation">
+  Semoga Allah memberkahimu, memberkahi atasmu, dan mempersatukan kalian berdua dalam kebaikan.
+  <br><em>(HR. Abu Dawud, At-Tirmidzi)</em>
+</p>
   </div>
 </section>
 
@@ -205,6 +205,11 @@
 
   </section>
   
+<div class="rsvp-heading">
+  <h2>RSVP</h2>
+  <p class="handwrite-effect">Diharapkan kepada para tamu untuk mengisi form kehadiran dibawah ini</p>
+</div>
+
 <form id="formReservasi" class="form-doa">
   <input type="text" id="namaReservasi" placeholder="Tulis Nama Anda" required />
 
@@ -218,6 +223,8 @@
   <button type="submit">Konfirmasi</button>
   <p id="statusReservasiMsg" style="text-align: center; margin-top: 10px;"></p>
 </form>
+
+
 
 <section id="gift-section">
   <h2 class="gift-title">
