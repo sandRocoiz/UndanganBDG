@@ -501,47 +501,79 @@ body {
   color: #5c4436;
 }
 
-.form-doa input,
+.form-doa input[type="text"],
+.form-doa select {
+  width: 100%;
+  padding: 12px 8px;
+  font-size: 16px;
+  border: none;
+  border-bottom: 2px solid #a1866f;
+  background: transparent;
+  font-family: 'Playfair Display', serif;
+  color: #4b3b2b;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.form-doa input[type="text"]::placeholder,
+.form-doa select:invalid {
+  color: #b9a89e;
+}
+
+.form-doa input[type="text"]:focus,
+.form-doa select:focus {
+  border-bottom-color: #6d4c3d;
+}
+
+.form-doa select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 18px;
+  padding-right: 30px;
+}
+
+.form-doa button[type="submit"] {
+  background-color: #6d4c3d;
+  color: #fff;
+  border: none;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-family: 'Playfair Display', serif;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.form-doa button[type="submit"]:hover {
+  background-color: #5a3d2f;
+}
+
 .form-doa textarea {
   width: 100%;
-  padding: 1em 1.2em;
-  font-size: 1em;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-family: 'Playfair Display', serif;
-  background-color: #fff;
-  transition: 0.3s ease;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-}
-
-.form-doa input:focus,
-.form-doa textarea:focus {
-  outline: none;
-  border-color: #c9a27e;
-  box-shadow: 0 0 0 3px rgba(201, 162, 126, 0.2);
-}
-
-.form-doa textarea {
-  resize: vertical;
-  height: 120px;
-}
-
-.form-doa button {
-  margin-top: 1em;
-  padding: 0.75em 2.5em;
-  background-color: #5c4436;
-  color: white;
-  font-weight: bold;
-  font-size: 1em;
+  padding: 12px 8px;
+  font-size: 16px;
   border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: background 0.3s ease;
+  border-bottom: 2px solid #a1866f;
+  background: transparent;
+  resize: vertical;
   font-family: 'Playfair Display', serif;
+  color: #4b3b2b;
+  outline: none;
+  transition: border-color 0.3s ease;
+  min-height: 80px;
 }
 
-.form-doa button:hover {
-  background-color: #3e2d23;
+.form-doa textarea::placeholder {
+  color: #b9a89e;
+}
+
+.form-doa textarea:focus {
+  border-bottom-color: #6d4c3d;
 }
 
 .ucapan-card {
@@ -1077,6 +1109,82 @@ body.loading-filter {
   margin-top: 1em;
   font-size: 0.9em;
   color: #00ffaa;
+}
+
+.like-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.like-tooltip {
+  display: none;
+  position: absolute;
+  top: 120%;
+  right: 0;
+  background-color: #333;
+  color: #fff;
+  padding: 0.6em;
+  font-size: 0.75em;
+  border-radius: 6px;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  z-index: 99;
+}
+
+.like-wrapper:hover .like-tooltip {
+  display: block;
+}
+
+.form-doa select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1em;
+  font-size: 1em;
+  font-family: 'Playfair Display', serif;
+  color: #5c4436;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+  background-image: url('data:image/svg+xml;utf8,<svg fill="%235c4436" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 1em center;
+  background-size: 1.2em;
+  cursor: pointer;
+}
+
+.form-doa select:focus {
+  outline: none;
+  border-color: #c9a27e;
+  box-shadow: 0 0 0 3px rgba(201, 162, 126, 0.2);
+}
+
+
+#pagination button {
+  margin: 0 5px;
+  padding: 6px 12px;
+  font-size: 0.9em;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#pagination button:disabled {
+  background: #eee;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+#pagination button:hover:not(:disabled) {
+  background: #ddd;
+}
+
+#pageInfo {
+  font-family: 'Playfair Display', serif;
+  color: #444;
 }
 
 

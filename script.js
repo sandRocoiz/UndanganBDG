@@ -56,11 +56,20 @@ function ambilUcapan() {
   document.getElementById("ucapanLoading").style.display = "block";
   document.getElementById("daftarUcapan").style.display = "none";
 
-  fetch(endpoint)
+  const filterAktif = document.getElementById("filterByUser")?.checked;
+  const url = new URL(endpoint);
+
+  if (!filterAktif) {
+    url.searchParams.set("limit", perPage);
+    url.searchParams.set("page", currentPage);
+  }
+
+  fetch(url.toString())
     .then(res => res.json())
-    .then(data => {
-      const approved = data.filter(d => d.approved === "Y");
-      renderUcapan(approved);
+    .then(result => {
+      const semuaData = result.data || result; // fallback
+      const approved = semuaData.filter(d => d.approved === "Y" || d.approved === true);
+      renderUcapan(approved, result.total || approved.length);
     })
     .catch(err => {
       console.error("Gagal ambil ucapan:", err);
@@ -69,8 +78,6 @@ function ambilUcapan() {
       document.getElementById("ucapanLoading").style.display = "none";
       document.getElementById("daftarUcapan").style.display = "block";
     });
-	
-
 }
 
 
@@ -79,8 +86,11 @@ function ambilUcapan() {
 
 
 
+
+
+
 // === RENDER UCAPAN ===
-function renderUcapan(data) {
+function renderUcapan(data, totalUcapan = 0) {
   const daftar = document.getElementById("daftarUcapan");
   const userId = getUserId();
   const filterCheckbox = document.getElementById("filterByUser");
@@ -97,12 +107,12 @@ function renderUcapan(data) {
     return head && (!filterCheckbox.checked || head.userId === userId);
   });
 
-  const totalPages = Math.ceil(filtered.length / perPage);
-  if (currentPage > totalPages) currentPage = 1;
-  const shown = filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
+  const filterAktif = filterCheckbox.checked;
+  const shown = filterAktif
+    ? filtered // tampilkan semua milik user
+    : filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
 
   daftar.innerHTML = "";
-  
   daftar.classList.remove("show");
   void daftar.offsetWidth;
   daftar.classList.add("fade-in", "show");
@@ -152,14 +162,17 @@ function renderUcapan(data) {
 
     daftar.appendChild(wrapper);
   });
-  
-   
 
-
-
+  const totalPages = filterAktif ? 1 : Math.ceil(totalUcapan / perPage);
+  const paginationDiv = document.getElementById("pagination");
+  if (paginationDiv) {
+    paginationDiv.style.display = filterAktif ? "none" : "block";
+  }
 
   renderPagination(totalPages);
 }
+
+
 
 // === KIRIM BALASAN LANJUTAN ===
 function kirimBalasanLanjutan(threadId, ucapan, nama) {
@@ -207,10 +220,13 @@ function renderLikes(ucapanId, likeList) {
   const likeCount = likeList.length;
 
   likeContainer.innerHTML = `
+  <div class="like-wrapper">
     <button class="like-btn ${likedByUser ? 'liked' : ''}" data-id="${ucapanId}">
       ❤️ ${likeCount}
     </button>
-  `;
+    <div class="like-tooltip">${likeList.map(l => `👤 ${l.nama}`).join('<br>')}</div>
+  </div>
+`;
   likeContainer.querySelector("button").onclick = () => toggleLike(ucapanId, likedByUser);
   return likeContainer;
 }
@@ -247,6 +263,22 @@ function renderPagination(totalPages) {
   paginationDiv.id = "pagination";
   paginationDiv.innerHTML = "";
 
+const pageInfo = document.getElementById("pageInfo");
+if (pageInfo) {
+  pageInfo.textContent = `Halaman ${currentPage} dari ${totalPages}`;
+}
+
+  // Tombol Prev
+  const prevBtn = document.createElement("button");
+  prevBtn.textContent = "← Sebelumnya";
+  prevBtn.disabled = currentPage === 1;
+  prevBtn.onclick = () => {
+    currentPage--;
+    ambilUcapan();
+  };
+  paginationDiv.appendChild(prevBtn);
+
+  // Tombol Angka Halaman
   for (let i = 1; i <= totalPages; i++) {
     const btn = document.createElement("button");
     btn.textContent = i;
@@ -257,6 +289,16 @@ function renderPagination(totalPages) {
     };
     paginationDiv.appendChild(btn);
   }
+
+  // Tombol Next
+  const nextBtn = document.createElement("button");
+  nextBtn.textContent = "Berikutnya →";
+  nextBtn.disabled = currentPage === totalPages;
+  nextBtn.onclick = () => {
+    currentPage++;
+    ambilUcapan();
+  };
+  paginationDiv.appendChild(nextBtn);
 
   const daftar = document.getElementById("daftarUcapan");
   if (!document.getElementById("pagination")) daftar.appendChild(paginationDiv);

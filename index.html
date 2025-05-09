@@ -193,25 +193,25 @@
 
 
     <div id="daftarUcapan"></div>
+	<div id="pageInfo" style="text-align:center; font-size: 0.9em; margin-bottom: 0.5em;"></div>
 	<div id="pagination" style="text-align:center; margin-top:2em;"></div>
 
 
   </section>
   
-<section id="reservasi-section" class="fade-in">
-  <h2 class="doa-title"><span class="doa-title-main">Konfirmasi Kehadiran</span></h2>
-  <form id="formReservasi" class="form-doa">
-    <input type="text" name="nama" id="namaReservasi" placeholder="Nama Anda" required />
-    <select name="status" id="statusReservasi" required>
-      <option value="">-- Pilih Kehadiran --</option>
-      <option value="datang">Saya akan datang</option>
-      <option value="tidak">Maaf, tidak bisa hadir</option>
-      <option value="ragu-ragu">Masih ragu-ragu</option>
-    </select>
-    <button type="submit">Kirim Konfirmasi</button>
-    <p id="statusReservasiMsg" style="margin-top:1em; font-weight: bold;"></p>
-  </form>
-</section>
+<form id="formReservasi" class="form-doa">
+  <input type="text" id="namaReservasi" placeholder="Tulis Nama Anda" required />
+
+  <select id="statusReservasi" required>
+    <option value="" disabled selected>Konfirmasi Kehadiran Anda</option>
+    <option value="datang">Datang</option>
+    <option value="tidak">Tidak Datang</option>
+    <option value="ragu-ragu">Masih Ragu</option>
+  </select>
+
+  <button type="submit">Konfirmasi</button>
+  <p id="statusReservasiMsg" style="text-align: center; margin-top: 10px;"></p>
+</form>
 
 <section id="gift-section">
   <h2 class="gift-title">
