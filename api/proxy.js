@@ -1,7 +1,6 @@
 export default async function handler(req, res) {
   const baseUrl = 'https://script.google.com/macros/s/AKfycby7srw_3_m0VFOAqmvg-lxT1lvSWjwuvsTe2JN9zS1u-e75BQXm2uns8S0PI1Rt07HFCQ/exec';
 
-
   // Handle preflight
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -10,7 +9,11 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  let url = baseUrl;
+  const url = new URL(baseUrl);
+  Object.entries(req.query || {}).forEach(([key, value]) => {
+    url.searchParams.append(key, value);
+  });
+
   const fetchOptions = {
     method: req.method,
     headers: {
@@ -18,7 +21,6 @@ export default async function handler(req, res) {
     },
   };
 
-  // For POST: forward the body
   if (req.method === 'POST') {
     let body = '';
     for await (const chunk of req) {
@@ -27,14 +29,8 @@ export default async function handler(req, res) {
     fetchOptions.body = body;
   }
 
-  // For GET: forward query parameters
-  if (req.method === 'GET' && Object.keys(req.query).length > 0) {
-    const queryString = new URLSearchParams(req.query).toString();
-    url += `?${queryString}`;
-  }
-
   try {
-    const response = await fetch(url, fetchOptions);
+    const response = await fetch(url.toString(), fetchOptions);
     const contentType = response.headers.get('content-type');
     const text = await response.text();
 
@@ -42,11 +38,11 @@ export default async function handler(req, res) {
 
     if (contentType && contentType.includes('application/json')) {
       res.setHeader('Content-Type', 'application/json');
-      res.status(200).send(text);
     } else {
       res.setHeader('Content-Type', 'text/plain');
-      res.status(200).send(text);
     }
+
+    res.status(200).send(text);
   } catch (err) {
     res.status(500).json({ error: 'Proxy failed', message: err.message });
   }
