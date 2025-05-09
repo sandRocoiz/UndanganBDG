@@ -198,22 +198,20 @@
 
   </section>
   
-<section id="rsvp-section" class="fade-in">
-  <div class="rsvp-container">
-    <h2 class="rsvp-title">Konfirmasi Kehadiran</h2>
-    <p class="rsvp-subtitle">Beritahu kami apakah kamu akan hadir di acara kami</p>
-    <form id="rsvp-form">
-      <input type="text" name="nama" placeholder="Nama Kamu" required />
-      <div class="rsvp-options">
-        <label><input type="radio" name="status" value="datang" required /> Hadir</label>
-        <label><input type="radio" name="status" value="tidak" /> Tidak Hadir</label>
-        <label><input type="radio" name="status" value="ragu-ragu" /> Masih Ragu</label>
-      </div>
-      <button type="submit">Kirim Konfirmasi</button>
-      <div id="rsvp-result" class="rsvp-result"></div>
-    </form>
-  </div>
-</section> 
+<section id="reservasi-section" class="fade-in">
+  <h2 class="doa-title"><span class="doa-title-main">Konfirmasi Kehadiran</span></h2>
+  <form id="formReservasi" class="form-doa">
+    <input type="text" name="nama" id="namaReservasi" placeholder="Nama Anda" required />
+    <select name="status" id="statusReservasi" required>
+      <option value="">-- Pilih Kehadiran --</option>
+      <option value="datang">Saya akan datang</option>
+      <option value="tidak">Maaf, tidak bisa hadir</option>
+      <option value="ragu-ragu">Masih ragu-ragu</option>
+    </select>
+    <button type="submit">Kirim Konfirmasi</button>
+    <p id="statusReservasiMsg" style="margin-top:1em; font-weight: bold;"></p>
+  </form>
+</section>
 
 <section id="gift-section">
   <h2 class="gift-title">

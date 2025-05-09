@@ -428,36 +428,43 @@ document.addEventListener("DOMContentLoaded", () => {
   scrollElements.forEach((el) => observer.observe(el));
 });
 
-document.getElementById("formReservasi")?.addEventListener("submit", function(e) {
+document.getElementById("formReservasi").addEventListener("submit", async function (e) {
   e.preventDefault();
-  const nama = this.nama.value.trim();
-  const status = this.status.value;
+  const nama = document.getElementById("namaReservasi").value.trim();
+  const status = document.getElementById("statusReservasi").value;
+  const statusMsg = document.getElementById("statusReservasiMsg");
 
-  if (!nama || !status) return alert("Nama dan status wajib diisi.");
+  if (!nama || !status) {
+    statusMsg.textContent = "Mohon isi nama dan status kehadiran.";
+    statusMsg.style.color = "red";
+    return;
+  }
 
-  const form = new URLSearchParams();
-  form.append("nama", nama);
-  form.append("status", status);
-  form.append("action", "reservasi");
+  try {
+    const res = await fetch("/api/proxy", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        action: "reservasi",
+        nama,
+        status,
+      })
+    });
 
-  fetch(endpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: form.toString()
-  })
-  .then(res => res.text())
-  .then(res => {
-    if (res === "OK") {
-      alert("Konfirmasi kehadiran berhasil dikirim!");
+    const text = await res.text();
+    if (text.trim() === "OK") {
+      statusMsg.textContent = "Terima kasih, reservasi Anda telah dicatat.";
+      statusMsg.style.color = "green";
       this.reset();
     } else {
-      console.warn("Respon gagal:", res);
-      alert("Gagal mengirim reservasi. Coba lagi ya.");
+      statusMsg.textContent = "Gagal menyimpan reservasi.";
+      statusMsg.style.color = "red";
     }
-  })
-  .catch(err => {
-    console.error("Gagal kirim reservasi:", err);
-    alert("Gagal mengirim reservasi.");
-  });
+  } catch (err) {
+    statusMsg.textContent = "Terjadi kesalahan koneksi.";
+    statusMsg.style.color = "red";
+  }
 });
+
+
 
