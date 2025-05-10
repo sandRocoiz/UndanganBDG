@@ -1666,4 +1666,12 @@ body.loading-filter {
   margin-right: 4px;
 }
 
+.form-doa.hidden {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  overflow: hidden !important;
+}
+
+
 

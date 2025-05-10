@@ -164,15 +164,24 @@ function tampilkanUcapanSudahSubmit() {
   const ucapanStatus = document.getElementById("ucapanStatusMsg");
   const ucapanThanks = document.getElementById("ucapanThanks");
 
-  if (formUcapan && ucapanThanks) {
+  if (formUcapan) {
     formUcapan.style.display = "none"; // Hide form ucapan
-    ucapanThanks.style.display = "block"; // Show Thank you
+    formUcapan.style.visibility = "hidden"; // Tambahan
+    formUcapan.style.height = "0"; // Tambahan
+    formUcapan.style.overflow = "hidden"; // Tambahan
+  }
+
+  if (ucapanThanks) {
+    ucapanThanks.style.display = "block"; // Show thank you
   }
 
   if (ucapanStatus) {
     ucapanStatus.style.display = "none"; // hide status message
   }
+  
+  formUcapan.classList.add("hidden");
 }
+
 
 
 
@@ -681,7 +690,7 @@ function animateLetterDropById(id) {
 
 
 
-// === INISIALISASI ===
+// === INISIALISASI FINAL PATCH ===
 document.addEventListener("DOMContentLoaded", () => {
   const userId = getUserId();
   const display = document.getElementById("userIdValue");
@@ -693,21 +702,13 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("nama").value = namaPrefill;
   }
 
-  // Cek apakah sudah submit ucapan
-  if (localStorage.getItem("sudahSubmitUcapan") === "true") {
-    const ucapanStatus = document.getElementById("ucapanStatusMsg");
-    if (ucapanStatus) {
-      ucapanStatus.textContent = "🎉 Terima kasih, ucapanmu sudah tercatat.";
-      ucapanStatus.classList.add("success");
-    }
+  // Cek status reservasi & ucapan DULU
+  if (localStorage.getItem("sudahReservasi") === "true") {
+    tampilkanReservasiSudahSubmit();
+  }
 
-    // Disable tombol submit saja (form tetap tampil, hanya tidak bisa submit lagi)
-    const submitBtn = document.querySelector("#formUcapan button[type='submit']");
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.style.opacity = "0.6";
-      submitBtn.style.cursor = "not-allowed";
-    }
+  if (localStorage.getItem("sudahSubmitUcapan") === "true") {
+    tampilkanUcapanSudahSubmit();
   }
 
   const splash = document.getElementById("splash");
@@ -724,7 +725,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   startCountdown();
-  ambilUcapan();
+
+  // Ambil daftar ucapan setelah semua setup done
+  setTimeout(() => {
+    ambilUcapan();
+  }, 300);
 
   const rellax = new Rellax('.parallax-bg', {
     speed: window.innerWidth > 768 ? -4 : -1
@@ -739,8 +744,44 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }, { threshold: 0.1 });
+
   scrollElements.forEach((el) => observer.observe(el));
 });
+
+function tampilkanReservasiSudahSubmit() {
+  const formReservasi = document.getElementById("formReservasi");
+  const reservasiThanks = document.getElementById("reservasiThanks");
+
+  if (formReservasi) {
+    formReservasi.style.display = "none";
+  }
+
+  if (reservasiThanks) {
+    reservasiThanks.style.display = "block";
+  }
+}
+
+function tampilkanUcapanSudahSubmit() {
+  const formUcapan = document.getElementById("formUcapan");
+  const ucapanThanks = document.getElementById("ucapanThanks");
+  const ucapanStatus = document.getElementById("ucapanStatusMsg");
+
+  if (formUcapan) {
+    formUcapan.style.display = "none";
+    formUcapan.style.visibility = "hidden";
+    formUcapan.style.height = "0";
+    formUcapan.style.overflow = "hidden";
+  }
+
+  if (ucapanThanks) {
+    ucapanThanks.style.display = "block";
+  }
+
+  if (ucapanStatus) {
+    ucapanStatus.style.display = "none";
+  }
+}
+
 
 
 
