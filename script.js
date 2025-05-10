@@ -261,6 +261,7 @@ document.getElementById("formReservasi").addEventListener("submit", async functi
         action: "reservasi",
         nama,
         status,
+		userId: getUserId(),
       })
     });
 
