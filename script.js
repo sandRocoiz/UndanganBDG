@@ -540,13 +540,13 @@ function kirimBalasanLanjutan(threadId, ucapan, nama) {
 function renderLikes(ucapanId, likeList) {
   // Jika bukan array, ubah jadi array kosong
   if (!Array.isArray(likeList)) {
-    try {
-      likeList = JSON.parse(likeList);
-      if (!Array.isArray(likeList)) likeList = [];
-    } catch {
-      likeList = [];
-    }
+  try {
+    likeList = JSON.parse(likeList);
+    if (!Array.isArray(likeList)) likeList = [];
+  } catch (e) {
+    likeList = [];
   }
+}
 
   const likeContainer = document.createElement("div");
   likeContainer.className = "like-container";
