@@ -1569,11 +1569,16 @@ body.loading-filter {
 }
 
 .status-msg.success {
-  color: #4CAF50; /* Hijau sukses */
+  color: #4CAF50;
+  background: rgba(76, 175, 80, 0.1);
+  padding: 8px 12px;
+  border-radius: 8px;
 }
 
 .status-msg.error {
-  color: #F44336; /* Merah error */
+  color: #F44336;
+  background: rgba(244, 67, 54, 0.1);
+  padding: 8px 12px;
+  border-radius: 8px;
 }
-
 

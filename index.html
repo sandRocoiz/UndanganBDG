@@ -7,13 +7,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Scheherazade&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/rellax/1.12.1/rellax.min.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="responsive.css">
+  <script defer src="script.js"></script>
   
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  
 
   
   
@@ -187,17 +188,16 @@
 
 <form id="formReservasi" class="form-doa">
   <input type="text" id="namaReservasi" placeholder="Tulis Nama Anda" required />
-
   <select id="statusReservasi" required>
     <option value="" disabled selected>Konfirmasi Kehadiran Anda</option>
     <option value="datang">Datang</option>
     <option value="tidak">Tidak Datang</option>
     <option value="ragu-ragu">Masih Ragu</option>
   </select>
-
   <button type="submit">Konfirmasi</button>
-  <p id="statusReservasiMsg" style="text-align: center; margin-top: 10px;"></p>
+  <p id="statusReservasiMsg" class="status-msg" style="text-align:center; margin-top:10px;"></p>
 </form>
+
 
 <div id="ucapanLoading" class="shimmer-wrapper" style="display: none;">
   <div class="shimmer-card"></div>
@@ -211,10 +211,12 @@
     <span class="doa-title-sub">Doa</span>
   </h2>
 <form id="formUcapan" onsubmit="submitUcapan(event)" class="form-doa">
-  <input type="text" name="nama" placeholder="Tulis namamu di sini..." class="input-nama" required>
+  <input type="text" name="nama" id="nama" placeholder="Tulis namamu di sini..." class="input-nama" required>
   <textarea name="ucapan" placeholder="Tulis ucapan dan doa untuk Devi & Sandro..." class="input-ucapan" required></textarea>
   <button type="submit" class="btn-kirim">Kirim Ucapan</button>
+  <p id="ucapanStatusMsg" class="status-msg" style="text-align:center; margin-top:10px;"></p>
 </form>
+
 
 <div id="userIdDisplay" style="text-align: center; margin-top: 10px; font-size: 0.9em; color: #444;">
   ID Anda: <span id="userIdValue"></span>
@@ -299,7 +301,7 @@
 <audio id="winSound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-notification-2018.mp3"></audio>
 <audio id="loseSound" src="https://assets.mixkit.co/sfx/preview/mixkit-losing-bleeps-2026.mp3"></audio>
 
-<script src="script.js"></script>
+
 </body>
 
 </html>
