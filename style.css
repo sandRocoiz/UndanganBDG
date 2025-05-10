@@ -1507,15 +1507,24 @@ body.loading-filter {
   flex-direction: column;
 }
 
+.scratch-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .scratch-background {
   position: relative;
-  width: 300px;
-  height: 200px;
-  background: white;
-  border-radius: 18px;
-  overflow: hidden;
-  text-align: center;
-  padding: 20px;
+  width: 100%;
+  height: 100%;
+  background: #fffaf4; /* Ini warna netral belakang */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 50px;
 }
 
 .scratch-result {
@@ -1720,5 +1729,17 @@ body.loading-filter {
   0% { opacity: 0; transform: scale(0.95); }
   100% { opacity: 1; transform: scale(1); }
 }
+
+#scratchImageResult {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  text-align: center;
+}
+
+
 
 
