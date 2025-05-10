@@ -106,7 +106,7 @@ function submitUcapan(e) {
   e.preventDefault();
 
   if (localStorage.getItem("sudahSubmitUcapan") === "true") {
-    tampilkanStatusUcapan("Kamu sudah mengirim ucapan sebelumnya.", "red");
+    tampilkanStatusMsg("ucapanStatusMsg", "Kamu sudah mengirim ucapan. Terima kasih!", "error");
     return;
   }
 
@@ -115,14 +115,13 @@ function submitUcapan(e) {
   const userId = getUserId();
 
   if (!nama || !ucapan) {
-    tampilkanStatusUcapan("Nama dan ucapan wajib diisi.", "red");
+    tampilkanStatusMsg("ucapanStatusMsg", "Nama dan ucapan wajib diisi.", "error");
     return;
   }
 
   const countdownTarget = new Date('2025-06-13T10:00:00').getTime();
-  const now = Date.now();
-  if (now >= countdownTarget) {
-    tampilkanStatusUcapan("Ucapan sudah ditutup. Terima kasih atas partisipasinya!", "red");
+  if (Date.now() >= countdownTarget) {
+    tampilkanStatusMsg("ucapanStatusMsg", "Ucapan sudah ditutup.", "error");
     return;
   }
 
@@ -139,40 +138,36 @@ function submitUcapan(e) {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: form.toString()
   })
-    .then(res => res.text())
-    .then(text => {
-      if (text.trim() === "OK") {
-        localStorage.setItem("sudahSubmitUcapan", "true");
-        tampilkanStatusUcapan("Ucapan berhasil dikirim!", "green");
-        e.target.reset();
-        ambilUcapan();
-        cekHadiahSetelahUcapan();
-      } else if (text.trim() === "ALREADY_SENT") {
-        localStorage.setItem("sudahSubmitUcapan", "true");
-        tampilkanStatusUcapan("Kamu sudah mengirim ucapan sebelumnya.", "red");
-      } else {
-        tampilkanStatusUcapan("Terjadi kesalahan saat mengirim ucapan.", "red");
-      }
-    })
-    .catch(err => {
-      console.error("Gagal mengirim ucapan:", err);
-      tampilkanStatusUcapan("Koneksi gagal, coba lagi.", "red");
-    });
+  .then(res => res.text())
+  .then(text => {
+    if (text.trim() === "OK") {
+      localStorage.setItem("sudahSubmitUcapan", "true");
+      tampilkanStatusMsg("ucapanStatusMsg", "Ucapan berhasil dikirim!", "success");
+      e.target.reset();
+      ambilUcapan();
+      cekHadiahSetelahUcapan();
+    } else if (text.trim() === "ALREADY_SENT") {
+      tampilkanStatusMsg("ucapanStatusMsg", "Kamu sudah mengirim ucapan sebelumnya.", "error");
+    } else {
+      tampilkanStatusMsg("ucapanStatusMsg", "Terjadi kesalahan saat mengirim.", "error");
+    }
+  })
+  .catch(err => {
+    console.error("Gagal mengirim ucapan:", err);
+    tampilkanStatusMsg("ucapanStatusMsg", "Koneksi gagal, coba lagi.", "error");
+  });
 }
+
 
 
 // Fungsi bantu untuk tampilkan pesan dengan efek fade-in
-function tampilkanStatusMsg(pesan, tipe) {
-  const statusMsg = document.getElementById("ucapanStatusMsg");
-  statusMsg.textContent = pesan;
-  statusMsg.className = `status-msg ${tipe} show`;
-
-  // Optional: auto-hide setelah beberapa detik
-  // setTimeout(() => {
-  //   statusMsg.classList.remove("show");
-  // }, 5000);
+function tampilkanStatusMsg(idElement, pesan, tipe = "success") {
+  const el = document.getElementById(idElement);
+  if (!el) return;
+  el.textContent = pesan;
+  el.classList.remove("success", "error", "show");
+  el.classList.add(tipe, "show");
 }
-
 
 
 
@@ -277,14 +272,11 @@ function bukaScratchCard(menang) {
 // === 6. FORM RESERVASI ===
 document.getElementById("formReservasi").addEventListener("submit", async function (e) {
   e.preventDefault();
-
   const nama = document.getElementById("namaReservasi").value.trim();
   const status = document.getElementById("statusReservasi").value;
-  const statusMsg = document.getElementById("statusReservasiMsg");
 
   if (!nama || !status) {
-    statusMsg.textContent = "Mohon isi nama dan status kehadiran.";
-    statusMsg.style.color = "red";
+    tampilkanStatusMsg("statusReservasiMsg", "Mohon isi nama dan status kehadiran.", "error");
     return;
   }
 
@@ -299,34 +291,23 @@ document.getElementById("formReservasi").addEventListener("submit", async functi
         userId: getUserId(),
       })
     });
-
     const text = await res.text();
+
     if (text.trim() === "OK") {
       localStorage.setItem("namaReservasi", nama);
       localStorage.setItem("reservasiStatus", status);
-      statusMsg.textContent = "Terima kasih, reservasi Anda telah dicatat.";
-      statusMsg.style.color = "green";
+      localStorage.setItem("sudahReservasi", "true");
+      tampilkanStatusMsg("statusReservasiMsg", "✅ Reservasi Anda berhasil dicatat.", "success");
       this.reset();
     } else if (text.trim() === "ALREADY_RESERVED") {
-      statusMsg.textContent = "Kamu sudah mengisi konfirmasi kehadiran sebelumnya.";
-      statusMsg.style.color = "red";
+      tampilkanStatusMsg("statusReservasiMsg", "Anda sudah mengisi konfirmasi sebelumnya.", "error");
     } else {
-      statusMsg.textContent = "Gagal menyimpan reservasi.";
-      statusMsg.style.color = "red";
+      tampilkanStatusMsg("statusReservasiMsg", "Gagal menyimpan reservasi.", "error");
     }
   } catch (err) {
-    statusMsg.textContent = "Terjadi kesalahan koneksi.";
-    statusMsg.style.color = "red";
+    tampilkanStatusMsg("statusReservasiMsg", "Terjadi kesalahan koneksi.", "error");
   }
 });
-
-function tampilkanStatusUcapan(pesan, warna = "red") {
-  const msgEl = document.getElementById("ucapanStatusMsg");
-  if (msgEl) {
-    msgEl.textContent = pesan;
-    msgEl.style.color = warna;
-  }
-}
 
 
 
@@ -372,14 +353,7 @@ function renderUcapan(data, totalUcapan = 0) {
   emptyDiv.className = "ucapan-empty";
   emptyDiv.innerHTML = `
     <div class="empty-illustration">
-      <svg width="120" height="120" viewBox="0 0 24 24" fill="none">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10
-        10-4.48 10-10S17.52 2 12 2zm-1 15h2v2h-2v-2zm1-13
-        C8.13 4 5 7.13 5 11h2c0-2.76 2.24-5 5-5s5 2.24
-        5 5c0 2.17-1.39 4.01-3.34 4.68L11 18h2v2h-2v-2h-1v-2h2c2.21
-        0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4H5c0-3.87 3.13-7 7-7z"
-        fill="#d2a679"/>
-      </svg>
+      <img src="https://undangan-bdg.vercel.app/Asset/floating.png" alt="Belum ada ucapan" width="120" height="120">
     </div>
     <p>Belum ada ucapan masuk.<br><em>Yuk beri ucapan pertama! ✨</em></p>
   `;
