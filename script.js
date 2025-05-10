@@ -1,7 +1,10 @@
-// === KONSTANTA ===
+// === 1. KONSTANTA DAN UTILITAS ===
 const endpoint = "https://undangan-bdg.vercel.app/api/proxy";
-let currentPage = 1;
 const perPage = 5;
+let currentPage = 1;
+const maxWinners = 10;
+const hadiahKey = "scratchWin";
+const namaReservasiKey = "namaReservasi";
 
 // === USER ID ===
 function generateUserId() {
@@ -12,6 +15,84 @@ function generateUserId() {
 
 function getUserId() {
   return localStorage.getItem("userId") || generateUserId();
+}
+
+// === FORMAT WAKTU ===
+function formatWaktuIndo(dateStr) {
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return "Waktu tidak diketahui";
+  const tanggal = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+  const waktu = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
+  return `${tanggal}, ${waktu} WIB`;
+}
+
+// === 2. SPLASH & INVITATION HANDLING ===
+function openInvitation() {
+  sessionStorage.setItem("invitationOpened", "true");
+  document.getElementById('splash').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'block';
+
+  const bgm = document.getElementById('bgm');
+  if (bgm && typeof bgm.play === 'function') {
+    bgm.play().catch(err => console.warn("Autoplay gagal:", err));
+  }
+
+  startCountdown();
+  ambilUcapan();
+  
+  animateLetterDropById("weddingNames");
+}
+
+// === 3. COUNTDOWN HANDLER ===
+function startCountdown() {
+  const countdownEl = document.getElementById('countdown');
+  const target = new Date('2025-06-13T10:00:00').getTime();
+  const interval = setInterval(() => {
+    const now = Date.now();
+    const diff = target - now;
+	
+    if (diff <= 0) {
+      clearInterval(interval);
+      countdownEl.innerHTML = "Countdown telah berakhir.";
+      return;
+    }
+	
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const s = Math.floor((diff % (1000 * 60)) / 1000);
+    countdownEl.innerHTML = `${d} hari ${h} jam ${m} menit ${s} detik`;
+  }, 1000);
+}
+
+// === 4. UCAPAN (SUBMIT - AMBIL - RENDER - LIKE) ===
+function ambilUcapan() {
+  const loading = document.getElementById("ucapanLoading");
+  const daftar = document.getElementById("daftarUcapan");
+  const filterAktif = document.getElementById("filterByUser")?.checked;
+  const url = new URL(endpoint);
+
+  if (!filterAktif) {
+    url.searchParams.set("limit", perPage);
+    url.searchParams.set("page", currentPage);
+  }
+
+  loading.style.display = "block";
+  daftar.style.display = "none";
+
+  fetch(url.toString())
+    .then(res => res.json())
+    .then(result => {
+      let semuaData = Array.isArray(result) ? result : result.data || [];
+      const approved = semuaData.filter(d => d.approved === "Y" || d.approved === true);
+      const total = result.total || approved.length;
+      renderUcapan(approved, total);
+    })
+    .catch(err => console.error("Gagal ambil ucapan:", err))
+    .finally(() => {
+      loading.style.display = "none";
+      daftar.style.display = "block";
+    });
 }
 
 // === SUBMIT UCAPAN ===
@@ -61,7 +142,37 @@ if (now >= countdownTarget) {
   });
 }
 
-// === AMBIL UCAPAN ===
+// === 5. SCRATCH CARD (BUKA & CEK HADIAH) ===
+async function cekHadiahSetelahUcapan() {
+  const nama = localStorage.getItem(namaReservasiKey);
+  if (!nama) return;
+
+  const pemenang = JSON.parse(localStorage.getItem("pemenang") || "[]");
+  if (pemenang.length >= maxWinners) {
+    console.log("Hadiah sudah habis");
+    return;
+  }
+
+  if (localStorage.getItem(hadiahKey)) {
+    bukaScratchCard();
+    return;
+  }
+
+  const menang = Math.random() < 0.5;
+
+  if (menang) {
+    pemenang.push({ nama, waktu: new Date().toISOString() });
+    localStorage.setItem("pemenang", JSON.stringify(pemenang));
+    localStorage.setItem(hadiahKey, "MENANG");
+  } else {
+    localStorage.setItem(hadiahKey, "KALAH");
+  }
+
+  bukaScratchCard();
+}
+
+
+
 function bukaScratchCard(menang) {
   const container = document.getElementById('scratchCardContainer');
   const resultText = document.getElementById('scratchResult');
@@ -128,6 +239,46 @@ function bukaScratchCard(menang) {
     container.style.display = 'none';
   };
 }
+
+// === 6. FORM RESERVASI ===
+document.getElementById("formReservasi").addEventListener("submit", async function (e) {
+  e.preventDefault();
+  const nama = document.getElementById("namaReservasi").value.trim();
+  const status = document.getElementById("statusReservasi").value;
+  const statusMsg = document.getElementById("statusReservasiMsg");
+
+  if (!nama || !status) {
+    statusMsg.textContent = "Mohon isi nama dan status kehadiran.";
+    statusMsg.style.color = "red";
+    return;
+  }
+
+  try {
+    const res = await fetch("/api/proxy", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        action: "reservasi",
+        nama,
+        status,
+      })
+    });
+
+    const text = await res.text();
+    if (text.trim() === "OK") {
+      statusMsg.textContent = "Terima kasih, reservasi Anda telah dicatat.";
+      statusMsg.style.color = "green";
+      this.reset();
+    } else {
+      statusMsg.textContent = "Gagal menyimpan reservasi.";
+      statusMsg.style.color = "red";
+    }
+  } catch (err) {
+    statusMsg.textContent = "Terjadi kesalahan koneksi.";
+    statusMsg.style.color = "red";
+  }
+});
+
 
 
 
@@ -394,34 +545,9 @@ if (existingPagination) existingPagination.remove();
 daftar.appendChild(paginationDiv);
 }
 
-// === FORMAT WAKTU ===
-function formatWaktuIndo(dateStr) {
-  const date = new Date(dateStr);
-  if (isNaN(date.getTime())) return "Waktu tidak diketahui";
-  const tanggal = date.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
-  const waktu = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false });
-  return `${tanggal}, ${waktu} WIB`;
-}
 
-// === COUNTDOWN ===
-function startCountdown() {
-  const countdownEl = document.getElementById('countdown');
-  const target = new Date('2025-06-13T10:00:00').getTime();
-  const interval = setInterval(() => {
-    const now = Date.now();
-    const diff = target - now;
-    if (diff <= 0) {
-      clearInterval(interval);
-      countdownEl.innerHTML = "Countdown telah berakhir.";
-      return;
-    }
-    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const s = Math.floor((diff % (1000 * 60)) / 1000);
-    countdownEl.innerHTML = `${d} hari ${h} jam ${m} menit ${s} detik`;
-  }, 1000);
-}
+
+
 
 function animateLetterDropById(id) {
   const h1 = document.getElementById(id);
@@ -453,22 +579,7 @@ function animateLetterDropById(id) {
   observer.observe(h1);
 }
 
-// === SPLASH SCREEN ===
-function openInvitation() {
-  sessionStorage.setItem("invitationOpened", "true");
-  document.getElementById('splash').style.display = 'none';
-  document.getElementById('mainContent').style.display = 'block';
 
-  const bgm = document.getElementById('bgm');
-  if (bgm && typeof bgm.play === 'function') {
-    bgm.play().catch(err => console.warn("Autoplay gagal:", err));
-  }
-
-  startCountdown();
-  ambilUcapan();
-  
-  animateLetterDropById("weddingNames");
-}
 
 
 
@@ -567,127 +678,10 @@ document.addEventListener("visibilitychange", () => {
 
 
 
-document.getElementById("formReservasi").addEventListener("submit", async function (e) {
-  e.preventDefault();
-  const nama = document.getElementById("namaReservasi").value.trim();
-  const status = document.getElementById("statusReservasi").value;
-  const statusMsg = document.getElementById("statusReservasiMsg");
-
-  if (!nama || !status) {
-    statusMsg.textContent = "Mohon isi nama dan status kehadiran.";
-    statusMsg.style.color = "red";
-    return;
-  }
-
-  try {
-    const res = await fetch("/api/proxy", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        action: "reservasi",
-        nama,
-        status,
-      })
-    });
-
-    const text = await res.text();
-    if (text.trim() === "OK") {
-      statusMsg.textContent = "Terima kasih, reservasi Anda telah dicatat.";
-      statusMsg.style.color = "green";
-      this.reset();
-    } else {
-      statusMsg.textContent = "Gagal menyimpan reservasi.";
-      statusMsg.style.color = "red";
-    }
-  } catch (err) {
-    statusMsg.textContent = "Terjadi kesalahan koneksi.";
-    statusMsg.style.color = "red";
-  }
-});
 
 
-async function cekHadiahSetelahUcapan() {
-  const userId = getUserId();
-  const url = `${endpoint}?action=checkPrize&userId=${userId}`;
-
-  try {
-    const res = await fetch(url);
-    const result = await res.json();
-    console.log("Result check prize:", result);
-
-    if (result.eligible) {
-      if (result.winner) {
-        bukaScratchCard(true); // user menang
-      } else {
-        bukaScratchCard(false); // user eligible tapi kalah
-      }
-    } else {
-      console.log("User belum reservasi datang, tidak eligible.");
-    }
-  } catch (err) {
-    console.error("Gagal cek hadiah:", err);
-  }
-}
 
 
-function bukaScratchCard(menang) {
-  const container = document.getElementById('scratchCardContainer');
-  const resultText = document.getElementById('scratchResult');
-  const canvas = document.getElementById('scratchCanvas');
-  const closeBtn = document.getElementById('closeScratchBtn');
-  const winSound = document.getElementById('winSound');
-  const loseSound = document.getElementById('loseSound');
-
-  resultText.textContent = menang
-    ? "🎉 Kamu Menang Souvenir Special! 🎉"
-    : "😢 Belum Beruntung. Semangat Lagi!";
-
-  container.style.display = 'flex';
-  container.classList.remove('scratch-flash-win');
-
-  const ctx = canvas.getContext('2d');
-  const width = canvas.width = canvas.offsetWidth;
-  const height = canvas.height = canvas.offsetHeight;
-
-  ctx.fillStyle = '#aaa';
-  ctx.fillRect(0, 0, width, height);
-
-  ctx.globalCompositeOperation = 'destination-out';
-
-  let isDrawing = false;
-
-  function scratch(e) {
-    if (!isDrawing) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX || e.touches[0].clientX) - rect.left;
-    const y = (e.clientY || e.touches[0].clientY) - rect.top;
-
-    ctx.beginPath();
-    ctx.arc(x, y, 20, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  canvas.addEventListener('mousedown', () => isDrawing = true);
-  canvas.addEventListener('touchstart', () => isDrawing = true);
-  canvas.addEventListener('mouseup', () => isDrawing = false);
-  canvas.addEventListener('touchend', () => isDrawing = false);
-  canvas.addEventListener('mousemove', scratch);
-  canvas.addEventListener('touchmove', scratch);
-
-  // Play Sound + Flash effect
-  setTimeout(() => {
-    if (menang) {
-      winSound?.play();
-      container.classList.add('scratch-flash-win');
-    } else {
-      loseSound?.play();
-    }
-  }, 500);
-
-  closeBtn.onclick = () => {
-    container.style.display = 'none';
-  };
-}
 
 
 
