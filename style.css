@@ -1543,5 +1543,30 @@ body.loading-filter {
   border-radius: 8px;
 }
 
+.scratch-flash-win {
+  animation: flashWin 0.5s ease-in-out 3;
+}
+
+@keyframes flashWin {
+  0% { background-color: rgba(255, 223, 0, 0.3); }
+  50% { background-color: rgba(255, 223, 0, 0.6); }
+  100% { background-color: rgba(255, 223, 0, 0.3); }
+}
+
+.status-msg {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.status-msg.success {
+  color: #4CAF50; /* Hijau sukses */
+}
+
+.status-msg.error {
+  color: #F44336; /* Merah error */
+}
 
 
