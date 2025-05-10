@@ -13,6 +13,12 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="responsive.css">
   
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+  
+  
+
+  
 
   
   
@@ -54,6 +60,13 @@
     <div id="countdown" style="margin-top: 20px; font-size: 1.2em;"></div>
   </div>
 </section>
+
+<div id="ucapanTutupOverlay" class="ucapan-tutup-overlay" style="display: none;">
+  <div class="ucapan-tutup-box">
+    <h2>⏳ Ucapan Telah Ditutup</h2>
+    <p>Terima kasih atas doa dan ucapannya 💌</p>
+  </div>
+</div>
 
 
 
@@ -167,6 +180,24 @@
 
 </section>
 
+<div class="rsvp-heading">
+  <h2>RSVP</h2>
+  <p class="handwrite-effect">Diharapkan kepada para tamu untuk mengisi form kehadiran dibawah ini</p>
+</div>
+
+<form id="formReservasi" class="form-doa">
+  <input type="text" id="namaReservasi" placeholder="Tulis Nama Anda" required />
+
+  <select id="statusReservasi" required>
+    <option value="" disabled selected>Konfirmasi Kehadiran Anda</option>
+    <option value="datang">Datang</option>
+    <option value="tidak">Tidak Datang</option>
+    <option value="ragu-ragu">Masih Ragu</option>
+  </select>
+
+  <button type="submit">Konfirmasi</button>
+  <p id="statusReservasiMsg" style="text-align: center; margin-top: 10px;"></p>
+</form>
 
 <div id="ucapanLoading" class="shimmer-wrapper" style="display: none;">
   <div class="shimmer-card"></div>
@@ -198,33 +229,30 @@
 
 
 
-    <div id="daftarUcapan"></div>
+    <div id="ucapanLoading" class="shimmer-wrapper">
+  <div class="shimmer-bubble"></div>
+  <div class="shimmer-bubble small"></div>
+  <div class="shimmer-bubble reply"></div>
+</div>
+	<div id="daftarUcapan"></div>
+	<div id="noUcapanMsg" class="no-ucapan-message" style="display: none;">
+  <p>💬 Belum ada ucapan yang masuk.</p>
+</div>
 	<div id="pageInfo" style="text-align:center; font-size: 0.9em; margin-bottom: 0.5em;"></div>
 	<div id="pagination" style="text-align:center; margin-top:2em;"></div>
 
 
   </section>
   
-<div class="rsvp-heading">
-  <h2>RSVP</h2>
-  <p class="handwrite-effect">Diharapkan kepada para tamu untuk mengisi form kehadiran dibawah ini</p>
+
+
+<div id="scratchCardContainer" class="scratch-container" style="display: none;">
+  <div class="scratch-background">
+    <div id="scratchResult" class="scratch-result">🎁 Kamu Menang Souvenir Special! 🎁</div>
+  </div>
+  <canvas id="scratchCanvas"></canvas>
+  <button id="closeScratchBtn" class="close-scratch">Tutup</button>
 </div>
-
-<form id="formReservasi" class="form-doa">
-  <input type="text" id="namaReservasi" placeholder="Tulis Nama Anda" required />
-
-  <select id="statusReservasi" required>
-    <option value="" disabled selected>Konfirmasi Kehadiran Anda</option>
-    <option value="datang">Datang</option>
-    <option value="tidak">Tidak Datang</option>
-    <option value="ragu-ragu">Masih Ragu</option>
-  </select>
-
-  <button type="submit">Konfirmasi</button>
-  <p id="statusReservasiMsg" style="text-align: center; margin-top: 10px;"></p>
-</form>
-
-
 
 <section id="gift-section">
   <h2 class="gift-title">
@@ -272,7 +300,8 @@
   </div>
 </div>
 
-
+<audio id="winSound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-notification-2018.mp3"></audio>
+<audio id="loseSound" src="https://assets.mixkit.co/sfx/preview/mixkit-losing-bleeps-2026.mp3"></audio>
 
 <script src="script.js"></script>
 </body>

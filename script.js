@@ -31,6 +31,15 @@ function submitUcapan(e) {
   form.append("ucapan", ucapan);
   form.append("userId", userId);
   form.append("is_ucapan", "true");
+  
+  const countdownTarget = new Date('2025-06-13T10:00:00').getTime();
+const now = Date.now();
+
+
+
+if (now >= countdownTarget) {
+  return alert("Ucapan sudah ditutup. Terima kasih atas partisipasinya!");
+}
 
   fetch(endpoint, {
     method: "POST",
@@ -44,6 +53,7 @@ function submitUcapan(e) {
     alert("Ucapan berhasil dikirim!");
     e.target.reset();
     ambilUcapan();
+	cekHadiahSetelahUcapan();
   })
   .catch(err => {
     console.error("Gagal mengirim ucapan:", err);
@@ -52,33 +62,75 @@ function submitUcapan(e) {
 }
 
 // === AMBIL UCAPAN ===
-function ambilUcapan() {
-  document.getElementById("ucapanLoading").style.display = "block";
-  document.getElementById("daftarUcapan").style.display = "none";
+function bukaScratchCard(menang) {
+  const container = document.getElementById('scratchCardContainer');
+  const resultText = document.getElementById('scratchResult');
+  const canvas = document.getElementById('scratchCanvas');
+  const closeBtn = document.getElementById('closeScratchBtn');
+  const winSound = document.getElementById('winSound');
+  const loseSound = document.getElementById('loseSound');
 
-  const filterAktif = document.getElementById("filterByUser")?.checked;
-  const url = new URL(endpoint);
+  resultText.textContent = menang
+    ? "🎉 Kamu Menang Souvenir Special! 🎉"
+    : "😢 Belum Beruntung. Semangat Lagi!";
 
-  if (!filterAktif) {
-    url.searchParams.set("limit", perPage);
-    url.searchParams.set("page", currentPage);
+  container.style.display = 'flex';
+  container.classList.remove('scratch-flash-win');
+
+  const ctx = canvas.getContext('2d');
+  const width = canvas.width = canvas.offsetWidth;
+  const height = canvas.height = canvas.offsetHeight;
+
+  ctx.fillStyle = '#aaa';
+  ctx.fillRect(0, 0, width, height);
+
+  ctx.globalCompositeOperation = 'destination-out';
+
+  let isDrawing = false;
+
+  function scratch(e) {
+    if (!isDrawing) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX || e.touches[0].clientX) - rect.left;
+    const y = (e.clientY || e.touches[0].clientY) - rect.top;
+
+    ctx.beginPath();
+    ctx.arc(x, y, 20, 0, Math.PI * 2);
+    ctx.fill();
   }
 
-  fetch(url.toString())
-    .then(res => res.json())
-    .then(result => {
-      const semuaData = result.data || result; // fallback
-      const approved = semuaData.filter(d => d.approved === "Y" || d.approved === true);
-      renderUcapan(approved, result.total || approved.length);
-    })
-    .catch(err => {
-      console.error("Gagal ambil ucapan:", err);
-    })
-    .finally(() => {
-      document.getElementById("ucapanLoading").style.display = "none";
-      document.getElementById("daftarUcapan").style.display = "block";
-    });
+  canvas.addEventListener('mousedown', () => isDrawing = true);
+  canvas.addEventListener('touchstart', () => isDrawing = true);
+  canvas.addEventListener('mouseup', () => isDrawing = false);
+  canvas.addEventListener('touchend', () => isDrawing = false);
+  canvas.addEventListener('mousemove', scratch);
+  canvas.addEventListener('touchmove', scratch);
+
+  // Play Sound + Flash + Confetti
+  setTimeout(() => {
+    if (menang) {
+      winSound?.play();
+      container.classList.add('scratch-flash-win');
+
+      // 🎊 Confetti Animation
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+
+    } else {
+      loseSound?.play();
+    }
+  }, 500);
+
+  closeBtn.onclick = () => {
+    container.style.display = 'none';
+  };
 }
+
+
+
 
 
 
@@ -108,20 +160,41 @@ function renderUcapan(data, totalUcapan = 0) {
   });
 
   const filterAktif = filterCheckbox.checked;
-  const shown = filterAktif
-    ? filtered // tampilkan semua milik user
-    : filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
+  const shown = filtered;
 
   daftar.innerHTML = "";
   daftar.classList.remove("show");
   void daftar.offsetWidth;
   daftar.classList.add("fade-in", "show");
 
+  // === HANDLE EMPTY STATE ===
+  if (shown.length === 0) {
+  const emptyDiv = document.createElement("div");
+  emptyDiv.className = "ucapan-empty";
+  emptyDiv.innerHTML = `
+    <div class="empty-illustration">
+      <svg width="120" height="120" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10
+        10-4.48 10-10S17.52 2 12 2zm-1 15h2v2h-2v-2zm1-13
+        C8.13 4 5 7.13 5 11h2c0-2.76 2.24-5 5-5s5 2.24
+        5 5c0 2.17-1.39 4.01-3.34 4.68L11 18h2v2h-2v-2h-1v-2h2c2.21
+        0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4H5c0-3.87 3.13-7 7-7z"
+        fill="#d2a679"/>
+      </svg>
+    </div>
+    <p>Belum ada ucapan masuk.<br><em>Yuk beri ucapan pertama! ✨</em></p>
+  `;
+  daftar.appendChild(emptyDiv);
+}
+
+  // === RENDER TIAP THREAD ===
   shown.forEach(([threadId, messages]) => {
     const wrapper = document.createElement("div");
     wrapper.className = "ucapan-thread";
 
-    messages.sort((a, b) => new Date(a.timestamp || a.reply_timestamp || 0) - new Date(b.timestamp || b.reply_timestamp || 0));
+    messages.sort((a, b) =>
+      new Date(a.timestamp || a.reply_timestamp || 0) - new Date(b.timestamp || b.reply_timestamp || 0)
+    );
 
     messages.forEach((msg) => {
       const isHead = msg.is_ucapan === "TRUE" || msg.is_ucapan === true;
@@ -171,6 +244,7 @@ function renderUcapan(data, totalUcapan = 0) {
 
   renderPagination(totalPages);
 }
+
 
 
 
@@ -301,7 +375,7 @@ function renderPagination(totalPages) {
       paginationDiv.appendChild(span);
     } else {
       const btn = createBtn(p, p === currentPage, () => {
-        currentPage = p;
+        currentPage = Number (p);
         ambilUcapan();
       });
       paginationDiv.appendChild(btn);
@@ -530,6 +604,93 @@ document.getElementById("formReservasi").addEventListener("submit", async functi
     statusMsg.style.color = "red";
   }
 });
+
+
+async function cekHadiahSetelahUcapan() {
+  const userId = getUserId();
+  const url = `${endpoint}?action=checkPrize&userId=${userId}`;
+
+  try {
+    const res = await fetch(url);
+    const result = await res.json();
+    console.log("Result check prize:", result);
+
+    if (result.eligible) {
+      if (result.winner) {
+        bukaScratchCard(true); // user menang
+      } else {
+        bukaScratchCard(false); // user eligible tapi kalah
+      }
+    } else {
+      console.log("User belum reservasi datang, tidak eligible.");
+    }
+  } catch (err) {
+    console.error("Gagal cek hadiah:", err);
+  }
+}
+
+
+function bukaScratchCard(menang) {
+  const container = document.getElementById('scratchCardContainer');
+  const resultText = document.getElementById('scratchResult');
+  const canvas = document.getElementById('scratchCanvas');
+  const closeBtn = document.getElementById('closeScratchBtn');
+  const winSound = document.getElementById('winSound');
+  const loseSound = document.getElementById('loseSound');
+
+  resultText.textContent = menang
+    ? "🎉 Kamu Menang Souvenir Special! 🎉"
+    : "😢 Belum Beruntung. Semangat Lagi!";
+
+  container.style.display = 'flex';
+  container.classList.remove('scratch-flash-win');
+
+  const ctx = canvas.getContext('2d');
+  const width = canvas.width = canvas.offsetWidth;
+  const height = canvas.height = canvas.offsetHeight;
+
+  ctx.fillStyle = '#aaa';
+  ctx.fillRect(0, 0, width, height);
+
+  ctx.globalCompositeOperation = 'destination-out';
+
+  let isDrawing = false;
+
+  function scratch(e) {
+    if (!isDrawing) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX || e.touches[0].clientX) - rect.left;
+    const y = (e.clientY || e.touches[0].clientY) - rect.top;
+
+    ctx.beginPath();
+    ctx.arc(x, y, 20, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  canvas.addEventListener('mousedown', () => isDrawing = true);
+  canvas.addEventListener('touchstart', () => isDrawing = true);
+  canvas.addEventListener('mouseup', () => isDrawing = false);
+  canvas.addEventListener('touchend', () => isDrawing = false);
+  canvas.addEventListener('mousemove', scratch);
+  canvas.addEventListener('touchmove', scratch);
+
+  // Play Sound + Flash effect
+  setTimeout(() => {
+    if (menang) {
+      winSound?.play();
+      container.classList.add('scratch-flash-win');
+    } else {
+      loseSound?.play();
+    }
+  }, 500);
+
+  closeBtn.onclick = () => {
+    container.style.display = 'none';
+  };
+}
+
+
+
 
 
 

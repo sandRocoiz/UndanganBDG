@@ -938,8 +938,32 @@ body.loading-filter::before {
 }
 
 .shimmer-wrapper {
-  margin-top: 1rem;
+  display: none;
+  padding: 20px;
+  animation: fadeIn 0.3s ease-in;
 }
+
+.shimmer-bubble {
+  height: 80px;
+  width: 80%;
+  background: linear-gradient(100deg, #f0f0f0 10%, #e0e0e0 18%, #f0f0f0 33%);
+  background-size: 200% 100%;
+  border-radius: 16px;
+  margin: 15px auto;
+  animation: shimmer 1.5s infinite;
+}
+
+.shimmer-bubble.small {
+  width: 60%;
+  height: 50px;
+}
+
+.shimmer-bubble.reply {
+  width: 70%;
+  height: 60px;
+  margin-left: 30px;
+}
+
 
 .shimmer-card {
   background: linear-gradient(90deg, #f3f3f3 25%, #ececec 50%, #f3f3f3 75%);
@@ -964,6 +988,26 @@ body.loading-filter {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+.bubble button.like-btn,
+.bubble button.reply-btn {
+  margin-top: 8px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #e5dac3;
+  color: #4a3e3e;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.bubble button.like-btn:hover,
+.bubble button.reply-btn:hover {
+  background: #d1bfa3;
+  transform: scale(1.05);
 }
 
 .letter-drop span {
@@ -1335,5 +1379,169 @@ body.loading-filter {
   font-weight: bold;
   font-family: monospace;
 }
+
+#pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+#pagination button,
+#pagination .ellipsis {
+  background: #f4e9da;
+  border: 1px solid #c5b9a5;
+  color: #5e4b32;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-family: 'Playfair Display', serif;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+#pagination button:hover:not(:disabled) {
+  background: #e2d4bb;
+  transform: scale(1.05);
+}
+
+#pagination button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+#pagination .ellipsis {
+  pointer-events: none;
+  background: transparent;
+  border: none;
+  font-weight: normal;
+}
+
+#ucapanLoading {
+  display: none;
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  color: #a97b50;
+  animation: shimmer 2s infinite linear;
+}
+
+@keyframes shimmer {
+  0% { opacity: 0.3; }
+  50% { opacity: 1; }
+  100% { opacity: 0.3; }
+}
+
+.no-ucapan-message {
+  text-align: center;
+  color: #5a4c40;
+  font-style: italic;
+  margin-top: 20px;
+  font-size: 1.1rem;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.ucapan-tutup-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ucapan-tutup-box {
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  font-family: 'Playfair Display', serif;
+  animation: fadeIn 0.5s ease-in;
+}
+
+.ucapan-tutup-box h2 {
+  color: #8b6f47;
+  margin-bottom: 10px;
+}
+
+.ucapan-tutup-box p {
+  color: #444;
+}
+
+.ucapan-empty {
+  padding: 40px 20px;
+  border-radius: 12px;
+  background-color: #fffaf4;
+  color: #7a5c40;
+  margin: 40px auto;
+  text-align: center;
+  max-width: 400px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.empty-illustration {
+  margin-bottom: 10px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0px); }
+}
+
+.scratch-container {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.scratch-background {
+  position: relative;
+  width: 300px;
+  height: 200px;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  text-align: center;
+  padding: 20px;
+}
+
+.scratch-result {
+  font-size: 1.2em;
+  color: #333;
+  margin-top: 20px;
+}
+
+#scratchCanvas {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: gray;
+  cursor: pointer;
+}
+
+.close-scratch {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: none;
+  background: #4caf50;
+  color: white;
+  font-size: 1em;
+  border-radius: 8px;
+}
+
 
 
