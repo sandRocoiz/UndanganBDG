@@ -348,11 +348,19 @@ document.getElementById("formReservasi").addEventListener("submit", async functi
     const text = await res.text();
 
     if (text.trim() === "OK") {
-      localStorage.setItem("namaReservasi", nama);
-      localStorage.setItem("reservasiStatus", status);
-      localStorage.setItem("sudahReservasi", "true");
-      tampilkanReservasiSudahSubmit();
-      this.reset();
+  localStorage.setItem("namaReservasi", nama);
+  localStorage.setItem("reservasiStatus", status);
+  localStorage.setItem("sudahReservasi", "true");
+
+  // ✅ Tambahan Patch Autofill Nama ke Form Ucapan
+  if (localStorage.getItem("sudahSubmitUcapan") !== "true" && document.getElementById("nama")) {
+    document.getElementById("nama").value = nama;
+    localStorage.setItem("nama", nama);
+  }
+
+  tampilkanReservasiSudahSubmit();
+  this.reset();
+}
     } else if (text.trim() === "ALREADY_RESERVED") {
       localStorage.setItem("sudahReservasi", "true");
       tampilkanReservasiSudahSubmit();
