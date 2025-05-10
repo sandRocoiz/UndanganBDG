@@ -321,6 +321,7 @@ function bukaScratchCard() {
 document.getElementById("formReservasi").addEventListener("submit", async function (e) {
   e.preventDefault();
 
+  // Cek apakah user sudah pernah reservasi
   if (localStorage.getItem("sudahReservasi") === "true") {
     tampilkanReservasiSudahSubmit();
     return;
@@ -329,6 +330,7 @@ document.getElementById("formReservasi").addEventListener("submit", async functi
   const nama = document.getElementById("namaReservasi").value.trim();
   const status = document.getElementById("statusReservasi").value;
 
+  // Validasi form input
   if (!nama || !status) {
     tampilkanStatusMsg("statusReservasiMsg", "Mohon isi nama dan status kehadiran.", "error");
     return;
@@ -345,32 +347,37 @@ document.getElementById("formReservasi").addEventListener("submit", async functi
         userId: getUserId(),
       })
     });
+
     const text = await res.text();
 
     if (text.trim() === "OK") {
-  localStorage.setItem("namaReservasi", nama);
-  localStorage.setItem("reservasiStatus", status);
-  localStorage.setItem("sudahReservasi", "true");
+      // ✅ Simpan data ke localStorage
+      localStorage.setItem("namaReservasi", nama);
+      localStorage.setItem("reservasiStatus", status);
+      localStorage.setItem("sudahReservasi", "true");
 
-  // ✅ Tambahan Patch Autofill Nama ke Form Ucapan
-  if (localStorage.getItem("sudahSubmitUcapan") !== "true" && document.getElementById("nama")) {
-    document.getElementById("nama").value = nama;
-    localStorage.setItem("nama", nama);
-  }
+      // ✅ Autofill nama ke form ucapan jika belum pernah submit ucapan
+      if (localStorage.getItem("sudahSubmitUcapan") !== "true" && document.getElementById("nama")) {
+        document.getElementById("nama").value = nama;
+        localStorage.setItem("nama", nama);
+      }
 
-  tampilkanReservasiSudahSubmit();
-  this.reset();
-}
+      tampilkanReservasiSudahSubmit();
+      this.reset();
+
     } else if (text.trim() === "ALREADY_RESERVED") {
       localStorage.setItem("sudahReservasi", "true");
       tampilkanReservasiSudahSubmit();
     } else {
       tampilkanStatusMsg("statusReservasiMsg", "Gagal menyimpan reservasi.", "error");
     }
+
   } catch (err) {
+    console.error("Error submit reservasi:", err);
     tampilkanStatusMsg("statusReservasiMsg", "Terjadi kesalahan koneksi.", "error");
   }
 });
+
 
 function tampilkanReservasiSudahSubmit() {
   const formReservasi = document.getElementById("formReservasi");
@@ -540,13 +547,13 @@ function kirimBalasanLanjutan(threadId, ucapan, nama) {
 function renderLikes(ucapanId, likeList) {
   // Jika bukan array, ubah jadi array kosong
   if (!Array.isArray(likeList)) {
-  try {
-    likeList = JSON.parse(likeList);
-    if (!Array.isArray(likeList)) likeList = [];
-  } catch (e) {
-    likeList = [];
+    try {
+      likeList = JSON.parse(likeList);
+      if (!Array.isArray(likeList)) likeList = [];
+    } catch {
+      likeList = [];
+    }
   }
-}
 
   const likeContainer = document.createElement("div");
   likeContainer.className = "like-container";
