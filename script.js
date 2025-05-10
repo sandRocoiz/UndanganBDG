@@ -197,7 +197,11 @@ function tampilkanStatusMsg(idElement, pesan, tipe = "success") {
 
 
 
-// === 5. SCRATCH CARD (BUKA & CEK HADIAH) ===
+// ============================================
+// FINAL PATCH: SCRATCH CARD SYSTEM CLEAN VERSION
+// ============================================
+
+// Fungsi setelah submit ucapan (untuk cek hadiah)
 async function cekHadiahSetelahUcapan() {
   const nama = localStorage.getItem(namaReservasiKey);
   if (!nama) return;
@@ -226,8 +230,7 @@ async function cekHadiahSetelahUcapan() {
   bukaScratchCard();
 }
 
-
-
+// Fungsi membuka Scratch Card
 function bukaScratchCard() {
   const container = document.getElementById('scratchCardContainer');
   const resultText = document.getElementById('scratchResult');
@@ -244,13 +247,13 @@ function bukaScratchCard() {
   container.style.display = 'flex';
   container.classList.remove('scratch-flash-win');
 
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
   const width = canvas.width = canvas.offsetWidth;
   const height = canvas.height = canvas.offsetHeight;
 
+  ctx.clearRect(0, 0, width, height);
   ctx.fillStyle = '#aaa';
   ctx.fillRect(0, 0, width, height);
-
   ctx.globalCompositeOperation = 'destination-out';
 
   let isDrawing = false;
@@ -262,29 +265,44 @@ function bukaScratchCard() {
     const y = (e.clientY || e.touches?.[0]?.clientY) - rect.top;
 
     ctx.beginPath();
-    ctx.arc(x, y, 20, 0, Math.PI * 2);
+    ctx.arc(x, y, 30, 0, Math.PI * 2); // Lebar garukan dibesarkan
     ctx.fill();
 
     checkScratchProgress();
   }
 
   function checkScratchProgress() {
-  const imageData = ctx.getImageData(0, 0, width, height);
-  let scratched = 0;
-  for (let i = 0; i < imageData.data.length; i += 4) {
-    if (imageData.data[i + 3] < 128) { // pixel transparan
-      scratched++;
+    const imageData = ctx.getImageData(0, 0, width, height);
+    let scratched = 0;
+    for (let i = 0; i < imageData.data.length; i += 4) {
+      if (imageData.data[i + 3] < 128) scratched++;
+    }
+    const scratchedPercent = scratched / (imageData.data.length / 4) * 100;
+
+    if (scratchedPercent > 50) {
+      setTimeout(() => {
+        container.classList.add('show-result');
+        closeBtn.style.display = 'block';
+
+        const scratchImageResult = document.getElementById("scratchImageResult");
+        if (menang) {
+          if (winSound && winSound.src) winSound.play().catch(() => {});
+          container.classList.add('scratch-flash-win');
+          confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+          scratchImageResult.innerHTML = `
+            <img src="https://undangan-bdg.vercel.app/Asset/win.png" alt="Menang" style="width: 100px; margin: 20px auto;">
+            <p style="margin-top: 10px; font-weight:bold; color:#4CAF50;">🎉 Selamat! Screenshot halaman ini dan tunjukkan ke Panitia untuk klaim hadiah! 🎉</p>
+          `;
+        } else {
+          if (loseSound && loseSound.src) loseSound.play().catch(() => {});
+          scratchImageResult.innerHTML = `
+            <img src="https://undangan-bdg.vercel.app/Asset/lose.png" alt="Kalah" style="width: 100px; margin: 20px auto;">
+            <p style="margin-top: 10px; font-weight:bold; color:#F44336;">😢 Belum beruntung kali ini. Terima kasih sudah berpartisipasi! ✨</p>
+          `;
+        }
+      }, 300);
     }
   }
-  const scratchedPercent = scratched / (imageData.data.length / 4) * 100; // ✅ PERBAIKI DI SINI
-
-  if (scratchedPercent > 50) {
-    setTimeout(() => {
-      container.classList.add('show-result');
-      closeBtn.style.display = 'block';
-    }, 500);
-  }
-}
 
   canvas.addEventListener('mousedown', () => isDrawing = true);
   canvas.addEventListener('touchstart', () => isDrawing = true);
@@ -293,28 +311,15 @@ function bukaScratchCard() {
   canvas.addEventListener('mousemove', scratch);
   canvas.addEventListener('touchmove', scratch);
 
-  // Play Sound + Flash + Confetti
-  setTimeout(() => {
-    if (menang) {
-      winSound?.play();
-      container.classList.add('scratch-flash-win');
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-    } else {
-      loseSound?.play();
-    }
-  }, 500);
-
   closeBtn.onclick = () => {
     container.style.display = 'none';
     closeBtn.style.display = 'none';
   };
 
-  closeBtn.style.display = 'none'; // sembunyikan tombol dulu
+  closeBtn.style.display = 'none';
 }
+
+
 
 
 // === 6. FORM RESERVASI ===
