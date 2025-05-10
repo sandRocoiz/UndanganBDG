@@ -106,7 +106,7 @@ function submitUcapan(e) {
   e.preventDefault();
 
   if (localStorage.getItem("sudahSubmitUcapan") === "true") {
-    tampilkanStatusMsg("ucapanStatusMsg", "Kamu sudah mengirim ucapan. Terima kasih!", "error");
+    tampilkanUcapanSudahSubmit();
     return;
   }
 
@@ -142,12 +142,12 @@ function submitUcapan(e) {
   .then(text => {
     if (text.trim() === "OK") {
       localStorage.setItem("sudahSubmitUcapan", "true");
-      tampilkanStatusMsg("ucapanStatusMsg", "Ucapan berhasil dikirim!", "success");
+      tampilkanUcapanSudahSubmit();
       e.target.reset();
       ambilUcapan();
       cekHadiahSetelahUcapan();
     } else if (text.trim() === "ALREADY_SENT") {
-      tampilkanStatusMsg("ucapanStatusMsg", "Kamu sudah mengirim ucapan sebelumnya.", "error");
+      tampilkanUcapanSudahSubmit();
     } else {
       tampilkanStatusMsg("ucapanStatusMsg", "Terjadi kesalahan saat mengirim.", "error");
     }
@@ -157,6 +157,30 @@ function submitUcapan(e) {
     tampilkanStatusMsg("ucapanStatusMsg", "Koneksi gagal, coba lagi.", "error");
   });
 }
+
+
+function tampilkanUcapanSudahSubmit() {
+  const formUcapan = document.getElementById("formUcapan");
+  const ucapanStatus = document.getElementById("ucapanStatusMsg");
+
+  if (formUcapan && ucapanStatus) {
+    ucapanStatus.innerHTML = `
+      <div class="ucapan-sudah-submit">
+        <img src="https://undangan-bdg.vercel.app/Asset/thank-you.png" alt="Terima Kasih" style="width: 140px; margin-bottom: 1rem;">
+        <p>🎉 Terima kasih, ucapanmu sudah tercatat.</p>
+      </div>
+    `;
+    ucapanStatus.classList.add("success");
+  }
+
+  const submitBtn = formUcapan.querySelector("button[type='submit']");
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = "0.6";
+    submitBtn.style.cursor = "not-allowed";
+  }
+}
+
 
 
 
@@ -272,6 +296,12 @@ function bukaScratchCard(menang) {
 // === 6. FORM RESERVASI ===
 document.getElementById("formReservasi").addEventListener("submit", async function (e) {
   e.preventDefault();
+
+  if (localStorage.getItem("sudahReservasi") === "true") {
+    tampilkanReservasiSudahSubmit();
+    return;
+  }
+
   const nama = document.getElementById("namaReservasi").value.trim();
   const status = document.getElementById("statusReservasi").value;
 
@@ -297,10 +327,11 @@ document.getElementById("formReservasi").addEventListener("submit", async functi
       localStorage.setItem("namaReservasi", nama);
       localStorage.setItem("reservasiStatus", status);
       localStorage.setItem("sudahReservasi", "true");
-      tampilkanStatusMsg("statusReservasiMsg", "✅ Reservasi Anda berhasil dicatat.", "success");
+      tampilkanReservasiSudahSubmit();
       this.reset();
     } else if (text.trim() === "ALREADY_RESERVED") {
-      tampilkanStatusMsg("statusReservasiMsg", "Anda sudah mengisi konfirmasi sebelumnya.", "error");
+      localStorage.setItem("sudahReservasi", "true");
+      tampilkanReservasiSudahSubmit();
     } else {
       tampilkanStatusMsg("statusReservasiMsg", "Gagal menyimpan reservasi.", "error");
     }
@@ -308,6 +339,34 @@ document.getElementById("formReservasi").addEventListener("submit", async functi
     tampilkanStatusMsg("statusReservasiMsg", "Terjadi kesalahan koneksi.", "error");
   }
 });
+
+function tampilkanReservasiSudahSubmit() {
+  const formReservasi = document.getElementById("formReservasi");
+  const reservasiStatus = document.getElementById("statusReservasiMsg");
+
+  if (formReservasi && reservasiStatus) {
+    reservasiStatus.innerHTML = `
+      <div class="reservasi-sudah-submit">
+        <img src="https://undangan-bdg.vercel.app/Asset/thank-you.png" alt="Reservasi Sukses" style="width: 140px; margin-bottom: 1rem;">
+        <p>🎉 Terima kasih, konfirmasi kehadiran Anda telah dicatat.</p>
+      </div>
+    `;
+    reservasiStatus.classList.add("success");
+  }
+
+  const submitBtn = formReservasi.querySelector("button[type='submit']");
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = "0.6";
+    submitBtn.style.cursor = "not-allowed";
+  }
+
+  const inputNama = document.getElementById("namaReservasi");
+  const selectStatus = document.getElementById("statusReservasi");
+  if (inputNama) inputNama.disabled = true;
+  if (selectStatus) selectStatus.disabled = true;
+}
+
 
 
 
@@ -607,60 +666,41 @@ function animateLetterDropById(id) {
 
 
 
+
 // === INISIALISASI ===
 document.addEventListener("DOMContentLoaded", () => {
   const userId = getUserId();
   const display = document.getElementById("userIdValue");
   if (display) display.textContent = userId;
 
-  // === Prefill nama dari localStorage ===
+  // Prefill nama dari localStorage
   const namaPrefill = localStorage.getItem("nama");
   if (namaPrefill && document.getElementById("nama")) {
     document.getElementById("nama").value = namaPrefill;
   }
 
-  // === Cek apakah user sudah submit reservasi ===
-  const sudahReservasi = localStorage.getItem("sudahReservasi") === "true";
-  if (sudahReservasi) {
-    const namaReservasi = localStorage.getItem("namaReservasi");
-    if (namaReservasi && document.getElementById("namaReservasi")) {
-      document.getElementById("namaReservasi").value = namaReservasi;
-      document.getElementById("namaReservasi").disabled = true;
-    }
-    const statusSelect = document.getElementById("statusReservasi");
-    if (statusSelect) {
-      statusSelect.disabled = true;
-    }
-    const submitBtn = document.querySelector("#formReservasi button[type='submit']");
-    if (submitBtn) {
-      submitBtn.style.display = "none"; // atau bisa submitBtn.disabled = true;
-    }
-    const statusMsg = document.getElementById("statusReservasiMsg");
-    if (statusMsg) {
-      statusMsg.textContent = "✅ Terima kasih, Anda sudah mengonfirmasi kehadiran.";
-      statusMsg.style.color = "green";
-    }
-  }
-
-  // === Cek apakah user sudah submit ucapan ===
+  // Cek apakah sudah submit ucapan
   if (localStorage.getItem("sudahSubmitUcapan") === "true") {
-    const formUcapan = document.getElementById("formUcapan");
-    if (formUcapan) {
-      formUcapan.innerHTML = `
-        <div class="ucapan-sudah-submit">
-          <p>🎉 Terima kasih, ucapanmu sudah tercatat.</p>
-        </div>
-      `;
+    const ucapanStatus = document.getElementById("ucapanStatusMsg");
+    if (ucapanStatus) {
+      ucapanStatus.textContent = "🎉 Terima kasih, ucapanmu sudah tercatat.";
+      ucapanStatus.classList.add("success");
+    }
+
+    // Disable tombol submit saja (form tetap tampil, hanya tidak bisa submit lagi)
+    const submitBtn = document.querySelector("#formUcapan button[type='submit']");
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = "0.6";
+      submitBtn.style.cursor = "not-allowed";
     }
   }
 
-  // === Splash screen control ===
   const splash = document.getElementById("splash");
   const mainContent = document.getElementById("mainContent");
   if (splash) splash.style.display = "flex";
   if (mainContent) mainContent.style.display = "none";
 
-  // === Filter ucapan ===
   const filter = document.getElementById("filterByUser");
   if (filter) {
     filter.addEventListener("change", () => {
@@ -669,7 +709,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // === Start fitur lainnya ===
   startCountdown();
   ambilUcapan();
 
@@ -688,6 +727,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }, { threshold: 0.1 });
   scrollElements.forEach((el) => observer.observe(el));
 });
+
 
 
 
