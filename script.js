@@ -269,22 +269,22 @@ function bukaScratchCard() {
   }
 
   function checkScratchProgress() {
-    const imageData = ctx.getImageData(0, 0, width, height);
-    let scratched = 0;
-    for (let i = 0; i < imageData.data.length; i += 4) {
-      if (imageData.data[i + 3] < 128) { // pixel transparan
-        scratched++;
-      }
-    }
-    const scratchedPercent = scratched / (width * height) * 100;
-    
-    if (scratchedPercent > 50) {
-      setTimeout(() => {
-        container.classList.add('show-result');
-        closeBtn.style.display = 'block';
-      }, 500);
+  const imageData = ctx.getImageData(0, 0, width, height);
+  let scratched = 0;
+  for (let i = 0; i < imageData.data.length; i += 4) {
+    if (imageData.data[i + 3] < 128) { // pixel transparan
+      scratched++;
     }
   }
+  const scratchedPercent = scratched / (imageData.data.length / 4) * 100; // ✅ PERBAIKI DI SINI
+
+  if (scratchedPercent > 50) {
+    setTimeout(() => {
+      container.classList.add('show-result');
+      closeBtn.style.display = 'block';
+    }, 500);
+  }
+}
 
   canvas.addEventListener('mousedown', () => isDrawing = true);
   canvas.addEventListener('touchstart', () => isDrawing = true);
