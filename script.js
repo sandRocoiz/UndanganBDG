@@ -162,22 +162,15 @@ function submitUcapan(e) {
 function tampilkanUcapanSudahSubmit() {
   const formUcapan = document.getElementById("formUcapan");
   const ucapanStatus = document.getElementById("ucapanStatusMsg");
+  const ucapanThanks = document.getElementById("ucapanThanks");
 
-  if (formUcapan && ucapanStatus) {
-    ucapanStatus.innerHTML = `
-      <div class="ucapan-sudah-submit">
-        <img src="https://undangan-bdg.vercel.app/Asset/thank-you.png" alt="Terima Kasih" style="width: 140px; margin-bottom: 1rem;">
-        <p>🎉 Terima kasih, ucapanmu sudah tercatat.</p>
-      </div>
-    `;
-    ucapanStatus.classList.add("success");
+  if (formUcapan && ucapanThanks) {
+    formUcapan.style.display = "none"; // Hide form ucapan
+    ucapanThanks.style.display = "block"; // Show Thank you
   }
 
-  const submitBtn = formUcapan.querySelector("button[type='submit']");
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.style.opacity = "0.6";
-    submitBtn.style.cursor = "not-allowed";
+  if (ucapanStatus) {
+    ucapanStatus.style.display = "none"; // hide status message
   }
 }
 
@@ -211,7 +204,7 @@ async function cekHadiahSetelahUcapan() {
     return;
   }
 
-  const menang = Math.random() < 0.5;
+  const menang = Math.random() < 0.1;
 
   if (menang) {
     pemenang.push({ nama, waktu: new Date().toISOString() });
@@ -226,7 +219,7 @@ async function cekHadiahSetelahUcapan() {
 
 
 
-function bukaScratchCard(menang) {
+function bukaScratchCard() {
   const container = document.getElementById('scratchCardContainer');
   const resultText = document.getElementById('scratchResult');
   const canvas = document.getElementById('scratchCanvas');
@@ -234,6 +227,7 @@ function bukaScratchCard(menang) {
   const winSound = document.getElementById('winSound');
   const loseSound = document.getElementById('loseSound');
 
+  const menang = localStorage.getItem("scratchWin") === "MENANG";
   resultText.textContent = menang
     ? "🎉 Kamu Menang Souvenir Special! 🎉"
     : "😢 Belum Beruntung. Semangat Lagi!";
@@ -255,12 +249,32 @@ function bukaScratchCard(menang) {
   function scratch(e) {
     if (!isDrawing) return;
     const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX || e.touches[0].clientX) - rect.left;
-    const y = (e.clientY || e.touches[0].clientY) - rect.top;
+    const x = (e.clientX || e.touches?.[0]?.clientX) - rect.left;
+    const y = (e.clientY || e.touches?.[0]?.clientY) - rect.top;
 
     ctx.beginPath();
     ctx.arc(x, y, 20, 0, Math.PI * 2);
     ctx.fill();
+
+    checkScratchProgress();
+  }
+
+  function checkScratchProgress() {
+    const imageData = ctx.getImageData(0, 0, width, height);
+    let scratched = 0;
+    for (let i = 0; i < imageData.data.length; i += 4) {
+      if (imageData.data[i + 3] < 128) { // pixel transparan
+        scratched++;
+      }
+    }
+    const scratchedPercent = scratched / (width * height) * 100;
+    
+    if (scratchedPercent > 50) {
+      setTimeout(() => {
+        container.classList.add('show-result');
+        closeBtn.style.display = 'block';
+      }, 500);
+    }
   }
 
   canvas.addEventListener('mousedown', () => isDrawing = true);
@@ -275,14 +289,11 @@ function bukaScratchCard(menang) {
     if (menang) {
       winSound?.play();
       container.classList.add('scratch-flash-win');
-
-      // 🎊 Confetti Animation
       confetti({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 }
       });
-
     } else {
       loseSound?.play();
     }
@@ -290,8 +301,12 @@ function bukaScratchCard(menang) {
 
   closeBtn.onclick = () => {
     container.style.display = 'none';
+    closeBtn.style.display = 'none';
   };
+
+  closeBtn.style.display = 'none'; // sembunyikan tombol dulu
 }
+
 
 // === 6. FORM RESERVASI ===
 document.getElementById("formReservasi").addEventListener("submit", async function (e) {
@@ -343,28 +358,16 @@ document.getElementById("formReservasi").addEventListener("submit", async functi
 function tampilkanReservasiSudahSubmit() {
   const formReservasi = document.getElementById("formReservasi");
   const reservasiStatus = document.getElementById("statusReservasiMsg");
+  const reservasiThanks = document.getElementById("reservasiThanks");
 
-  if (formReservasi && reservasiStatus) {
-    reservasiStatus.innerHTML = `
-      <div class="reservasi-sudah-submit">
-        <img src="https://undangan-bdg.vercel.app/Asset/thank-you.png" alt="Reservasi Sukses" style="width: 140px; margin-bottom: 1rem;">
-        <p>🎉 Terima kasih, konfirmasi kehadiran Anda telah dicatat.</p>
-      </div>
-    `;
-    reservasiStatus.classList.add("success");
+  if (formReservasi && reservasiThanks) {
+    formReservasi.style.display = "none"; // Hide form
+    reservasiThanks.style.display = "block"; // Show thank you
   }
 
-  const submitBtn = formReservasi.querySelector("button[type='submit']");
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.style.opacity = "0.6";
-    submitBtn.style.cursor = "not-allowed";
+  if (reservasiStatus) {
+    reservasiStatus.style.display = "none"; // hide status msg
   }
-
-  const inputNama = document.getElementById("namaReservasi");
-  const selectStatus = document.getElementById("statusReservasi");
-  if (inputNama) inputNama.disabled = true;
-  if (selectStatus) selectStatus.disabled = true;
 }
 
 
@@ -434,14 +437,22 @@ function renderUcapan(data, totalUcapan = 0) {
       const bubbleClass = isHead ? "head-ucapan" : isAdmin ? "reply-admin" : "reply-user";
 
       const bubble = document.createElement("div");
-      bubble.className = `bubble ${bubbleClass}`;
-      bubble.innerHTML = `
-        <strong>${msg.nama}</strong>
-        <div>${msg.ucapan}</div>
-        <div class="ucapan-time">
-          ${msg.timestamp ? formatWaktuIndo(msg.timestamp) : '<em>Waktu tidak diketahui</em>'}
-        </div>
-      `;
+bubble.className = `bubble ${bubbleClass}`;
+
+let badgeWinner = "";
+if (isHead && (msg.isWinner === true || msg.isWinner === "TRUE")) {
+  badgeWinner = `<img src="https://undangan-bdg.vercel.app/Asset/win.png" alt="Pemenang" class="badge-winner">`;
+}
+
+bubble.innerHTML = `
+  <div style="display:flex; align-items:center; gap:0.5em;">
+    <strong>${msg.nama}</strong> ${badgeWinner}
+  </div>
+  <div>${msg.ucapan}</div>
+  <div class="ucapan-time">
+    ${msg.timestamp ? formatWaktuIndo(msg.timestamp) : '<em>Waktu tidak diketahui</em>'}
+  </div>
+`;
       wrapper.appendChild(bubble);
 
       if (isHead) {
@@ -528,9 +539,12 @@ function renderLikes(ucapanId, likeList) {
   likeContainer.innerHTML = `
   <div class="like-wrapper">
     <button class="like-btn ${likedByUser ? 'liked' : ''}" data-id="${ucapanId}">
-      ❤️ ${likeCount}
+      <img src="https://undangan-bdg.vercel.app/Asset/love.png" alt="Like" class="like-icon">
+      <span class="like-count">${likeCount}</span>
     </button>
-    <div class="like-tooltip">${likeList.map(l => `👤 ${l.nama}`).join('<br>')}</div>
+    <div class="like-tooltip">
+  ${likeList.map(l => `<img src="https://undangan-bdg.vercel.app/Asset/rating.png" alt="User" class="user-icon"> ${l.nama}`).join('<br>')}
+</div>
   </div>
 `;
   likeContainer.querySelector("button").onclick = () => toggleLike(ucapanId, likedByUser);

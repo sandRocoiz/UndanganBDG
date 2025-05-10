@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="responsive.css">
   <script defer src="script.js"></script>
+
   
   
 
@@ -46,7 +47,7 @@
   <h1 style="font-family:'Great Vibes', cursive; font-size: 2em;">Devi & Sandro</h1>
   <p class="handwrite-effect">Special Invitation to</p>
   <p>Tanpa mengurangi rasa hormat, kami mengundang Bapak/Ibu/Saudara/i untuk hadir di acara pernikahan kami</p>
-  <button onclick="openInvitation()">🎉 Open Invitationn</button>
+  <button onclick="openInvitation()">🎉 Open Invitation</button>
 </div>
 
 <div id="mainContent" class="main-content">
@@ -62,12 +63,14 @@
   </div>
 </section>
 
-<div id="ucapanTutupOverlay" class="ucapan-tutup-overlay" style="display: none;">
+<div id="ucapanTutupOverlay" class="ucapan-tutup-overlay" style="display: none;" role="dialog" aria-modal="true">
+  <img src="https://undangan-bdg.vercel.app/Asset/closed.png" alt="Acara Telah Selesai">
   <div class="ucapan-tutup-box">
     <h2>⏳ Ucapan Telah Ditutup</h2>
     <p>Terima kasih atas doa dan ucapannya 💌</p>
   </div>
 </div>
+
 
 
 
@@ -200,6 +203,11 @@
   <p id="statusReservasiMsg" class="status-msg" style="text-align:center; margin-top:10px;"></p>
 </form>
 
+<div id="reservasiThanks" class="thanks-message" style="display:none; text-align:center; margin-top:1em;">
+  <img src="https://undangan-bdg.vercel.app/Asset/thank-you.png" alt="Terima kasih" style="width:140px; margin-bottom:1em;">
+  <p>🎉 Terima kasih, kehadiran Anda telah tercatat.</p>
+</div>
+
 
 <div id="ucapanLoading" class="shimmer-wrapper" style="display: none;">
   <div class="shimmer-card"></div>
@@ -218,6 +226,12 @@
   <button type="submit" class="btn-kirim">Kirim Ucapan</button>
   <p id="ucapanStatusMsg" class="status-msg" style="text-align:center; margin-top:10px;"></p>
 </form>
+
+<div id="ucapanThanks" class="thanks-message" style="display:none; text-align:center; margin-top:1em;">
+  <img src="https://undangan-bdg.vercel.app/Asset/thank-you.png" alt="Terima kasih" style="width:140px; margin-bottom:1em;">
+  <p>🎉 Terima kasih atas ucapan dan doanya!</p>
+</div>
+
 
 
 <div id="userIdDisplay" style="text-align: center; margin-top: 10px; font-size: 0.9em; color: #444;">
@@ -251,7 +265,7 @@
     <div id="scratchResult" class="scratch-result">🎁 Kamu Menang Souvenir Special! 🎁</div>
   </div>
   <canvas id="scratchCanvas"></canvas>
-  <button id="closeScratchBtn" class="close-scratch">Tutup</button>
+  <button id="closeScratchBtn" style="display:none; margin-top: 20px;">Tutup</button>
 </div>
 
 <section id="gift-section">
