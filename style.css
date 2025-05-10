@@ -1558,7 +1558,14 @@ body.loading-filter {
   text-align: center;
   font-size: 0.95rem;
   font-weight: 500;
-  color: #555;
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.status-msg.show {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .status-msg.success {

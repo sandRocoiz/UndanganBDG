@@ -73,8 +73,8 @@ function startCountdown() {
 
 // === 4. UCAPAN (SUBMIT - AMBIL - RENDER - LIKE) ===
 function ambilUcapan() {
-  const loading = document.getElementById("ucapanLoading");
-  const daftar = document.getElementById("daftarUcapan");
+  const loading = document.getElementById("ucapanLoading") || { style: {} };
+  const daftar = document.getElementById("daftarUcapan") || { style: {} };
   const filterAktif = document.getElementById("filterByUser")?.checked;
   const url = new URL(endpoint);
 
@@ -278,7 +278,7 @@ document.getElementById("formReservasi").addEventListener("submit", async functi
   const nama = document.getElementById("namaReservasi").value.trim();
   const status = document.getElementById("statusReservasi").value;
   const statusMsg = document.getElementById("statusReservasiMsg");
-  <p id="ucapanStatusMsg" class="status-msg"></p>
+  
   const userId = getUserId();
 
   if (!nama || !status) {
