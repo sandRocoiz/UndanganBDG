@@ -149,6 +149,13 @@
     background-position: center center;
     background-size: cover;
   }
+  
+   #countdown-section h1, .judul-wedding {
+    font-size: 1.5em;
+  }
+  .form-doa, #formReservasi {
+    padding: 1.5em;
+  }
 }
 
 

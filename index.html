@@ -188,25 +188,34 @@
 
 <div class="rsvp-heading">
   <h2>RSVP</h2>
-  <p class="handwrite-effect">Diharapkan kepada para tamu untuk mengisi form kehadiran dibawah ini</p>
+  <p class="handwrite-effect">
+    Yuk, isi kehadiran kamu di bawah ini.
+  </p>
 </div>
 
 <form id="formReservasi" class="form-doa">
   <input type="text" id="namaReservasi" placeholder="Tulis Nama Anda" required />
+  
   <select id="statusReservasi" required>
     <option value="" disabled selected>Konfirmasi Kehadiran Anda</option>
     <option value="datang">Datang</option>
     <option value="tidak">Tidak Datang</option>
     <option value="ragu-ragu">Masih Ragu</option>
   </select>
-  <button type="submit">Konfirmasi</button>
-  <p id="statusReservasiMsg" class="status-msg" style="text-align:center; margin-top:10px;"></p>
+  
+  <button type="submit" class="btn-konfirmasi">Konfirmasi</button>
+  
+  <p id="statusReservasiMsg" class="status-msg"></p>
 </form>
 
 <div id="reservasiThanks" class="thanks-message" style="display:none;">
-  <img src="https://undangan-bdg.vercel.app/Asset/thank-you.png" alt="Terima kasih" class="floating-animate">
-  <p>🎉 Terima kasih, konfirmasi kehadiran Anda telah tercatat.</p>
+  <img src="https://undangan-bdg.vercel.app/Asset/thank-you.png" alt="Terima kasih" class="thank-you-img floating-animate">
+  
+  <p class="thanks-wording">
+    🎉 Terima kasih, konfirmasi kehadiran Anda telah tercatat.
+  </p>
 </div>
+
 
 
 
@@ -221,45 +230,37 @@
     <span class="doa-title-main">Ucapan &</span>
     <span class="doa-title-sub">Doa</span>
   </h2>
-<form id="formUcapan" onsubmit="submitUcapan(event)" class="form-doa">
-  <input type="text" name="nama" id="nama" placeholder="Tulis namamu di sini..." class="input-nama" required>
-  <textarea name="ucapan" placeholder="Tulis ucapan dan doa untuk Devi & Sandro..." class="input-ucapan" required></textarea>
-  <button type="submit" class="btn-kirim">Kirim Ucapan</button>
-  <p id="ucapanStatusMsg" class="status-msg" style="text-align:center; margin-top:10px;"></p>
-</form>
 
-<div id="ucapanThanks" class="thanks-message" style="display:none;">
-  <img src="https://undangan-bdg.vercel.app/Asset/thank-you.png" alt="Terima kasih" class="floating-animate">
-  <p>🎉 Terima kasih atas ucapan dan doanya!</p>
-</div>
+  <form id="formUcapan" onsubmit="submitUcapan(event)" class="form-doa">
+    <input type="text" name="nama" id="nama" placeholder="Tulis namamu di sini..." class="input-nama" required>
+    <textarea name="ucapan" placeholder="Tulis ucapan dan doa untuk Devi & Sandro..." class="input-ucapan" required></textarea>
+    <button type="submit" class="btn-kirim">Kirim Ucapan</button>
+    <p id="ucapanStatusMsg" class="status-msg"></p>
+  </form>
 
+  <div id="ucapanThanks" class="thanks-message" style="display: none;">
+    <img src="https://undangan-bdg.vercel.app/Asset/thank-you.png" alt="Terima kasih" class="floating-animate">
+    <p class="thanks-wording">🎉 Terima kasih atas ucapan dan doanya!</p>
+  </div>
 
+  <div id="userIdDisplay">
+    ID Anda: <span id="userIdValue"></span>
+  </div>
 
+  <div class="filter-checkbox">
+    <label><input type="checkbox" id="filterByUser"> Tampilkan hanya ucapan saya</label>
+  </div>
 
+  <div id="daftarUcapan"></div>
 
-<div id="userIdDisplay" style="text-align: center; margin-top: 10px; font-size: 0.9em; color: #444;">
-  ID Anda: <span id="userIdValue"></span>
-</div>
+  <div id="noUcapanMsg" class="no-ucapan-message" style="display: none;">
+    <p>💬 Belum ada ucapan yang masuk.</p>
+  </div>
 
+  <div id="pageInfo"></div>
+  <div id="pagination"></div>
+</section>
 
-<div style="text-align:center; margin-bottom:1em;">
-  <label>
-    <input type="checkbox" id="filterByUser"> Tampilkan hanya ucapan saya
-  </label>
-</div>
-
-
-
-    
-	<div id="daftarUcapan"></div>
-	<div id="noUcapanMsg" class="no-ucapan-message" style="display: none;">
-  <p>💬 Belum ada ucapan yang masuk.</p>
-</div>
-	<div id="pageInfo" style="text-align:center; font-size: 0.9em; margin-bottom: 0.5em;"></div>
-	<div id="pagination" style="text-align:center; margin-top:2em;"></div>
-
-
-  </section>
   
 
 

@@ -1094,8 +1094,8 @@ body.loading-filter {
 
 #rsvp-section {
   padding: 5em 1em;
-  background: linear-gradient(to bottom, #0f0f0f, #1c1c1c);
-  color: #fff;
+  background-color: #FAF3EA; /* <- cocok dengan warna global */
+  color: #5D4037;
   text-align: center;
 }
 
@@ -1103,10 +1103,9 @@ body.loading-filter {
   max-width: 600px;
   margin: auto;
   padding: 2em;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid #333;
+  background: rgba(255, 255, 255, 0.7);
   border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.05);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
 }
 
 .rsvp-title {
@@ -1337,14 +1336,21 @@ body.loading-filter {
 
 .rsvp-heading {
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 2rem;
 }
 
 .rsvp-heading h2 {
   font-family: 'Playfair Display', serif;
   font-size: 2rem;
-  color: #5a4231; /* warna rustic elegan */
-  margin-bottom: 10px;
+  margin-bottom: 0.5rem;
+  color: #5D4037;
+}
+
+.rsvp-heading .handwrite-effect {
+  font-family: 'Great Vibes', cursive;
+  font-size: 1rem;
+  color: #8D6E63;
+  margin-top: 0;
 }
 
 .rsvp-heading p {
@@ -1361,6 +1367,62 @@ body.loading-filter {
   border-right: 2px solid #fff;
   animation: typing 3.5s steps(40, end), blink 0.75s step-end infinite;
   color: #fff;
+}
+
+/* Bagian Form */
+#formReservasi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+#formReservasi input,
+#formReservasi select {
+  width: 100%;
+  max-width: 320px;
+  padding: 0.8rem;
+  font-size: 1rem;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+#formReservasi button.btn-konfirmasi {
+  padding: 0.8rem 2.5rem;
+  font-size: 1rem;
+  background-color: #6D4C41;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+#formReservasi .status-msg {
+  font-size: 0.9rem;
+  color: #F44336;
+  text-align: center;
+}
+
+/* Bagian Thanks */
+#reservasiThanks {
+  text-align: center;
+  padding: 3em 1em;
+}
+
+#reservasiThanks .thank-you-img {
+  width: 180px;
+  margin: 0 auto 1.5em auto;
+  display: block;
+  animation: floating 4s ease-in-out infinite;
+}
+
+#reservasiThanks .thanks-wording {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.5rem; /* <= dikecilin, info aja */
+  font-weight: 100; /* <= normal, bukan bold */
+  color: #6D4C41; /* earthy tone */
+  margin-top: 1em;
+  line-height: 1.5;
 }
 
 @keyframes typing {
@@ -1918,6 +1980,46 @@ body.loading-filter {
   font-weight: 600;
 }
 
+
+#ucapanThanks {
+  text-align: center;
+  padding: 3em 1em;
+}
+
+#ucapanThanks .floating-animate {
+  width: 180px;
+  margin: 0 auto 1.5em auto;
+  display: block;
+  animation: floating 4s ease-in-out infinite;
+}
+
+#ucapanThanks .thanks-wording {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.5rem; /* <= KECIL dan rapi */
+  font-weight: 100;
+  color: #6D4C41;
+  margin-top: 1em;
+  line-height: 1.5;
+}
+
+#userIdDisplay {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.9rem;
+  color: #6B4F2B;
+  margin-top: 1.5em;
+  text-align: center;
+}
+
+.filter-checkbox {
+  text-align: center;
+  margin-top: 1em;
+}
+
+.filter-checkbox label {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  color: #5D4037;
+}
 
 
 
