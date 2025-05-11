@@ -1,6 +1,6 @@
 // === 1. KONSTANTA DAN UTILITAS ===
 const endpoint = "https://undangan-bdg.vercel.app/api/proxy";
-const perPage = 2;
+const perPage = 5;
 let currentPage = 1;
 const maxWinners = 10;
 const hadiahKey = "scratchWin";
@@ -488,6 +488,7 @@ function tampilkanReservasiSudahSubmit() {
 
 
 
+
 // === RENDER UCAPAN ===
 function renderUcapan(data, totalUcapan = 0) {
   const daftar = document.getElementById("daftarUcapan");
@@ -522,77 +523,142 @@ function renderUcapan(data, totalUcapan = 0) {
       <p>Belum ada ucapan masuk.<br><em>Yuk beri ucapan pertama! ✨</em></p>
     `;
     daftar.appendChild(emptyDiv);
+
   } else {
-    filteredThreads.forEach(([threadId, messages]) => {
-      const wrapper = document.createElement("div");
-      wrapper.className = "ucapan-thread";
+    if (filterAktif) {
+      // === FILTER AKTIF MODE (WhatsApp bubble)
+      filteredThreads.forEach(([threadId, messages]) => {
+  const wrapper = document.createElement("div");
+  wrapper.className = "ucapan-thread";
 
-      messages
-        .sort((a, b) => new Date(a.timestamp || a.reply_timestamp) - new Date(b.timestamp || b.reply_timestamp))
+  messages
+    .sort((a, b) => new Date(a.timestamp || a.reply_timestamp) - new Date(b.timestamp || b.reply_timestamp))
+    .forEach(msg => {
+      const isHead = msg.is_ucapan === "TRUE" || msg.is_ucapan === true;
+      const isAdmin = msg.nama?.toLowerCase() === "admin";
+      const bubbleClass = isHead ? "head-ucapan" : isAdmin ? "reply-admin" : "reply-user";
+
+      const bubbleWrapper = document.createElement("div");
+      bubbleWrapper.className = `bubble-wrapper ${bubbleClass}`;
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+
+      bubble.innerHTML = `
+        <div style="display:flex; align-items:center; gap:0.5em;">
+          <strong>${msg.nama}</strong>
+        </div>
+        <div>${msg.ucapan}</div>
+        <div class="ucapan-time">
+          ${msg.timestamp ? formatWaktuIndo(msg.timestamp) : '<em>Waktu tidak diketahui</em>'}
+        </div>
+      `;
+
+      bubbleWrapper.appendChild(bubble);
+      wrapper.appendChild(bubbleWrapper);
+    });
+
+  // === Tambahkan form chat reply hanya kalau filter aktif
+  if (filterCheckbox?.checked) {
+    const replyForm = document.createElement("form");
+    replyForm.className = "reply-form";
+
+    replyForm.innerHTML = `
+      <input type="text" placeholder="Ketik balasan..." class="reply-input" />
+      <button type="submit" class="reply-button">➤</button>
+    `;
+
+    replyForm.onsubmit = (e) => {
+      e.preventDefault();
+      const input = replyForm.querySelector(".reply-input");
+      const text = input.value.trim();
+      if (text) {
+        kirimBalasanLanjutan(threadId, text, localStorage.getItem("nama") || "Anonim");
+        input.value = ""; // Reset input setelah kirim
+      }
+    };
+
+    wrapper.appendChild(replyForm);
+  }
+
+  daftar.appendChild(wrapper);
+});
+
+    } else {
+      // === FILTER TIDAK AKTIF MODE (List Card + Like)
+      data
+  .filter(msg => msg.is_ucapan === true || msg.is_ucapan === "TRUE")
+  .sort((a, b) => {
+    const likesA = Array.isArray(a.likes) ? a.likes.length : 0;
+    const likesB = Array.isArray(b.likes) ? b.likes.length : 0;
+    if (likesB !== likesA) {
+      return likesB - likesA;
+    } else {
+      return new Date(a.timestamp) - new Date(b.timestamp);
+    }
+  })
         .forEach(msg => {
-          const isHead = msg.is_ucapan === "TRUE" || msg.is_ucapan === true;
-          const isAdmin = msg.nama?.toLowerCase() === "admin";
-          const bubbleClass = isHead ? "head-ucapan" : isAdmin ? "reply-admin" : "reply-user";
+          const card = document.createElement("div");
+          card.className = "ucapan-card";
 
-          const bubbleWrapper = document.createElement("div");
-          bubbleWrapper.className = `bubble-wrapper ${bubbleClass}`;
-
-          const bubble = document.createElement("div");
-          bubble.className = `bubble`;
-
-          let badgeWinner = "";
-          if (isHead && (msg.isWinner === true || msg.isWinner === "TRUE")) {
-            badgeWinner = `<img src="https://undangan-bdg.vercel.app/Asset/win.png" alt="Pemenang" class="badge-winner">`;
-          }
-
-          bubble.innerHTML = `
-            <div style="display:flex; align-items:center; gap:0.5em;">
-              <strong>${msg.nama}</strong> ${badgeWinner}
-            </div>
-            <div>${msg.ucapan}</div>
-            <div class="ucapan-time">
-              ${msg.timestamp || msg.reply_timestamp ? formatWaktuIndo(msg.timestamp || msg.reply_timestamp) : '<em>Waktu tidak diketahui</em>'}
+          card.innerHTML = `
+            <div style="padding:10px;">
+              <strong>${msg.nama}</strong><br>
+              <div>${msg.ucapan}</div>
+              <div style="margin-top:5px; font-size:0.8em; color:#777;">
+                ${msg.timestamp ? formatWaktuIndo(msg.timestamp) : '<em>Waktu tidak diketahui</em>'}
+              </div>
             </div>
           `;
 
-          bubbleWrapper.appendChild(bubble);
+          // LIKE/UNLIKE tombol di mode List
+          const likeDiv = renderLikes(msg.id, msg.likes || []);
+          card.appendChild(likeDiv);
 
-          wrapper.appendChild(bubbleWrapper);
+          daftar.appendChild(card);
         });
-
-      daftar.appendChild(wrapper);
-    });
-	
-	// Auto-scroll ke bawah setelah render semua ucapan
-setTimeout(() => {
-  const daftar = document.getElementById("daftarUcapan");
-  if (daftar) {
-    daftar.scrollTop = daftar.scrollHeight;
-  }
-}, 300);
-
-if (typeof window.navigator.vibrate === "function") {
-  window.navigator.vibrate(50); // 50ms vibrate
-}
-	
-  }
-
-  const pageInfo = document.getElementById("pageInfo");
-  const paginationContainer = document.getElementById("paginationContainer");
-
-  if (filterAktif) {
-    if (pageInfo) pageInfo.style.display = "none";
-    if (paginationContainer) paginationContainer.style.display = "none";
-  } else {
-    const totalPages = Math.max(1, Math.ceil(totalUcapan / perPage));
-    renderPagination(totalPages);
-    if (pageInfo) {
-      pageInfo.textContent = `Halaman ${currentPage} dari ${totalPages}`;
-      pageInfo.style.display = "block";
     }
-    if (paginationContainer) paginationContainer.style.display = "flex";
+  }
+
+  // Auto-scroll ke bawah setelah render
+  setTimeout(() => {
+    if (daftar) {
+      daftar.scrollTop = daftar.scrollHeight;
+    }
+  }, 300);
+
+  // Vibration ringan setiap load
+  if (typeof window.navigator.vibrate === "function") {
+    window.navigator.vibrate(50);
+  }
+
+  // === Pagination Show/Hide
+  const pageInfo = document.getElementById("pageInfo");
+const paginationContainer = document.getElementById("paginationContainer");
+
+if (filterAktif) {
+  // Kalau filter aktif (mode WhatsApp Bubble), sembunyikan pagination
+  if (pageInfo) pageInfo.style.display = "none";
+  if (paginationContainer) paginationContainer.style.display = "none";
+
+} else {
+  // Kalau filter tidak aktif, hitung total ucapan utama (is_ucapan == true saja)
+  const totalUcapanFiltered = data.filter(msg => msg.is_ucapan === true || msg.is_ucapan === "TRUE").length;
+  const totalPages = Math.max(1, Math.ceil(totalUcapanFiltered / perPage));
+
+  renderPagination(totalPages);
+
+  if (pageInfo) {
+    pageInfo.textContent = `Halaman ${currentPage} dari ${totalPages}`;
+    pageInfo.style.display = "block";
+  }
+  if (paginationContainer) {
+    paginationContainer.style.display = "flex";
   }
 }
+
+}
+
 
 
 

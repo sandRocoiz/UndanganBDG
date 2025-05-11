@@ -696,11 +696,43 @@ body {
 
 
 .reply-form {
+  display: flex;
+  gap: 0.5em;
   margin-top: 1em;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  padding: 1em;
-  border-radius: 8px;
+  background: #f9f9f9;
+  padding: 10px;
+  border-radius: 1em;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.reply-input {
+  flex: 1;
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 1em;
+  font-size: 1rem;
+  outline: none;
+}
+
+.reply-input:focus {
+  border-color: #5e9ed6;
+  box-shadow: 0 0 5px rgba(94,158,214,0.5);
+}
+
+.reply-button {
+  padding: 10px 20px;
+  background-color: #5e9ed6;
+  border: none;
+  border-radius: 1em;
+  color: white;
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.reply-button:hover {
+  background-color: #3c8ac9;
 }
 
 .reply-form textarea {
@@ -1766,13 +1798,13 @@ body.loading-filter {
 }
 
 .thanks-message p {
-  font-size: 1.1em;
+  font-size: 2em;
   color: #6B4F2B;
   margin-top: 1em;
 }
 
 .thanks-message img {
-  max-width: 180px;
+  max-width: 100px;
   animation: fadeIn 1s ease;
 }
 
