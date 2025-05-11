@@ -555,6 +555,12 @@ function renderUcapan(data, totalUcapan = 0) {
 
       const bubble = document.createElement("div");
       bubble.className = "bubble";
+	  
+	  // === ✨ Tambahin ini untuk cek pemenang
+    let badgeWinner = "";
+    if (isHead && (msg.isWinner === true || msg.isWinner === "TRUE")) {
+      badgeWinner = `<img src="https://undangan-bdg.vercel.app/Asset/trophy.png" alt="Pemenang" class="badge-winner">`;
+    }
 
       bubble.innerHTML = `
         <div style="display:flex; align-items:center; gap:0.5em;">

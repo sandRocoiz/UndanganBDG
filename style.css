@@ -2651,6 +2651,18 @@ Hi <strong>NamaUser</strong> 👋
   100% { background-position: 0%;}
 }
 
+.badge-winner {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  margin-left: 6px;
+  animation: popBadge 0.5s ease;
+}
+
+@keyframes popBadge {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
 
 
 html {
