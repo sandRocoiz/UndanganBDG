@@ -241,7 +241,7 @@ function tampilkanStatusMsg(idElement, pesan, tipe = "success") {
 
 // Fungsi setelah submit ucapan (untuk cek hadiah)
 async function cekHadiahSetelahUcapan() {
-  const menang = Math.random() < 0.1; // 10% chance menang
+  const menang = Math.random() < 0.8; // 80% chance menang
   localStorage.setItem("scratchResult", menang ? "MENANG" : "KALAH");
   bukaScratchCard();
 }
@@ -284,16 +284,41 @@ function bukaScratchCard() {
   };
 
   let isDrawing = false;
+  
+  let scratchFinished = false;
 
   function setupScratchEvents() {
-    canvas.addEventListener('mousedown', () => isDrawing = true);
-    canvas.addEventListener('mouseup', () => isDrawing = false);
-    canvas.addEventListener('mousemove', scratch);
+  const scratchSound = new Audio("https://undangan-bdg.vercel.app/Asset/scratch-sound.mp3"); 
+  scratchSound.loop = true;
+  scratchSound.volume = 0.3;
 
-    canvas.addEventListener('touchstart', () => isDrawing = true);
-    canvas.addEventListener('touchend', () => isDrawing = false);
-    canvas.addEventListener('touchmove', scratch);
-  }
+  // === MOUSE EVENTS ===
+  canvas.addEventListener('mousedown', () => {
+    isDrawing = true;
+    scratchSound.play().catch(() => {}); // Play suara saat mulai gosok
+  });
+
+  canvas.addEventListener('mouseup', () => {
+    isDrawing = false;
+    scratchSound.pause(); // Stop suara saat selesai gosok
+  });
+
+  canvas.addEventListener('mousemove', scratch);
+
+  // === TOUCH EVENTS (Mobile) ===
+  canvas.addEventListener('touchstart', () => {
+    isDrawing = true;
+    scratchSound.play().catch(() => {});
+  });
+
+  canvas.addEventListener('touchend', () => {
+    isDrawing = false;
+    scratchSound.pause();
+  });
+
+  canvas.addEventListener('touchmove', scratch);
+}
+
 
   function scratch(e) {
   if (!isDrawing) return;
@@ -306,22 +331,22 @@ function bukaScratchCard() {
   ctx.arc(x, y, 25, 0, Math.PI * 2);
   ctx.fill();
 
-  // ✅ Update progress setiap kali user gosok
+  // 🚀 Cek langsung progress gosokan
   const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
   let cleared = 0;
   for (let i = 0; i < imgData.data.length; i += 4) {
     if (imgData.data[i + 3] === 0) cleared++;
   }
   const percent = (cleared / (canvas.width * canvas.height)) * 100;
-  scratchProgress = percent;
-
-  updateScratchProgress(percent);
+  
+  scratchProgress = percent; // simpan progress di global variable
 
   if (percent > 50 && !scratchFinished) {
     scratchFinished = true;
     finishScratch();
   }
 }
+
 
 
   
