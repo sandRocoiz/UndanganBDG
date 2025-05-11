@@ -38,9 +38,21 @@ function openInvitation() {
   document.getElementById('splash').style.display = 'none';
   document.getElementById('mainContent').style.display = 'block';
 
+  // === AUDIO PLAY BGM with Fade-in
   const bgm = document.getElementById('bgm');
-  if (bgm && typeof bgm.play === 'function') {
-    bgm.play().catch(err => console.warn("Autoplay gagal:", err));
+  if (bgm && typeof bgm.play === "function") {
+    bgm.volume = 0;
+    bgm.play().then(() => {
+      let vol = 0;
+      const fadeIn = setInterval(() => {
+        if (vol < 0.5) {
+          vol += 0.05;
+          bgm.volume = Math.min(vol, 0.5);
+        } else {
+          clearInterval(fadeIn);
+        }
+      }, 200);
+    }).catch(err => console.warn("Autoplay gagal:", err));
   }
 
   startCountdown();
@@ -881,6 +893,7 @@ function animateLetterDropById(id) {
 
 
 
+
 // === INISIALISASI FINAL PATCH ===
 document.addEventListener("DOMContentLoaded", () => {
   const userId = getUserId();
@@ -937,7 +950,23 @@ document.addEventListener("DOMContentLoaded", () => {
   }, { threshold: 0.1 });
 
   scrollElements.forEach((el) => observer.observe(el));
+
+  // 🚀 Tambahan bagian random pantun penutup (di dalam DOMContentLoaded yang sama)
+  const pantunList = [
+    `Mentari pagi bersinar cerah,<br>Membawa hangat di tiap langkah.<br>Mari bersama berbagi suka,<br>Di hari bahagia kami berdua.`,
+    `Angin berbisik di antara dedaunan,<br>Membawa kisah tentang kebahagiaan.<br>Hadirlah, teman dan saudara,<br>Menyemai doa di hari istimewa.`,
+    `Burung terbang mengepakkan sayap,<br>Membawa harapan tanpa lelah.<br>Mari kita kumpul penuh canda,<br>Mengukir memori sepanjang masa.`,
+    `Langit jingga di pagi cerah,<br>Menyapa kasih dengan ramah.<br>Ayo bergabung di pesta cinta,<br>Bersama doa dan tawa bahagia.`,
+    `Daun gugur menari di angin,<br>Membisikkan cerita tentang cinta.<br>Datanglah kawan, mari bersanding,<br>Membawa doa penuh makna.`
+  ];
+
+  const pantunContainer = document.getElementById("pantunContainer");
+  if (pantunContainer) {
+    const randomPantun = pantunList[Math.floor(Math.random() * pantunList.length)];
+    pantunContainer.innerHTML = randomPantun;
+  }
 });
+
 
 function tampilkanReservasiSudahSubmit() {
   const formReservasi = document.getElementById("formReservasi");
