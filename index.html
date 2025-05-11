@@ -85,18 +85,22 @@
 
 
 
-<section class="parallax-wrapper ayat-section">
-  <div class="parallax-bg" data-rellax-speed="-5" style="background-image: url('https://undangan-bdg.vercel.app/Asset/daun.jpg');"></div>
-  
-  <div class="parallax-content scroll-reveal ayat-container">
-    <h2>بَارَكَ اللَّهُ لَك، وَبَارَكَ عَلَيْك، وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ</h2>
-    <p class="latin">Bārakallāhu laka, wa bāraka ‘alaika, wa jama‘a bainakumā fī khair.</p>
-    <p class="translation">
-      Semoga Allah memberkahimu, memberkahi atasmu, dan mempersatukan kalian berdua dalam kebaikan.
-      <br><em>(HR. Abu Dawud, At-Tirmidzi)</em>
+<section id="ayat-section" class="ayat-deluxe">
+  <div class="ayat-overlay"></div>
+  <div class="ayat-container scroll-reveal">
+    <h2 class="ayat-arabic">
+      بَارَكَ اللهُ لَكَ وَبَارَكَ عَلَيْكَ وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ
+    </h2>
+    <p class="ayat-latin">
+      Bārakallāhu laka, wa bāraka ‘alaika, wa jama‘a bainakumā fī khair.
+    </p>
+    <p class="ayat-terjemahan">
+      Semoga Allah memberkahimu, memberkahi atasmu, dan mempersatukan kalian berdua dalam kebaikan.<br>
+      <em>(HR. Abu Dawud, At-Tirmidzi)</em>
     </p>
   </div>
 </section>
+
 
 
 
@@ -275,13 +279,12 @@
     <p class="thanks-wording">🎉 Terima kasih atas ucapan dan doanya!</p>
   </div>
 
-  <div id="userIdDisplay">
-    ID Anda: <span id="userIdValue"></span>
-  </div>
+  <div id="userIdValue" class="user-frame"></div>
 
-  <div class="filter-checkbox">
-    <label><input type="checkbox" id="filterByUser"> Tampilkan hanya ucapan saya</label>
-  </div>
+  <div class="filter-wrapper">
+  <input type="checkbox" id="filterByUser" />
+  <label id="filterByUserLabel" for="filterByUser">Sorot ucapan saya</label>
+</div>
 
   <div id="daftarUcapan"></div>
 

@@ -246,16 +246,44 @@ body {
   line-height: 2em;
 }
 
+.ayat-box h2 {
+  font-size: 1.6em;
+  margin-bottom: 15px;
+  color: #2e2e2e;
+}
+
 .latin {
   font-style: italic;
-  font-size: 1em;
-  color: #444;
-  margin-bottom: 1em;
+  color: #5b5b5b;
+  margin-bottom: 15px;
 }
 
 .translation {
   font-size: 1em;
   color: #555;
+}
+
+.ayat-background {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: url('https://undangan-bdg.vercel.app/Asset/daun.jpg') center center / cover no-repeat;
+  z-index: 1;
+  transform: translateY(30%);
+  opacity: 0.8;
+}
+
+.ayat-section::after {
+  content: "";
+  position: absolute;
+  bottom: 180px;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background: url('https://undangan-bdg.vercel.app/Asset/white-wave.png') top center / cover no-repeat;
+  z-index: 2;
 }
 
 #couple-section {
@@ -483,12 +511,12 @@ body {
   margin: 0 !important;
   width: 100vw;
   height: 30vh;
-  background: url('https://i.imgur.com/40hYGRP.jpeg') center center / cover no-repeat;
+  background: url('https://undangan-bdg.vercel.app/Asset/bg-footer.jpg') center center / cover no-repeat;
   display: flex;
   justify-content: center;
   align-items: center;
   color: white;
-  background-position: center 65%;
+  background-position: center 120%;
 }
 
 .weddingdate-title {
@@ -1455,8 +1483,25 @@ body.loading-filter {
 }
 
 .ayat-section {
-  height: 60vh;
+  position: relative;
+  background: #f8f8f8;
+  padding: 80px 20px;
+  overflow: hidden;
+}
+
+.ayat-wrapper {
+  position: relative;
+  z-index: 2;
   text-align: center;
+}
+
+.ayat-box {
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+  padding: 30px 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(6px);
+  margin-bottom: 50px; /* 🧹 spacing sebelum daun masuk */
 }
 
 .ayat-section .parallax-content {
@@ -2487,6 +2532,125 @@ body.loading-filter {
   cursor: grab;
   scroll-behavior: smooth; /* Tambahan kecil biar auto scroll wheel smooth */
 }
+
+.ayat-deluxe {
+  position: relative;
+  background: url('https://undangan-bdg.vercel.app/Asset/daun.jpg') center/cover no-repeat;
+  padding: 80px 20px;
+  text-align: center;
+  color: #fff;
+  overflow: hidden;
+}
+
+.ayat-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1;
+}
+
+.ayat-container {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+  margin: 0 auto;
+  animation: fadeInUp 1.5s ease-out forwards;
+}
+
+.ayat-arabic {
+  font-family: 'Scheherazade', serif;
+  font-size: 1.8em;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.ayat-latin {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 1.2em;
+  margin-bottom: 15px;
+  color: #d4d4d4;
+}
+
+.ayat-terjemahan {
+  font-family: 'Playfair Display', serif;
+  font-size: 1em;
+  color: #e0e0e0;
+  line-height: 1.6;
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+Hi <strong>NamaUser</strong> 👋
+
+.user-frame {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid #e0e0e0;
+  padding: 14px 18px;
+  margin: 12px auto 20px;
+  border-radius: 14px;
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 1em;
+  color: #5b5b5b;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+  max-width: 300px;
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: fadeInUser 1s ease forwards;
+}
+.user-frame strong {
+  color: #54382d;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+.user-frame small {
+  font-size: 0.9em;
+  color: #999;
+}
+
+@keyframes fadeInUser {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#filterByUserLabel {
+  font-size: 1em;
+  color: #6b4d36;
+  transition: all 0.4s ease;
+  display: inline-block;
+  cursor: pointer;
+  background: linear-gradient(90deg, #bfa38b, #e0d1c3, #bfa38b);
+  background-size: 200%;
+  background-position: 0%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+#filterByUser:checked + #filterByUserLabel,
+#filterByUserLabel:hover {
+  font-weight: 600;
+  animation: shimmerEffect 2s infinite;
+}
+
+@keyframes shimmerEffect {
+  0% { background-position: 0%;}
+  50% { background-position: 100%;}
+  100% { background-position: 0%;}
+}
+
 
 
 html {

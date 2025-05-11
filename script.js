@@ -898,7 +898,15 @@ function animateLetterDropById(id) {
 document.addEventListener("DOMContentLoaded", () => {
   const userId = getUserId();
   const display = document.getElementById("userIdValue");
-  if (display) display.textContent = userId;
+  const namaUser = localStorage.getItem("nama");
+  if (display) {
+  if (namaUser) {
+    display.innerHTML = `Hi, <strong>${namaUser}</strong> 👋`;
+  } else {
+    const userId = getUserId();
+    display.innerHTML = `Hi, <small>${userId}</small>`;
+  }
+}
 
   // Prefill nama dari localStorage
   const namaPrefill = localStorage.getItem("nama");
