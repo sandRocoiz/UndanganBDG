@@ -465,10 +465,12 @@ function renderUcapan(data, totalUcapan = 0) {
   });
 
   const filteredThreads = Object.entries(threads).filter(([_, messages]) => {
-    const head = messages.find(m => m.is_ucapan === "TRUE" || m.is_ucapan === true);
-    return head && (!filterAktif || head.userId === userId);
+  const head = messages.find(m =>
+    (m.is_ucapan === "TRUE" || m.is_ucapan === true) || (m.nama && m.nama.toLowerCase() === "admin")
+  );
+  return head && (!filterAktif || head.userId === userId);
   });
-
+  
   daftar.innerHTML = "";
   daftar.classList.remove("show");
   void daftar.offsetWidth;
@@ -494,7 +496,12 @@ function renderUcapan(data, totalUcapan = 0) {
       );
 
       messages
-      .filter(msg => msg.is_ucapan === "TRUE" || msg.is_ucapan === true || msg.nama.toLowerCase() === "admin")
+      messages
+  .filter(msg => 
+    (msg.is_ucapan === "TRUE" || msg.is_ucapan === true) || 
+    (msg.is_ucapan === false && msg.nama && msg.nama.toLowerCase() === "admin")
+  )
+
       .sort((a, b) => new Date(a.timestamp || a.reply_timestamp) - new Date(b.timestamp || b.reply_timestamp))
       .forEach(msg => {
         const isHead = msg.is_ucapan === "TRUE" || msg.is_ucapan === true;

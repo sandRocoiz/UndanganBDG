@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  const baseUrl = 'https://script.google.com/macros/s/AKfycby7srw_3_m0VFOAqmvg-lxT1lvSWjwuvsTe2JN9zS1u-e75BQXm2uns8S0PI1Rt07HFCQ/exec';
+  const baseUrl = 'https://script.google.com/macros/s/AKfycbzktSUi2Enao5GdqFCdhXLurkvWq365EWhfhYI3aAoZ0XxfWTqcrHXDfsmZZpJ_zR-2GQ/exec';
 
   // Handle preflight
   if (req.method === 'OPTIONS') {
@@ -29,21 +29,23 @@ export default async function handler(req, res) {
     fetchOptions.body = body;
   }
 
-  try {
-    const response = await fetch(url.toString(), fetchOptions);
-    const contentType = response.headers.get('content-type');
+try {
+  const response = await fetch(url.toString(), fetchOptions);
+  const contentType = response.headers.get('content-type') || '';
+
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  if (contentType.includes('application/json')) {
+    const json = await response.json();
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).json(json);
+  } else {
     const text = await response.text();
-
-    res.setHeader('Access-Control-Allow-Origin', '*');
-
-    if (contentType && contentType.includes('application/json')) {
-      res.setHeader('Content-Type', 'application/json');
-    } else {
-      res.setHeader('Content-Type', 'text/plain');
-    }
-
+    res.setHeader('Content-Type', 'text/plain');
     res.status(200).send(text);
-  } catch (err) {
-    res.status(500).json({ error: 'Proxy failed', message: err.message });
   }
+} catch (err) {
+  res.status(500).json({ error: 'Proxy failed', message: err.message });
+}
+
 }
