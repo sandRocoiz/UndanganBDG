@@ -936,8 +936,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }, 300);
 
   const rellax = new Rellax('.parallax-bg', {
-    speed: window.innerWidth > 768 ? -4 : -1
-  });
+  speed: window.innerWidth > 768 ? -4 : -2, // tablet lebih ringan
+  center: true,
+  round: true,
+  vertical: true,
+  horizontal: false
+});
 
   const scrollElements = document.querySelectorAll(".scroll-reveal");
   const observer = new IntersectionObserver((entries) => {
@@ -1026,27 +1030,34 @@ function tampilkanUcapanSudahSubmit() {
 
 
 
-// === GALERI FOTO INTERAKTIF ===
+// === GALERI FOTO INTERAKTIF DELUXE ===
 const track = document.getElementById('carouselTrack');
 let isDown = false;
 let startX;
 let scrollLeft;
+let velocity = 0;
+let momentumID = null;
 
+// === Handle Drag Mouse
 track?.addEventListener('mousedown', (e) => {
   isDown = true;
   track.classList.add('active');
   startX = e.pageX - track.offsetLeft;
   scrollLeft = track.scrollLeft;
+  velocity = 0;
+  cancelMomentumTracking();
 });
 
 track?.addEventListener('mouseleave', () => {
   isDown = false;
   track.classList.remove('active');
+  startMomentum();
 });
 
 track?.addEventListener('mouseup', () => {
   isDown = false;
   track.classList.remove('active');
+  startMomentum();
 });
 
 track?.addEventListener('mousemove', (e) => {
@@ -1054,9 +1065,43 @@ track?.addEventListener('mousemove', (e) => {
   e.preventDefault();
   const x = e.pageX - track.offsetLeft;
   const walk = (x - startX) * 1.5;
+  velocity = walk - (track.scrollLeft - scrollLeft);
   track.scrollLeft = scrollLeft - walk;
 });
 
+// === Tambahan Support Scroll Mouse (Wheel)
+track?.addEventListener('wheel', (e) => {
+  if (e.deltaY !== 0) {
+    e.preventDefault();
+    track.scrollLeft += e.deltaY * 1.2;
+  }
+});
+
+// === Momentum Scroll After Drag Release
+function startMomentum() {
+  cancelMomentumTracking();
+  momentumID = requestAnimationFrame(momentumLoop);
+}
+
+function cancelMomentumTracking() {
+  if (momentumID) {
+    cancelAnimationFrame(momentumID);
+    momentumID = null;
+  }
+}
+
+function momentumLoop() {
+  track.scrollLeft -= velocity;
+  velocity *= 0.95; // Deceleration
+
+  if (Math.abs(velocity) > 0.5) {
+    momentumID = requestAnimationFrame(momentumLoop);
+  } else {
+    cancelMomentumTracking();
+  }
+}
+
+// === Handle Slider Range Input kalau ada
 document.querySelectorAll(".slider").forEach(slider => {
   const wrapper = slider.previousElementSibling;
   slider.addEventListener("input", function () {
@@ -1064,6 +1109,7 @@ document.querySelectorAll(".slider").forEach(slider => {
   });
 });
 
+// === Background Music Handling
 const bgm = document.getElementById("bgm");
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
@@ -1074,6 +1120,7 @@ document.addEventListener("visibilitychange", () => {
     }
   }
 });
+
 
 
 

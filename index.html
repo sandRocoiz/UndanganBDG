@@ -9,6 +9,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/rellax/1.12.1/rellax.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="responsive.css">
@@ -53,7 +55,7 @@
 <div id="mainContent" class="main-content">
 
 <section class="parallax-wrapper" id="countdown-section">
-  <div class="parallax-bg" data-rellax-speed="-4"></div>
+  <div class="parallax-bg" data-rellax-speed="-4" loading="lazy"></div>
   <div class="parallax-content scroll-reveal">
     <h2 class="judul-wedding">The Wedding of</h2>
     <h1 id="weddingNames" class="letter-drop">Devi & Sandro</h1>
@@ -85,13 +87,14 @@
 
 <section class="parallax-wrapper ayat-section">
   <div class="parallax-bg" data-rellax-speed="-5" style="background-image: url('https://undangan-bdg.vercel.app/Asset/daun.jpg');"></div>
-  <div class="parallax-content scroll-reveal">
-  <h2>بَارَكَ اللَّهُ لَك، وَبَارَكَ عَلَيْك، وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ</h2>
-<p class="latin">Bārakallāhu laka, wa bāraka ‘alaika, wa jama‘a bainakumā fī khair.</p>
-<p class="translation">
-  Semoga Allah memberkahimu, memberkahi atasmu, dan mempersatukan kalian berdua dalam kebaikan.
-  <br><em>(HR. Abu Dawud, At-Tirmidzi)</em>
-</p>
+  
+  <div class="parallax-content scroll-reveal ayat-container">
+    <h2>بَارَكَ اللَّهُ لَك، وَبَارَكَ عَلَيْك، وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ</h2>
+    <p class="latin">Bārakallāhu laka, wa bāraka ‘alaika, wa jama‘a bainakumā fī khair.</p>
+    <p class="translation">
+      Semoga Allah memberkahimu, memberkahi atasmu, dan mempersatukan kalian berdua dalam kebaikan.
+      <br><em>(HR. Abu Dawud, At-Tirmidzi)</em>
+    </p>
   </div>
 </section>
 
@@ -193,15 +196,17 @@
     <span class="gift-title-main">Wedding</span>
     <span class="gift-title-sub">Gift</span>
   </h2>
-  <p>Tanpa mengurangi rasa hormat, kehadiran Anda sudah menjadi anugerah terindah bagi kami.<br>
-  Namun jika berkenan berbagi kebahagiaan dari jauh, dapat melalui:</p>
-  <ul>
-    <li>
-  <a href="https://saweria.co/CZhappy" target="_blank" class="btn-saweria">
-    💝 Beri Hadiah via Saweria
-  </a>
-</li>
-  </ul>
+
+  <p class="gift-intro">
+    Kehadiranmu adalah hadiah terindah.<br>
+    Jika berkenan berbagi kebahagiaan dari jauh, berikut opsinya:
+  </p>
+
+  <div class="gift-card scroll-reveal">
+    <a href="https://saweria.co/CZhappy" target="_blank" class="btn-saweria">
+      💝 Kirim Hadiah via Saweria
+    </a>
+  </div>
 </section>
 
 

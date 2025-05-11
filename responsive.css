@@ -156,6 +156,29 @@
   .form-doa, #formReservasi {
     padding: 1.5em;
   }
+  
+  .splash h1 {
+    font-size: 2rem;
+  }
+  .splash p {
+    font-size: 1rem;
+  }
+  #weddingNames {
+    font-size: 2.8rem;
+  }
+  #countdown {
+    font-size: 1.2rem;
+  }
+  .unduhmantu-title-main {
+    font-size: 2.8rem;
+  }
+  .unduhmantu-title-sub {
+    font-size: 2rem;
+  }
+  .map-link {
+    font-size: 1rem;
+  }
+  
 }
 
 
@@ -240,6 +263,99 @@
     width: 220px;
     height: 220px;
   }
+  
+  .unduhmantu-title-main {
+    font-size: 2.2rem;
+    line-height: 1.2;
+    letter-spacing: 0.5px;
+  }
+  
+  .unduhmantu-title-sub {
+    font-size: 1.5rem;
+    line-height: 1.2;
+    letter-spacing: 0.3px;
+  }
+  
+  /* Splash screen */
+  .splash h1 {
+    font-size: 1.5rem;
+  }
+  .splash p {
+    font-size: 0.95rem;
+    margin: 10px 0;
+  }
+  .splash button {
+    font-size: 1rem;
+    padding: 10px 20px;
+  }
+
+  /* Countdown Section */
+  #countdown-section h2 {
+    font-size: 1.2rem;
+  }
+  #weddingNames {
+    font-size: 2rem;
+    margin: 10px 0;
+  }
+  #countdown {
+    font-size: 1rem;
+  }
+
+  /* Ayat Section */
+  .ayat-section h2 {
+    font-size: 1.2rem;
+    line-height: 1.4;
+  }
+  .latin, .translation {
+    font-size: 0.95rem;
+  }
+
+  /* Unduh Mantu / Tasyakuran Section */
+  #unduhmantu-section {
+    padding: 50px 15px;
+  }
+  .unduhmantu-title-main {
+    font-size: 2.2rem;
+    line-height: 1.2;
+    letter-spacing: 0.5px;
+  }
+  .unduhmantu-title-sub {
+    font-size: 1.5rem;
+    line-height: 1.2;
+    letter-spacing: 0.3px;
+  }
+  #unduhmantu-section p, #unduhmantu-section a {
+    font-size: 0.9rem;
+  }
+
+  /* Penutup Section */
+  .penutup-section {
+    padding: 50px 20px 80px;
+  }
+  .penutup-overlay {
+    padding: 20px;
+    margin-bottom: 30px;
+  }
+  .penutup-salam {
+    font-size: 1.2rem;
+  }
+  .pantun-container {
+    font-size: 0.9rem;
+  }
+  .penutup-invite {
+    font-size: 0.85rem;
+  }
+
+  /* Map link */
+  .map-link {
+    font-size: 0.9rem;
+    padding: 8px 16px;
+  }
+  .map-link img {
+    width: 20px;
+    height: 20px;
+  }
+
   
 }
 
