@@ -204,7 +204,7 @@
 </form>
 
 <div id="reservasiThanks" class="thanks-message" style="display:none;">
-  <img src="https://undangan-bdg.vercel.app/Asset/thanks.png" alt="Terima kasih" class="floating-animate">
+  <img src="https://undangan-bdg.vercel.app/Asset/thank-you.png" alt="Terima kasih" class="floating-animate">
   <p>🎉 Terima kasih, konfirmasi kehadiran Anda telah tercatat.</p>
 </div>
 
@@ -229,7 +229,7 @@
 </form>
 
 <div id="ucapanThanks" class="thanks-message" style="display:none;">
-  <img src="https://undangan-bdg.vercel.app/Asset/thanks.png" alt="Terima kasih" class="floating-animate">
+  <img src="https://undangan-bdg.vercel.app/Asset/thank-you.png" alt="Terima kasih" class="floating-animate">
   <p>🎉 Terima kasih atas ucapan dan doanya!</p>
 </div>
 
@@ -263,14 +263,19 @@
   
 
 
-<div id="scratchCardContainer" class="scratch-container" style="display: none; position:relative;">
-  <div class="scratch-background">
-    <div id="scratchResult" class="scratch-result">🎁 Kamu Menang Souvenir Special! 🎁</div>
-    <div id="scratchImageResult" style="margin-top:20px;"></div> 
+<div id="scratchCardContainer" class="scratch-container" style="display: none;">
+  <div class="scratch-card-wrapper">
+    <img id="scratchRewardImage" src="" alt="Reward" class="reward-image">
+    <canvas id="scratchCanvas"></canvas>
   </div>
-  <canvas id="scratchCanvas"></canvas>
-  <button id="closeScratchBtn" style="display:none; margin-top: 20px;">Tutup</button>
+  <p id="scratchResultText" class="scratch-result-text"></p>
+  <button id="closeScratchBtn" class="scratch-close-btn">Tutup</button>
 </div>
+
+
+
+
+
 
 
 

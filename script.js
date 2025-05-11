@@ -203,117 +203,145 @@ function tampilkanStatusMsg(idElement, pesan, tipe = "success") {
 
 // Fungsi setelah submit ucapan (untuk cek hadiah)
 async function cekHadiahSetelahUcapan() {
-  const nama = localStorage.getItem(namaReservasiKey);
-  if (!nama) return;
-
-  const pemenang = JSON.parse(localStorage.getItem("pemenang") || "[]");
-  if (pemenang.length >= maxWinners) {
-    console.log("Hadiah sudah habis");
-    return;
-  }
-
-  if (localStorage.getItem(hadiahKey)) {
-    bukaScratchCard();
-    return;
-  }
-
-  const menang = Math.random() < 0.1;
-
-  if (menang) {
-    pemenang.push({ nama, waktu: new Date().toISOString() });
-    localStorage.setItem("pemenang", JSON.stringify(pemenang));
-    localStorage.setItem(hadiahKey, "MENANG");
-  } else {
-    localStorage.setItem(hadiahKey, "KALAH");
-  }
-
+  const menang = Math.random() < 0.1; // 10% chance menang
+  localStorage.setItem("scratchResult", menang ? "MENANG" : "KALAH");
   bukaScratchCard();
 }
 
 // Fungsi membuka Scratch Card
 function bukaScratchCard() {
   const container = document.getElementById('scratchCardContainer');
-  const resultText = document.getElementById('scratchResult');
-  const scratchImageResult = document.getElementById('scratchImageResult');
-  const canvas = document.getElementById('scratchCanvas');
+  const rewardImage = document.getElementById('scratchRewardImage');
+  const resultText = document.getElementById('scratchResultText');
   const closeBtn = document.getElementById('closeScratchBtn');
-  const winSound = document.getElementById('winSound');
-  const loseSound = document.getElementById('loseSound');
-
-  const menang = localStorage.getItem(hadiahKey) === "MENANG";
-
-  // === Inject Gambar Win atau Lose dulu
-  scratchImageResult.innerHTML = menang
-    ? `<img src="https://undangan-bdg.vercel.app/Asset/win.png" alt="Menang" style="width:120px; margin:20px auto;">
-       <p style="color:#4CAF50; font-weight:bold;">🎉 Screenshot dan tunjukkan ke Panitia!</p>`
-    : `<img src="https://undangan-bdg.vercel.app/Asset/lose.png" alt="Kalah" style="width:120px; margin:20px auto;">
-       <p style="color:#F44336; font-weight:bold;">😢 Belum beruntung, tetap semangat!</p>`;
-
-  container.style.display = 'flex';
-  container.classList.remove('scratch-flash-win');
-
+  const canvas = document.getElementById('scratchCanvas');
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
-  const width = canvas.width = container.offsetWidth;
-  const height = canvas.height = container.offsetHeight;
 
-  ctx.clearRect(0, 0, width, height);
-  ctx.fillStyle = '#aaa'; // Tutupin dengan abu-abu
-  ctx.fillRect(0, 0, width, height);
-  ctx.globalCompositeOperation = 'destination-out';
+  const menang = localStorage.getItem("scratchResult") === "MENANG";
+
+  rewardImage.src = menang
+    ? "https://undangan-bdg.vercel.app/Asset/win.png"
+    : "https://undangan-bdg.vercel.app/Asset/lose.png";
+
+  // ✅ Set Wording Instruksi saat pertama buka
+  resultText.innerHTML = `
+    <div class="scratch-message" style="font-size: 0.9rem; color: #555;">
+      📜 <em>Mohon gosok bagian ini untuk melihat apakah Anda mendapatkan souvenir spesial!</em>
+    </div>`;
+  resultText.style.display = 'block';
+  closeBtn.style.display = 'none';
+
+  container.classList.remove('scratch-flash-win');
+  container.style.display = 'flex';
+
+  rewardImage.onload = () => {
+    canvas.width = rewardImage.offsetWidth;
+    canvas.height = rewardImage.offsetHeight;
+
+    ctx.fillStyle = "#aaa";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.globalCompositeOperation = "destination-out";
+
+    setupScratchEvents();
+  };
 
   let isDrawing = false;
 
+  function setupScratchEvents() {
+    canvas.addEventListener('mousedown', () => isDrawing = true);
+    canvas.addEventListener('mouseup', () => isDrawing = false);
+    canvas.addEventListener('mousemove', scratch);
+
+    canvas.addEventListener('touchstart', () => isDrawing = true);
+    canvas.addEventListener('touchend', () => isDrawing = false);
+    canvas.addEventListener('touchmove', scratch);
+  }
+
   function scratch(e) {
     if (!isDrawing) return;
+
     const rect = canvas.getBoundingClientRect();
     const x = (e.clientX || e.touches?.[0]?.clientX) - rect.left;
     const y = (e.clientY || e.touches?.[0]?.clientY) - rect.top;
 
     ctx.beginPath();
-    ctx.arc(x, y, 30, 0, Math.PI * 2);
+    ctx.arc(x, y, 25, 0, Math.PI * 2);
     ctx.fill();
 
     checkScratchProgress();
   }
 
   function checkScratchProgress() {
-    const imageData = ctx.getImageData(0, 0, width, height);
-    let scratched = 0;
-    for (let i = 0; i < imageData.data.length; i += 4) {
-      if (imageData.data[i + 3] < 128) scratched++;
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let cleared = 0;
+    for (let i = 0; i < imgData.data.length; i += 4) {
+      if (imgData.data[i + 3] === 0) cleared++;
     }
-    const scratchedPercent = scratched / (imageData.data.length / 4) * 100;
+    const percent = cleared / (canvas.width * canvas.height) * 100;
 
-    if (scratchedPercent > 50) {
-      setTimeout(() => {
-        container.classList.add('show-result');
-        closeBtn.style.display = 'block';
-
-        if (menang) {
-          if (winSound && winSound.src) winSound.play().catch(() => {});
-          container.classList.add('scratch-flash-win');
-          confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-        } else {
-          if (loseSound && loseSound.src) loseSound.play().catch(() => {});
-        }
-      }, 300);
+    if (percent > 50) {
+      finishScratch();
     }
   }
 
-  canvas.addEventListener('mousedown', () => isDrawing = true);
-  canvas.addEventListener('touchstart', () => isDrawing = true);
-  canvas.addEventListener('mouseup', () => isDrawing = false);
-  canvas.addEventListener('touchend', () => isDrawing = false);
-  canvas.addEventListener('mousemove', scratch);
-  canvas.addEventListener('touchmove', scratch);
+  function finishScratch() {
+    canvas.style.pointerEvents = "none"; // Disable scratch
+    setTimeout(() => {
+      // ✅ Setelah berhasil gosok, baru tampilkan hasil Win/Lose
+      resultText.innerHTML = menang
+        ? `<div class="scratch-message">
+             🎉 <strong>Selamat!</strong><br>
+             Kamu mendapatkan souvenir spesial!<br>
+             📸 <small>Screenshot layar ini & tunjukkan ke panitia ya!</small>
+           </div>`
+        : `<div class="scratch-message">
+             😢 <em>Belum beruntung!</em><br>
+             ✨ Terima kasih atas partisipasimu.<br>
+           </div>`;
+
+      closeBtn.style.display = 'block';
+
+      if (menang) {
+        container.classList.add('scratch-flash-win');
+        playSound('https://undangan-bdg.vercel.app/Asset/win-sound.mp3');
+      } else {
+        playSound('https://undangan-bdg.vercel.app/Asset/lose-sound.mp3');
+      }
+    }, 300);
+  }
 
   closeBtn.onclick = () => {
     container.style.display = 'none';
-    closeBtn.style.display = 'none';
   };
-
-  closeBtn.style.display = 'none';
 }
+
+
+
+function playSound(url) {
+  const audio = new Audio(url);
+  audio.volume = 0; // Mulai dari 0
+  audio.play().then(() => {
+    // Fade in perlahan
+    let vol = 0;
+    const fade = setInterval(() => {
+      if (vol < 0.8) { // Batas volume 0.8 (lebih empuk)
+        vol += 0.05;
+        audio.volume = vol;
+      } else {
+        clearInterval(fade);
+      }
+    }, 50); // setiap 50ms naikin volume
+  }).catch(() => {});
+}
+
+
+
+
+
+
+
+
+
 
 
 

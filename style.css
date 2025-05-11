@@ -1497,22 +1497,66 @@ body.loading-filter {
 }
 
 .scratch-container {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.7);
-  z-index: 9999;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
+  padding: 20px;
 }
 
-.scratch-overlay {
+.reward-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+.scratch-card-wrapper {
+  position: relative;
+  width: 300px;
+  height: 300px;
+}
+
+.scratch-area {
+  position: relative;
+  width: 250px;
+  height: 250px;
+  margin: 20px 0;
+}
+
+.scratch-area img.scratch-image {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+  z-index: 1;
+}
+
+.scratch-wrapper {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  margin-bottom: 1em;
+}
+
+.scratch-image {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+.scratch-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  cursor: pointer;
+  border-radius: 16px;
 }
 
 .scratch-background {
@@ -1533,14 +1577,6 @@ body.loading-filter {
   margin-top: 20px;
 }
 
-#scratchCanvas {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(145deg, #d3d3d3, #f0f0f0);
-  cursor: pointer;
-}
 
 .close-scratch {
   margin-top: 20px;
@@ -1739,6 +1775,149 @@ body.loading-filter {
   pointer-events: none;
   text-align: center;
 }
+
+
+/* ===== SCRATCH CARD FINAL CLEAN PATCH ===== */
+#scratchCardContainer {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fffaf4;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  display: none;
+}
+
+.scratch-result {
+  margin-top: 1em;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #555;
+  text-align: center;
+}
+
+#scratchImageResult {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+#scratchImageResult img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+#scratchImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+/* Canvas Scratch */
+#scratchCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+}
+
+.scratch-result-text {
+  margin-top: 20px;
+  font-weight: bold;
+  text-align: center;
+  font-size: 18px;
+}
+
+.scratch-close-btn {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #5D4037;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.scratch-flash-win {
+  animation: vibrate 0.3s linear infinite;
+}
+
+/* Tombol Tutup */
+#closeScratchBtn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 1em;
+  background: #6a4c34;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+#closeScratchBtn:hover {
+  background: #8a6245;
+}
+
+/* Efek Flash Win */
+.scratch-flash-win {
+  animation: shake 0.5s infinite;
+}
+
+/* Efek Shake saat menang */
+@keyframes shake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+@keyframes vibrate {
+  0% { transform: translate(0); }
+  25% { transform: translate(2px, -2px); }
+  50% { transform: translate(-2px, 2px); }
+  75% { transform: translate(2px, 2px); }
+  100% { transform: translate(-2px, -2px); }
+}
+
+.scratch-message {
+  text-align: center;
+  font-size: 0.9rem; /* Lebih kecil, biar proporsional */
+  margin-top: 1rem;
+  line-height: 1.4;
+  color: #555; /* Abu kalem */
+  font-weight: 400;
+}
+
+.scratch-message strong {
+  color: #4CAF50; /* Hijau untuk Menang */
+  font-weight: 600;
+}
+.scratch-message em {
+  color: #F44336; /* Merah untuk Kalah */
+  font-style: normal;
+  font-weight: 600;
+}
+
 
 
 
