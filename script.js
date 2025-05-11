@@ -965,7 +965,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const randomPantun = pantunList[Math.floor(Math.random() * pantunList.length)];
     pantunContainer.innerHTML = randomPantun;
   }
+  animateWords(".pantun-container");
+  animateWords(".penutup-invite");
 });
+
+function animateWords(selector) {
+  const container = document.querySelector(selector);
+  if (!container) return;
+  const text = container.innerText.trim();
+  container.innerHTML = "";
+
+  text.split(" ").forEach((word, idx) => {
+    const span = document.createElement("span");
+    span.textContent = word + " ";
+    span.style.opacity = 0;
+    span.style.display = "inline-block";
+    span.style.transform = "translateY(20px)";
+    span.style.animation = "fadeSlideUpSlow 1.5s ease-out forwards";
+    span.style.animationDelay = `${idx * 0.25}s`; // ✨ Delay antar kata 0.25s slow
+    container.appendChild(span);
+  });
+}
 
 
 function tampilkanReservasiSudahSubmit() {
