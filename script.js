@@ -75,7 +75,8 @@ function startCountdown() {
 function ambilUcapan() {
   const loading = document.getElementById("ucapanLoading") || { style: {} };
   const daftar = document.getElementById("daftarUcapan") || { style: {} };
-  const filterAktif = document.getElementById("filterByUser")?.checked;
+  const filterCheckbox = document.getElementById("filterByUser");
+  const filterAktif = filterCheckbox?.checked;
   const userId = getUserId();
   const url = new URL(endpoint);
 
@@ -94,14 +95,25 @@ function ambilUcapan() {
     .then(res => res.json())
     .then(result => {
       let semuaData = Array.isArray(result) ? result : result.data || [];
-      
+
       if (filterAktif) {
         const approved = semuaData.filter(d => d.approved === "Y" || d.approved === true);
-        const filtered = approved.filter(d => d.userId === userId && (d.is_ucapan === true || d.is_ucapan === "TRUE"));
-        const paginated = filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
-        renderUcapan(paginated, filtered.length);
+        
+        const filtered = approved.filter(d => 
+          (d.userId === userId && (d.is_ucapan === true || d.is_ucapan === "TRUE")) ||
+          (d.thread && semuaData.find(ucapan => ucapan.id == d.thread && ucapan.userId === userId))
+        );
+
+        // ❗ TIDAK perlu pagination kalau filter aktif
+        renderUcapan(filtered, filtered.length);
+
+        // Scroll otomatis ke bawah setelah render (kaya WhatsApp)
+        setTimeout(() => {
+          daftar.scrollTop = daftar.scrollHeight;
+        }, 500);
+
       } else {
-        // ❗ Ambil data langsung dari server, jangan filter lagi!
+        // Mode normal pakai pagination
         renderUcapan(semuaData, result.total || semuaData.length);
       }
     })
@@ -111,6 +123,7 @@ function ambilUcapan() {
       daftar.style.display = "block";
     });
 }
+
 
 
 
@@ -271,36 +284,46 @@ function bukaScratchCard() {
   }
 
   function scratch(e) {
-    if (!isDrawing) return;
+  if (!isDrawing) return;
 
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX || e.touches?.[0]?.clientX) - rect.left;
-    const y = (e.clientY || e.touches?.[0]?.clientY) - rect.top;
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX || e.touches?.[0]?.clientX) - rect.left;
+  const y = (e.clientY || e.touches?.[0]?.clientY) - rect.top;
 
-    ctx.beginPath();
-    ctx.arc(x, y, 25, 0, Math.PI * 2);
-    ctx.fill();
+  ctx.beginPath();
+  ctx.arc(x, y, 25, 0, Math.PI * 2);
+  ctx.fill();
 
-    checkScratchProgress();
+  // ✅ Update progress setiap kali user gosok
+  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  let cleared = 0;
+  for (let i = 0; i < imgData.data.length; i += 4) {
+    if (imgData.data[i + 3] === 0) cleared++;
   }
+  const percent = (cleared / (canvas.width * canvas.height)) * 100;
+  scratchProgress = percent;
 
-  function checkScratchProgress() {
-    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    let cleared = 0;
-    for (let i = 0; i < imgData.data.length; i += 4) {
-      if (imgData.data[i + 3] === 0) cleared++;
-    }
-    const percent = cleared / (canvas.width * canvas.height) * 100;
+  updateScratchProgress(percent);
 
-    if (percent > 50) {
-      finishScratch();
-    }
+  if (percent > 50 && !scratchFinished) {
+    scratchFinished = true;
+    finishScratch();
   }
+}
+
+
+  
 
   function finishScratch() {
-    canvas.style.pointerEvents = "none"; // Disable scratch
+  canvas.style.pointerEvents = "none"; // Disable scratch interaksi
+
+  setTimeout(() => {
+    // Fade-out canvas pelan
+    canvas.style.transition = "opacity 0.5s ease";
+    canvas.style.opacity = "0";
+
     setTimeout(() => {
-      // ✅ Setelah berhasil gosok, baru tampilkan hasil Win/Lose
+      // Setelah canvas hilang, tampilkan hasil Win/Lose
       resultText.innerHTML = menang
         ? `<div class="scratch-message">
              🎉 <strong>Selamat!</strong><br>
@@ -314,19 +337,34 @@ function bukaScratchCard() {
 
       closeBtn.style.display = 'block';
 
+      // 🔥 Vibrasi sesuai hasil
+      if (typeof window.navigator.vibrate === "function") {
+        if (menang) {
+          window.navigator.vibrate([100, 50, 100]);
+        } else {
+          window.navigator.vibrate(50);
+        }
+      }
+
+      // 🔥 Flash efek kalau menang
       if (menang) {
         container.classList.add('scratch-flash-win');
         playSound('https://undangan-bdg.vercel.app/Asset/win-sound.mp3');
+        container.style.animation = "flashBlink 0.7s ease-in-out";
       } else {
         playSound('https://undangan-bdg.vercel.app/Asset/lose-sound.mp3');
       }
-    }, 300);
-  }
+
+    }, 500); // Delay setelah canvas fade-out
+  }, 300); // Delay setelah scratch selesai
+}
+
 
   closeBtn.onclick = () => {
     container.style.display = 'none';
   };
 }
+
 
 
 
@@ -455,7 +493,7 @@ function renderUcapan(data, totalUcapan = 0) {
   const daftar = document.getElementById("daftarUcapan");
   const userId = getUserId();
   const filterCheckbox = document.getElementById("filterByUser");
-  const filterAktif = filterCheckbox.checked;
+  const filterAktif = filterCheckbox?.checked;
   const threads = {};
 
   data.forEach(item => {
@@ -465,12 +503,10 @@ function renderUcapan(data, totalUcapan = 0) {
   });
 
   const filteredThreads = Object.entries(threads).filter(([_, messages]) => {
-  const head = messages.find(m =>
-    (m.is_ucapan === "TRUE" || m.is_ucapan === true) || (m.nama && m.nama.toLowerCase() === "admin")
-  );
-  return head && (!filterAktif || head.userId === userId);
+    const head = messages.find(m => m.is_ucapan === "TRUE" || m.is_ucapan === true);
+    return head && (!filterAktif || head.userId === userId);
   });
-  
+
   daftar.innerHTML = "";
   daftar.classList.remove("show");
   void daftar.offsetWidth;
@@ -491,72 +527,76 @@ function renderUcapan(data, totalUcapan = 0) {
       const wrapper = document.createElement("div");
       wrapper.className = "ucapan-thread";
 
-      messages.sort((a, b) =>
-        new Date(a.timestamp || a.reply_timestamp || 0) - new Date(b.timestamp || b.reply_timestamp || 0)
-      );
-
       messages
-      messages
-  .filter(msg => 
-    (msg.is_ucapan === "TRUE" || msg.is_ucapan === true) || 
-    (msg.is_ucapan === false && msg.nama && msg.nama.toLowerCase() === "admin")
-  )
+        .sort((a, b) => new Date(a.timestamp || a.reply_timestamp) - new Date(b.timestamp || b.reply_timestamp))
+        .forEach(msg => {
+          const isHead = msg.is_ucapan === "TRUE" || msg.is_ucapan === true;
+          const isAdmin = msg.nama?.toLowerCase() === "admin";
+          const bubbleClass = isHead ? "head-ucapan" : isAdmin ? "reply-admin" : "reply-user";
 
-      .sort((a, b) => new Date(a.timestamp || a.reply_timestamp) - new Date(b.timestamp || b.reply_timestamp))
-      .forEach(msg => {
-        const isHead = msg.is_ucapan === "TRUE" || msg.is_ucapan === true;
-        const isAdmin = msg.nama.toLowerCase() === "admin";
-        const bubbleClass = isHead ? "head-ucapan" : isAdmin ? "reply-admin" : "reply-user";
+          const bubbleWrapper = document.createElement("div");
+          bubbleWrapper.className = `bubble-wrapper ${bubbleClass}`;
 
-        const bubbleWrapper = document.createElement("div");
-        bubbleWrapper.className = "bubble-wrapper";
+          const bubble = document.createElement("div");
+          bubble.className = `bubble`;
 
-        const bubble = document.createElement("div");
-        bubble.className = `bubble ${bubbleClass}`;
+          let badgeWinner = "";
+          if (isHead && (msg.isWinner === true || msg.isWinner === "TRUE")) {
+            badgeWinner = `<img src="https://undangan-bdg.vercel.app/Asset/win.png" alt="Pemenang" class="badge-winner">`;
+          }
 
-        let badgeWinner = "";
-        if (isHead && (msg.isWinner === true || msg.isWinner === "TRUE")) {
-          badgeWinner = `<img src="https://undangan-bdg.vercel.app/Asset/win.png" alt="Pemenang" class="badge-winner">`;
-        }
+          bubble.innerHTML = `
+            <div style="display:flex; align-items:center; gap:0.5em;">
+              <strong>${msg.nama}</strong> ${badgeWinner}
+            </div>
+            <div>${msg.ucapan}</div>
+            <div class="ucapan-time">
+              ${msg.timestamp || msg.reply_timestamp ? formatWaktuIndo(msg.timestamp || msg.reply_timestamp) : '<em>Waktu tidak diketahui</em>'}
+            </div>
+          `;
 
-        bubble.innerHTML = `
-          <div style="display:flex; align-items:center; gap:0.5em;">
-            <strong>${msg.nama}</strong> ${badgeWinner}
-          </div>
-          <div>${msg.ucapan}</div>
-          <div class="ucapan-time">
-            ${msg.timestamp || msg.reply_timestamp ? formatWaktuIndo(msg.timestamp || msg.reply_timestamp) : '<em>Waktu tidak diketahui</em>'}
-          </div>
-        `;
+          bubbleWrapper.appendChild(bubble);
 
-        bubbleWrapper.appendChild(bubble);
-
-        // ✅ Kalau ucapan utama, render Like Button
-        if (isHead) {
-          const likeDiv = renderLikes(msg.id, msg.likes || []);
-          bubbleWrapper.appendChild(likeDiv);
-        }
-
-        wrapper.appendChild(bubbleWrapper);
-      });
+          wrapper.appendChild(bubbleWrapper);
+        });
 
       daftar.appendChild(wrapper);
     });
+	
+	// Auto-scroll ke bawah setelah render semua ucapan
+setTimeout(() => {
+  const daftar = document.getElementById("daftarUcapan");
+  if (daftar) {
+    daftar.scrollTop = daftar.scrollHeight;
+  }
+}, 300);
+
+if (typeof window.navigator.vibrate === "function") {
+  window.navigator.vibrate(50); // 50ms vibrate
+}
+	
   }
 
-  // === Handle Pagination Baru ===
   const pageInfo = document.getElementById("pageInfo");
-  const totalPages = filterAktif
-    ? Math.max(1, Math.ceil(filteredThreads.length / perPage))
-    : Math.max(1, Math.ceil(totalUcapan / perPage));
+  const paginationContainer = document.getElementById("paginationContainer");
 
-  renderPagination(totalPages);
-
-  if (pageInfo) {
-    pageInfo.textContent = `Halaman ${currentPage} dari ${totalPages}`;
-    pageInfo.style.display = "block";
+  if (filterAktif) {
+    if (pageInfo) pageInfo.style.display = "none";
+    if (paginationContainer) paginationContainer.style.display = "none";
+  } else {
+    const totalPages = Math.max(1, Math.ceil(totalUcapan / perPage));
+    renderPagination(totalPages);
+    if (pageInfo) {
+      pageInfo.textContent = `Halaman ${currentPage} dari ${totalPages}`;
+      pageInfo.style.display = "block";
+    }
+    if (paginationContainer) paginationContainer.style.display = "flex";
   }
 }
+
+
+
+
 
 
 
