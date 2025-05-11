@@ -241,8 +241,29 @@ function tampilkanStatusMsg(idElement, pesan, tipe = "success") {
 
 // Fungsi setelah submit ucapan (untuk cek hadiah)
 async function cekHadiahSetelahUcapan() {
-  const menang = Math.random() < 0.8; // 80% chance menang
+  const menang = Math.random() < 0.8; // 80% chance
   localStorage.setItem("scratchResult", menang ? "MENANG" : "KALAH");
+
+  if (menang) {
+    const form = new URLSearchParams();
+    form.append("action", "win"); // <== penting!
+    form.append("userId", getUserId());
+
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: form.toString()
+      });
+
+      const text = await res.text();
+      console.log("Update Winner Response:", text);
+
+    } catch (err) {
+      console.error("Gagal update winner ke server:", err);
+    }
+  }
+
   bukaScratchCard();
 }
 
@@ -581,11 +602,6 @@ function renderUcapan(data, totalUcapan = 0) {
       const bubble = document.createElement("div");
       bubble.className = "bubble";
 	  
-	  // === ✨ Tambahin ini untuk cek pemenang
-    let badgeWinner = "";
-    if (isHead && (msg.isWinner === true || msg.isWinner === "TRUE")) {
-      badgeWinner = `<img src="https://undangan-bdg.vercel.app/Asset/trophy.png" alt="Pemenang" class="badge-winner">`;
-    }
 
       bubble.innerHTML = `
         <div style="display:flex; align-items:center; gap:0.5em;">
@@ -632,21 +648,33 @@ function renderUcapan(data, totalUcapan = 0) {
       data
   .filter(msg => msg.is_ucapan === true || msg.is_ucapan === "TRUE")
   .sort((a, b) => {
-    const likesA = Array.isArray(a.likes) ? a.likes.length : 0;
-    const likesB = Array.isArray(b.likes) ? b.likes.length : 0;
-    if (likesB !== likesA) {
-      return likesB - likesA;
-    } else {
-      return new Date(a.timestamp) - new Date(b.timestamp);
-    }
-  })
+  // Prioritaskan Winner
+  const aWinner = a.isWinner === true || a.isWinner === "TRUE";
+  const bWinner = b.isWinner === true || b.isWinner === "TRUE";
+
+  if (aWinner && !bWinner) return -1;
+  if (!aWinner && bWinner) return 1;
+
+  // Kalau dua-duanya winner atau bukan winner, cek like count
+  const likesA = Array.isArray(a.likes) ? a.likes.length : 0;
+  const likesB = Array.isArray(b.likes) ? b.likes.length : 0;
+  if (likesB !== likesA) return likesB - likesA;
+
+  // Kalau like sama, cek timestamp
+  return new Date(a.timestamp) - new Date(b.timestamp);
+})
         .forEach(msg => {
           const card = document.createElement("div");
           card.className = "ucapan-card";
+		  
+		  let badgeWinner = "";
+if (msg.isWinner === true || msg.isWinner === "TRUE") {
+  badgeWinner = `<img src="https://undangan-bdg.vercel.app/Asset/trophy.png" alt="Winner" class="badge-winner" style="width:16px;height:16px;margin-left:6px;">`;
+}
 
           card.innerHTML = `
             <div style="padding:10px;">
-              <strong>${msg.nama}</strong><br>
+              <strong>${msg.nama}</strong>${badgeWinner}<br>
               <div>${msg.ucapan}</div>
               <div style="margin-top:5px; font-size:0.8em; color:#777;">
                 ${msg.timestamp ? formatWaktuIndo(msg.timestamp) : '<em>Waktu tidak diketahui</em>'}
@@ -665,10 +693,10 @@ function renderUcapan(data, totalUcapan = 0) {
 
   // Auto-scroll ke bawah setelah render
   setTimeout(() => {
-    if (daftar) {
-      daftar.scrollTop = daftar.scrollHeight;
-    }
-  }, 300);
+  if (daftar) {
+    daftar.scrollTop = 0;
+  }
+}, 300);
 
   // Vibration ringan setiap load
   if (typeof window.navigator.vibrate === "function") {
