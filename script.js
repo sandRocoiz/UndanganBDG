@@ -1,6 +1,6 @@
 // === 1. KONSTANTA DAN UTILITAS ===
 const endpoint = "https://undangan-bdg.vercel.app/api/proxy";
-const perPage = 5;
+const perPage = 2;
 let currentPage = 1;
 const maxWinners = 10;
 const hadiahKey = "scratchWin";
@@ -76,11 +76,15 @@ function ambilUcapan() {
   const loading = document.getElementById("ucapanLoading") || { style: {} };
   const daftar = document.getElementById("daftarUcapan") || { style: {} };
   const filterAktif = document.getElementById("filterByUser")?.checked;
+  const userId = getUserId();
   const url = new URL(endpoint);
 
   if (!filterAktif) {
     url.searchParams.set("limit", perPage);
     url.searchParams.set("page", currentPage);
+  } else {
+    url.searchParams.delete("limit");
+    url.searchParams.delete("page");
   }
 
   loading.style.display = "block";
@@ -90,9 +94,16 @@ function ambilUcapan() {
     .then(res => res.json())
     .then(result => {
       let semuaData = Array.isArray(result) ? result : result.data || [];
-      const approved = semuaData.filter(d => d.approved === "Y" || d.approved === true);
-      const total = result.total || approved.length;
-      renderUcapan(approved, total);
+      
+      if (filterAktif) {
+        const approved = semuaData.filter(d => d.approved === "Y" || d.approved === true);
+        const filtered = approved.filter(d => d.userId === userId && (d.is_ucapan === true || d.is_ucapan === "TRUE"));
+        const paginated = filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
+        renderUcapan(paginated, filtered.length);
+      } else {
+        // ❗ Ambil data langsung dari server, jangan filter lagi!
+        renderUcapan(semuaData, result.total || semuaData.length);
+      }
     })
     .catch(err => console.error("Gagal ambil ucapan:", err))
     .finally(() => {
@@ -100,6 +111,8 @@ function ambilUcapan() {
       daftar.style.display = "block";
     });
 }
+
+
 
 // === SUBMIT UCAPAN ===
 function submitUcapan(e) {
@@ -442,6 +455,7 @@ function renderUcapan(data, totalUcapan = 0) {
   const daftar = document.getElementById("daftarUcapan");
   const userId = getUserId();
   const filterCheckbox = document.getElementById("filterByUser");
+  const filterAktif = filterCheckbox.checked;
   const threads = {};
 
   data.forEach(item => {
@@ -450,97 +464,96 @@ function renderUcapan(data, totalUcapan = 0) {
     threads[threadId].push(item);
   });
 
-  const filtered = Object.entries(threads).filter(([_, messages]) => {
+  const filteredThreads = Object.entries(threads).filter(([_, messages]) => {
     const head = messages.find(m => m.is_ucapan === "TRUE" || m.is_ucapan === true);
-    return head && (!filterCheckbox.checked || head.userId === userId);
+    return head && (!filterAktif || head.userId === userId);
   });
-
-  const filterAktif = filterCheckbox.checked;
-  const shown = filtered;
 
   daftar.innerHTML = "";
   daftar.classList.remove("show");
   void daftar.offsetWidth;
   daftar.classList.add("fade-in", "show");
 
-  // === HANDLE EMPTY STATE ===
-  if (shown.length === 0) {
-  const emptyDiv = document.createElement("div");
-  emptyDiv.className = "ucapan-empty";
-  emptyDiv.innerHTML = `
-    <div class="empty-illustration">
-      <img src="https://undangan-bdg.vercel.app/Asset/floating.png" alt="Belum ada ucapan" width="120" height="120">
-    </div>
-    <p>Belum ada ucapan masuk.<br><em>Yuk beri ucapan pertama! ✨</em></p>
-  `;
-  daftar.appendChild(emptyDiv);
-}
+  if (filteredThreads.length === 0) {
+    const emptyDiv = document.createElement("div");
+    emptyDiv.className = "ucapan-empty";
+    emptyDiv.innerHTML = `
+      <div class="empty-illustration">
+        <img src="https://undangan-bdg.vercel.app/Asset/floating.png" alt="Belum ada ucapan" width="120" height="120">
+      </div>
+      <p>Belum ada ucapan masuk.<br><em>Yuk beri ucapan pertama! ✨</em></p>
+    `;
+    daftar.appendChild(emptyDiv);
+  } else {
+    filteredThreads.forEach(([threadId, messages]) => {
+      const wrapper = document.createElement("div");
+      wrapper.className = "ucapan-thread";
 
-  // === RENDER TIAP THREAD ===
-  shown.forEach(([threadId, messages]) => {
-    const wrapper = document.createElement("div");
-    wrapper.className = "ucapan-thread";
+      messages.sort((a, b) =>
+        new Date(a.timestamp || a.reply_timestamp || 0) - new Date(b.timestamp || b.reply_timestamp || 0)
+      );
 
-    messages.sort((a, b) =>
-      new Date(a.timestamp || a.reply_timestamp || 0) - new Date(b.timestamp || b.reply_timestamp || 0)
-    );
+      messages
+      .filter(msg => msg.is_ucapan === "TRUE" || msg.is_ucapan === true || msg.nama.toLowerCase() === "admin")
+      .sort((a, b) => new Date(a.timestamp || a.reply_timestamp) - new Date(b.timestamp || b.reply_timestamp))
+      .forEach(msg => {
+        const isHead = msg.is_ucapan === "TRUE" || msg.is_ucapan === true;
+        const isAdmin = msg.nama.toLowerCase() === "admin";
+        const bubbleClass = isHead ? "head-ucapan" : isAdmin ? "reply-admin" : "reply-user";
 
-    messages.forEach((msg) => {
-      const isHead = msg.is_ucapan === "TRUE" || msg.is_ucapan === true;
-      const isAdmin = msg.nama.toLowerCase() === "admin";
-      const bubbleClass = isHead ? "head-ucapan" : isAdmin ? "reply-admin" : "reply-user";
+        const bubbleWrapper = document.createElement("div");
+        bubbleWrapper.className = "bubble-wrapper";
 
-      const bubble = document.createElement("div");
-bubble.className = `bubble ${bubbleClass}`;
+        const bubble = document.createElement("div");
+        bubble.className = `bubble ${bubbleClass}`;
 
-let badgeWinner = "";
-if (isHead && (msg.isWinner === true || msg.isWinner === "TRUE")) {
-  badgeWinner = `<img src="https://undangan-bdg.vercel.app/Asset/win.png" alt="Pemenang" class="badge-winner">`;
-}
+        let badgeWinner = "";
+        if (isHead && (msg.isWinner === true || msg.isWinner === "TRUE")) {
+          badgeWinner = `<img src="https://undangan-bdg.vercel.app/Asset/win.png" alt="Pemenang" class="badge-winner">`;
+        }
 
-bubble.innerHTML = `
-  <div style="display:flex; align-items:center; gap:0.5em;">
-    <strong>${msg.nama}</strong> ${badgeWinner}
-  </div>
-  <div>${msg.ucapan}</div>
-  <div class="ucapan-time">
-    ${msg.timestamp ? formatWaktuIndo(msg.timestamp) : '<em>Waktu tidak diketahui</em>'}
-  </div>
-`;
-      wrapper.appendChild(bubble);
+        bubble.innerHTML = `
+          <div style="display:flex; align-items:center; gap:0.5em;">
+            <strong>${msg.nama}</strong> ${badgeWinner}
+          </div>
+          <div>${msg.ucapan}</div>
+          <div class="ucapan-time">
+            ${msg.timestamp || msg.reply_timestamp ? formatWaktuIndo(msg.timestamp || msg.reply_timestamp) : '<em>Waktu tidak diketahui</em>'}
+          </div>
+        `;
 
-      if (isHead) {
-        const likeDiv = renderLikes(msg.id, msg.likes || []);
-        wrapper.appendChild(likeDiv);
-      }
+        bubbleWrapper.appendChild(bubble);
+
+        // ✅ Kalau ucapan utama, render Like Button
+        if (isHead) {
+          const likeDiv = renderLikes(msg.id, msg.likes || []);
+          bubbleWrapper.appendChild(likeDiv);
+        }
+
+        wrapper.appendChild(bubbleWrapper);
+      });
+
+      daftar.appendChild(wrapper);
     });
-
-    const main = messages.find(m => m.is_ucapan === "TRUE" || m.is_ucapan === true);
-    if (main && main.userId === userId && messages.some(msg => msg.nama.toLowerCase() === "admin")) {
-      const form = document.createElement("form");
-      form.className = "form-reply-thread";
-      form.innerHTML = `
-        <textarea required placeholder="Balas admin..."></textarea>
-        <button type="submit">Kirim</button>
-      `;
-      form.onsubmit = function (e) {
-        e.preventDefault();
-        kirimBalasanLanjutan(threadId, form.querySelector("textarea").value, main.nama);
-      };
-      wrapper.appendChild(form);
-    }
-
-    daftar.appendChild(wrapper);
-  });
-
-  const totalPages = filterAktif ? 1 : Math.ceil(totalUcapan / perPage);
-  const paginationDiv = document.getElementById("pagination");
-  if (paginationDiv) {
-    paginationDiv.style.display = filterAktif ? "none" : "block";
   }
 
+  // === Handle Pagination Baru ===
+  const pageInfo = document.getElementById("pageInfo");
+  const totalPages = filterAktif
+    ? Math.max(1, Math.ceil(filteredThreads.length / perPage))
+    : Math.max(1, Math.ceil(totalUcapan / perPage));
+
   renderPagination(totalPages);
+
+  if (pageInfo) {
+    pageInfo.textContent = `Halaman ${currentPage} dari ${totalPages}`;
+    pageInfo.style.display = "block";
+  }
 }
+
+
+
+
 
 
 
@@ -575,7 +588,7 @@ function kirimBalasanLanjutan(threadId, ucapan, nama) {
 }
 
 function renderLikes(ucapanId, likeList) {
-  // Jika bukan array, ubah jadi array kosong
+  // Kalau bukan array, coba parse, kalau gagal jadikan array kosong
   if (!Array.isArray(likeList)) {
     try {
       likeList = JSON.parse(likeList);
@@ -587,23 +600,33 @@ function renderLikes(ucapanId, likeList) {
 
   const likeContainer = document.createElement("div");
   likeContainer.className = "like-container";
+
   const likedByUser = likeList.some(like => like.userId === getUserId());
   const likeCount = likeList.length;
 
   likeContainer.innerHTML = `
-  <div class="like-wrapper">
-    <button class="like-btn ${likedByUser ? 'liked' : ''}" data-id="${ucapanId}">
-      <img src="https://undangan-bdg.vercel.app/Asset/love.png" alt="Like" class="like-icon">
-      <span class="like-count">${likeCount}</span>
-    </button>
-    <div class="like-tooltip">
-  ${likeList.map(l => `<img src="https://undangan-bdg.vercel.app/Asset/rating.png" alt="User" class="user-icon"> ${l.nama}`).join('<br>')}
-</div>
-  </div>
-`;
-  likeContainer.querySelector("button").onclick = () => toggleLike(ucapanId, likedByUser);
+    <div class="like-wrapper">
+      <button class="like-btn ${likedByUser ? 'liked' : ''}" data-id="${ucapanId}">
+        <img src="https://undangan-bdg.vercel.app/Asset/love.png" alt="Like" class="like-icon">
+        <span class="like-count">${likeCount}</span>
+      </button>
+      <div class="like-tooltip">
+        ${likeList.map(l => `<img src="https://undangan-bdg.vercel.app/Asset/rating.png" alt="User" class="user-icon"> ${l.nama}`).join('<br>')}
+      </div>
+    </div>
+  `;
+
+  // ✅ Ambil tombol like-nya
+  const likeBtn = likeContainer.querySelector(".like-btn");
+  likeBtn.onclick = (e) => {
+    e.stopPropagation(); // ⛔ Supaya tidak trigger klik bubble
+    toggleLike(ucapanId, likedByUser);
+  };
+
   return likeContainer;
 }
+
+
 
 
 function toggleLike(ucapanId, alreadyLiked) {
@@ -638,32 +661,43 @@ function renderPagination(totalPages) {
   paginationDiv.innerHTML = "";
 
   const pageInfo = document.getElementById("pageInfo");
-  if (pageInfo) pageInfo.textContent = `Halaman ${currentPage} dari ${totalPages}`;
+
+  // 🚀 Patch supaya minimal 1 halaman
+  const fixedTotalPages = Math.max(totalPages, 1);
+  if (pageInfo) pageInfo.textContent = `Halaman ${currentPage} dari ${fixedTotalPages}`;
 
   const createBtn = (label, disabled = false, onClick = null) => {
     const btn = document.createElement("button");
     btn.textContent = label;
     btn.disabled = disabled;
-    if (onClick) btn.onclick = onClick;
-    return btn;
-  };
+    if (onClick) {
+    btn.onclick = (e) => {
+      btn.classList.remove("page-clicked"); // reset dulu biar animasi bisa ulang
+      void btn.offsetWidth; // trigger reflow
+      btn.classList.add("page-clicked"); // kasih animasi klik
+      setTimeout(() => { // kasih delay dikit baru jalankan action
+        onClick(e);
+      }, 200); // biar user lihat animasi dulu
+    };
+  }
+  return btn;
+};
 
-  // Tombol Sebelumnya
   paginationDiv.appendChild(createBtn("←", currentPage === 1, () => {
     currentPage--;
     ambilUcapan();
   }));
 
   const pages = [];
-  if (totalPages <= 5) {
-    for (let i = 1; i <= totalPages; i++) pages.push(i);
+  if (fixedTotalPages <= 5) {
+    for (let i = 1; i <= fixedTotalPages; i++) pages.push(i);
   } else {
     if (currentPage <= 3) {
-      pages.push(1, 2, 3, "...", totalPages);
-    } else if (currentPage >= totalPages - 2) {
-      pages.push(1, "...", totalPages - 2, totalPages - 1, totalPages);
+      pages.push(1, 2, 3, "...", fixedTotalPages);
+    } else if (currentPage >= fixedTotalPages - 2) {
+      pages.push(1, "...", fixedTotalPages - 2, fixedTotalPages - 1, fixedTotalPages);
     } else {
-      pages.push(1, "...", currentPage, "...", totalPages);
+      pages.push(1, "...", currentPage, "...", fixedTotalPages);
     }
   }
 
@@ -675,23 +709,22 @@ function renderPagination(totalPages) {
       paginationDiv.appendChild(span);
     } else {
       const btn = createBtn(p, p === currentPage, () => {
-        currentPage = Number (p);
+        currentPage = Number(p);
         ambilUcapan();
       });
       paginationDiv.appendChild(btn);
     }
   });
 
-  // Tombol Berikutnya
-  paginationDiv.appendChild(createBtn("→", currentPage === totalPages, () => {
+  paginationDiv.appendChild(createBtn("→", currentPage === fixedTotalPages, () => {
     currentPage++;
     ambilUcapan();
   }));
 
   const daftar = document.getElementById("daftarUcapan");
   const existingPagination = document.getElementById("pagination");
-if (existingPagination) existingPagination.remove();
-daftar.appendChild(paginationDiv);
+  if (existingPagination) existingPagination.remove();
+  daftar.appendChild(paginationDiv);
 }
 
 

@@ -607,8 +607,13 @@ body {
 }
 
 #pagination {
-  text-align: center;
-  margin-top: 2.5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+  font-family: 'Playfair Display', serif;
 }
 
 #pagination button {
@@ -742,8 +747,9 @@ body {
 }
 
 .reply-admin {
-  background-color: #f7e7e7;
-  border-left-color: #D36464;
+  background-color: #f5f5f5;
+  margin-left: 20px;
+  border-left: 3px solid #6c757d;
 }
 
 .sub-user {
@@ -1455,29 +1461,40 @@ body.loading-filter {
   background: #f4e9da;
   border: 1px solid #c5b9a5;
   color: #5e4b32;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-family: 'Playfair Display', serif;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 }
 
+
 #pagination button:hover:not(:disabled) {
   background: #e2d4bb;
+  color: #4b3928;
   transform: scale(1.05);
 }
 
 #pagination button:disabled {
   opacity: 0.5;
-  cursor: default;
+  cursor: not-allowed;
 }
 
 #pagination .ellipsis {
-  pointer-events: none;
   background: transparent;
   border: none;
-  font-weight: normal;
+  color: #999;
+  font-size: 1.2rem;
+  pointer-events: none;
+}
+
+/* Tombol halaman aktif */
+#pagination button:disabled {
+  background: #d8c3a5;
+  color: #5e4b32;
+  font-weight: bold;
+  cursor: default;
 }
 
 #ucapanLoading {
@@ -2020,6 +2037,27 @@ body.loading-filter {
   font-size: 0.95rem;
   color: #5D4037;
 }
+
+/* === ANIMASI KLIK PAGINATION === */
+@keyframes bounceClick {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(0.85);
+  }
+  60% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.page-clicked {
+  animation: bounceClick 0.4s ease;
+}
+
 
 
 
