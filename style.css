@@ -1826,7 +1826,7 @@ body.loading-filter {
 
 #reservasiThanks .thanks-wording {
   font-family: 'Playfair Display', serif;
-  font-size: 0.5rem; /* <= dikecilin, info aja */
+  font-size: 0.7rem; /* <= dikecilin, info aja */
   font-weight: 100; /* <= normal, bukan bold */
   color: #6D4C41; /* earthy tone */
   margin-top: 1em;
@@ -2444,7 +2444,7 @@ body.loading-filter {
 
 #ucapanThanks .thanks-wording {
   font-family: 'Playfair Display', serif;
-  font-size: 0.5rem; /* <= KECIL dan rapi */
+  font-size: 0.7rem; /* <= KECIL dan rapi */
   font-weight: 100;
   color: #6D4C41;
   margin-top: 1em;
@@ -2550,12 +2550,18 @@ body.loading-filter {
 }
 
 .penutup-section {
-  
   position: relative;
-  background: linear-gradient(135deg, #fef9f4, #f1f8f5);
-  padding: 4em 2em;
-  text-align: center;
   overflow: hidden;
+  text-align: center;
+  padding: 80px 20px 100px; /* tambahin padding bawah supaya turun */
+  background: url('https://undangan-bdg.vercel.app/Asset/bg-footer.jpg') center center / cover no-repeat;
+  font-family: 'Playfair Display', serif;
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* ini supaya tulisan auto ke bawah */
+  align-items: center;
 }
 
 .penutup-overlay {
@@ -2564,7 +2570,6 @@ body.loading-filter {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('https://undangan-bdg.vercel.app/Asset/flower-overlay.jpeg'); /* ❗ Pakai overlay bunga transparan */
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
