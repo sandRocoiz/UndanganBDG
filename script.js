@@ -468,18 +468,17 @@ function playSound(url) {
 document.getElementById("formReservasi").addEventListener("submit", async function (e) {
   e.preventDefault();
 
-  // Cek apakah user sudah pernah reservasi
   if (localStorage.getItem("sudahReservasi") === "true") {
     tampilkanReservasiSudahSubmit();
+    showToast("Kamu sudah konfirmasi reservasi sebelumnya! 🙌", "success");
     return;
   }
 
   const nama = document.getElementById("namaReservasi").value.trim();
   const status = document.getElementById("statusReservasi").value;
 
-  // Validasi form input
   if (!nama || !status) {
-    tampilkanStatusMsg("statusReservasiMsg", "Mohon isi nama dan status kehadiran.", "error");
+    showToast("Mohon isi nama dan status kehadiran! ❌", "error");
     return;
   }
 
@@ -498,32 +497,34 @@ document.getElementById("formReservasi").addEventListener("submit", async functi
     const text = await res.text();
 
     if (text.trim() === "OK") {
-      // ✅ Simpan data ke localStorage
       localStorage.setItem("namaReservasi", nama);
       localStorage.setItem("reservasiStatus", status);
       localStorage.setItem("sudahReservasi", "true");
 
-      // ✅ Autofill nama ke form ucapan jika belum pernah submit ucapan
       if (localStorage.getItem("sudahSubmitUcapan") !== "true" && document.getElementById("nama")) {
         document.getElementById("nama").value = nama;
         localStorage.setItem("nama", nama);
       }
 
       tampilkanReservasiSudahSubmit();
+      showToast("Konfirmasi kehadiran berhasil! 🎉", "success");
       this.reset();
 
     } else if (text.trim() === "ALREADY_RESERVED") {
       localStorage.setItem("sudahReservasi", "true");
       tampilkanReservasiSudahSubmit();
+      showToast("Kamu sudah konfirmasi sebelumnya! 🤝", "success");
+
     } else {
-      tampilkanStatusMsg("statusReservasiMsg", "Gagal menyimpan reservasi.", "error");
+      showToast("Gagal menyimpan reservasi. ❌", "error");
     }
 
   } catch (err) {
     console.error("Error submit reservasi:", err);
-    tampilkanStatusMsg("statusReservasiMsg", "Terjadi kesalahan koneksi.", "error");
+    showToast("Terjadi kesalahan koneksi. ❌", "error");
   }
 });
+
 
 
 function tampilkanReservasiSudahSubmit() {
@@ -650,12 +651,12 @@ function renderUcapan(data, totalUcapan = 0) {
           e.preventDefault();
           const input = replyForm.querySelector(".reply-input");
           const text = input.value.trim();
-          if (text) {
-    showToast("Balasan tidak boleh kosong! ❌", "error");
-    return false; // Stop di sini
-  }
-  kirimBalasanLanjutan(threadId, text, localStorage.getItem("nama") || "Anonim");
-  input.value = ""; // Reset input
+          if (!text) {
+          showToast("Balasan tidak boleh kosong! ❌", "error");
+          return false; // ❌ kosong => stop
+           }
+            kirimBalasanLanjutan(threadId, text, localStorage.getItem("nama") || "Anonim");
+            input.value = ""; // ✅ setelah berhasil kirim, kosongkan input
         };
 
         wrapper.appendChild(replyForm);
@@ -1164,22 +1165,36 @@ function showToast(message, tipe = "success") {
     document.body.appendChild(toast);
   }
 
-  toast.textContent = message;
+  toast.innerHTML = `<div class="toast-message">${message}</div>`;
 
+  const progress = document.createElement('div');
+  progress.className = 'toast-progress';
   if (tipe === "error") {
-    toast.style.background = "rgba(220, 53, 69, 0.95)"; // Merah untuk error
-    playErrorSound(); // 🔥 Play sound error
+    toast.style.background = "rgba(220, 53, 69, 0.95)";
+    progress.style.background = "#ff4444"; // Merah untuk error
+    playErrorSound();
   } else {
-    toast.style.background = "rgba(50, 50, 50, 0.9)";   // Default abu sukses
-    playPopSound(); // 🔥 Play sound sukses
+    toast.style.background = "rgba(50, 50, 50, 0.9)";
+    progress.style.background = "#4caf50"; // Hijau untuk sukses
+    playPopSound();
   }
 
-  toast.classList.add('toast-show');
+  toast.appendChild(progress);
+
+  requestAnimationFrame(() => {
+    toast.classList.add('toast-show');
+  });
 
   setTimeout(() => {
     toast.classList.remove('toast-show');
-  }, 2500); 
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.parentNode.removeChild(toast); // hapus dari DOM setelah animasi
+      }
+    }, 400); // biar smooth
+  }, 2500);
 }
+
 
 
 function playErrorSound() {
