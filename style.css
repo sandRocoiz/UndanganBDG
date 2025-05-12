@@ -18,8 +18,10 @@ html, body {
   font-family: 'Playfair Display', serif;
   background: #FAF3EA;
   color: #333;
+  scroll-behavior: smooth;
+  height: auto;
   overflow-x: hidden;
-  height: 100%;
+  scroll-behavior: smooth;
 }
 
 #userIdDisplay {
@@ -104,11 +106,7 @@ html, body {
 }
 
 
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
+
 
 body {
   margin: 0;
@@ -187,15 +185,15 @@ body {
 }
 
 #countdown-section {
-  padding: 0 !important;
-  margin: 0 !important;
-  width: 100vw;
-  height: 100vh;
-  background: url('https://i.imgur.com/mnubXkZ.jpeg') center center / cover no-repeat;
+  position: relative;
+  min-height: 100vh; /* ✅ Wajib 1 layar penuh */
   display: flex;
-  justify-content: center;
   align-items: center;
-  color: white;
+  justify-content: center;
+  overflow: hidden;
+  flex-direction: column;
+  text-align: center;
+  background: #000; /* fallback kalau gambar belum load */
 }
 
 #countdown-section h1 span {
@@ -1454,22 +1452,49 @@ body.loading-filter {
 }
 
 .parallax-bg {
+  background: url('https://undangan-bdg.vercel.app/Asset/bg-countdown.jpg') center center / cover no-repeat;
+  background-color: #d8f3dc; /* ✅ fallback kalau gambar gagal */
+  width: 100%;
+  height: 100%;
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-image: url('https://undangan-bdg.vercel.app/Asset/bg-countdown.webp'); /* Ganti sesuai foto kamu */
-  background-size: cover;
-  background-position: center;
-  z-index: 0;
+  top: 0;
+  left: 0;
+  z-index: -1;
 }
 
 .parallax-content {
   position: relative;
-  z-index: 1;
-  padding: 40px 20px;
-  border-radius: 12px;
-  background: linear-gradient(to bottom right, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.3));
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-  color: white;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+/* Saat muncul di viewport */
+.scroll-reveal.active .parallax-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Efek cinematic zoom saat muncul */
+.scroll-reveal.active .parallax-bg {
+  transform: scale(1);
+  opacity: 1;
+}
+
+@keyframes fadeInCinematic {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.judul-wedding, .tanggal-acara, #countdown {
+  margin-top: 10px;
 }
 
 .letter-drop span {
@@ -1479,11 +1504,11 @@ body.loading-filter {
   transform: translateY(-50px);
 }
 
-.ayat-section {
+#ayat-section {
   position: relative;
-  background: #f8f8f8;
-  padding: 80px 20px;
   overflow: hidden;
+  padding: 80px 20px;
+  background: url('https://undangan-bdg.vercel.app/Asset/bg-islamic.png') center center / cover no-repeat;
 }
 
 .ayat-wrapper {
@@ -2350,7 +2375,14 @@ body.loading-filter {
 }
 
 .parallax-wrapper {
-  scroll-snap-align: start;
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-direction: column;
+  text-align: center;
 }
 
 .main-content {
@@ -2573,17 +2605,23 @@ body.loading-filter {
 .ayat-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
-  z-index: 1;
+  background: rgba(255, 255, 255, 0.4); /* Transparan putih soft */
+  backdrop-filter: blur(3px) saturate(140%);
+  -webkit-backdrop-filter: blur(3px) saturate(140%);
 }
 
 .ayat-container {
   position: relative;
-  z-index: 2;
-  max-width: 800px;
-  margin: 0 auto;
-  animation: fadeInUp 1.5s ease-out forwards;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.5); /* semi transparan */
+  border-radius: 20px;
+  padding: 40px 30px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  max-width: 700px;
+  margin: auto;
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+  animation: fadeInUp 1.5s ease both;
 }
 
 .ayat-arabic {
@@ -2591,29 +2629,31 @@ body.loading-filter {
   font-size: 1.8em;
   margin-bottom: 20px;
   line-height: 1.5;
+  color: #333;
+  line-height: 1.8;
 }
 
 .ayat-latin {
   font-family: 'Playfair Display', serif;
   font-style: italic;
   font-size: 1.2em;
-  margin-bottom: 15px;
-  color: #d4d4d4;
+  margin-bottom: 10px;
+  color: #666;
 }
 
 .ayat-terjemahan {
   font-family: 'Playfair Display', serif;
   font-size: 1em;
-  color: #e0e0e0;
+  color: #444;
   line-height: 1.6;
 }
 
 @keyframes fadeInUp {
-  0% {
+  from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
-  100% {
+  to {
     opacity: 1;
     transform: translateY(0);
   }
