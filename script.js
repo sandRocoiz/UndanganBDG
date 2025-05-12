@@ -185,6 +185,7 @@ function submitUcapan(e) {
     if (text.trim() === "OK") {
       localStorage.setItem("sudahSubmitUcapan", "true");
       tampilkanUcapanSudahSubmit();
+	  showToast("Ucapan berhasil dikirim! 🎉", "success");
       e.target.reset();
       ambilUcapan();
       cekHadiahSetelahUcapan();
@@ -235,6 +236,9 @@ function tampilkanStatusMsg(idElement, pesan, tipe = "success") {
   el.textContent = pesan;
   el.classList.remove("success", "error", "show");
   el.classList.add(tipe, "show");
+  
+  showToast(pesan, tipe);
+  
 }
 
 
@@ -647,9 +651,11 @@ function renderUcapan(data, totalUcapan = 0) {
           const input = replyForm.querySelector(".reply-input");
           const text = input.value.trim();
           if (text) {
-            kirimBalasanLanjutan(threadId, text, localStorage.getItem("nama") || "Anonim");
-            input.value = "";
-          }
+    showToast("Balasan tidak boleh kosong! ❌", "error");
+    return false; // Stop di sini
+  }
+  kirimBalasanLanjutan(threadId, text, localStorage.getItem("nama") || "Anonim");
+  input.value = ""; // Reset input
         };
 
         wrapper.appendChild(replyForm);
@@ -769,7 +775,11 @@ if (filterAktif) {
 
 // === KIRIM BALASAN LANJUTAN ===
 function kirimBalasanLanjutan(threadId, ucapan, nama) {
-  if (!ucapan.trim()) return alert("Balasan tidak boleh kosong!");
+  //if (!ucapan.trim()) return alert("Balasan tidak boleh kosong!");
+  if (!ucapan.trim()) {
+    showToast("Balasan tidak boleh kosong! ❌", "error");
+    return false; // ✨ Biar stop sempurna
+  }
 
   const form = new URLSearchParams();
   form.append("userId", getUserId());
@@ -787,12 +797,14 @@ function kirimBalasanLanjutan(threadId, ucapan, nama) {
     body: form.toString()
   })
   .then(() => {
-    alert("Balasan terkirim!");
+    //alert("Balasan terkirim!");
+	showToast("Balasan berhasil terkirim! 🎉", "success");
     ambilUcapan();
   })
   .catch(err => {
     console.error("Gagal kirim balasan:", err);
-    alert("Gagal kirim balasan.");
+    //alert("Gagal kirim balasan.");
+	showToast("Gagal kirim balasan. Coba lagi! ❌", "error")
   });
 }
 
@@ -1065,6 +1077,15 @@ document.addEventListener("DOMContentLoaded", () => {
   animateWords(".pantun-container");
   animateWords(".penutup-invite");
   
+  const bell = document.getElementById("notificationBell");
+  if (bell) {
+    bell.addEventListener("click", () => {
+      const daftar = document.getElementById("daftarUcapan");
+      if (daftar) {
+        daftar.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+  }
 
 
 // Mulai polling setelah 3 detik pas user buka
@@ -1114,6 +1135,7 @@ async function startPollingUcapan() {
 }
 
 
+
 function animateWords(selector) {
   const container = document.querySelector(selector);
   if (!container) return;
@@ -1132,10 +1154,44 @@ function animateWords(selector) {
   });
 }
 
+function showToast(message, tipe = "success") {
+  let toast = document.getElementById('toastNotification');
+
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toastNotification';
+    toast.className = 'toast-notification';
+    document.body.appendChild(toast);
+  }
+
+  toast.textContent = message;
+
+  if (tipe === "error") {
+    toast.style.background = "rgba(220, 53, 69, 0.95)"; // Merah untuk error
+    playErrorSound(); // 🔥 Play sound error
+  } else {
+    toast.style.background = "rgba(50, 50, 50, 0.9)";   // Default abu sukses
+    playPopSound(); // 🔥 Play sound sukses
+  }
+
+  toast.classList.add('toast-show');
+
+  setTimeout(() => {
+    toast.classList.remove('toast-show');
+  }, 2500); 
+}
+
+
+function playErrorSound() {
+  const popSound = new Audio('https://undangan-bdg.vercel.app/Asset/fail-sound.mp3');
+  popSound.volume = 0.5;
+  popSound.play().catch(err => console.warn("Error sound gagal:", err));
+}
+
 function playNotificationSound() {
   const popSound = new Audio('https://undangan-bdg.vercel.app/Asset/bell-notification.mp3');
   popSound.volume = 0.5;
-  popSound.play().catch(err => console.warn("Pop sound gagal:", err));
+  popSound.play().catch(err => console.warn("Notification sound gagal:", err));
 }
 
 function playPopSound() {
