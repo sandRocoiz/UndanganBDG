@@ -124,38 +124,119 @@ body {
 
 .splash {
   background: url('https://undangan-bdg.vercel.app/Asset/invitation.jpg') no-repeat center/cover;
-  color: white;
   height: 100vh;
-  justify-content: center;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  text-align: center;
+  padding: 2em;
+  overflow: hidden;
 }
 
-.splash button {
-  padding: 0.6em 1.5em;
-  font-size: 0.9em;
+.splash-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4); /* ✅ layer hitam tipis */
+  z-index: 0;
+}
+
+.splash-title {
+  font-family: 'Great Vibes', cursive;
+  font-size: 3em;
+  color: #fff;
+  margin-bottom: 0.3em;
+  animation: fadeIn 1s ease forwards;
+  animation-delay: 0.3s;
+  opacity: 0;
+  z-index: 1;
+}
+
+.splash-subtitle {
+  font-family: 'Great Vibes', cursive;
+  font-size: 1.5em;
+  color: #e0e0e0;
+  margin-bottom: 1em;
+  animation: fadeIn 1s ease forwards;
+  animation-delay: 0.6s;
+  opacity: 0;
+  z-index: 1;
+}
+
+.splash-desc {
+  font-family: 'Playfair Display', serif;
+  font-size: 1em;
+  color: #ddd;
+  margin-bottom: 2em;
+  animation: fadeIn 1s ease forwards;
+  animation-delay: 0.9s;
+  opacity: 0;
+  z-index: 1;
+}
+
+.splash-button {
+  padding: 14px 28px;
+  font-size: 1em;
+  font-family: 'Playfair Display', serif;
   background: white;
   color: black;
   border: none;
-  border-radius: 30px;
+  border-radius: 40px;
   cursor: pointer;
-  font-weight: 600;
-  white-space: nowrap;
-  display: inline-block;
-  margin-top: 1.5em;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  font-weight: bold;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
   transition: all 0.3s ease;
+  animation: fadeIn 1s ease forwards;
+  animation-delay: 1.2s;
+  opacity: 0;
+  z-index: 1;
+}
+.splash-button:hover {
+  transform: scale(1.05);
+  background: #f7f7f7;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.3);
 }
 
-.splash button:hover {
-  background-color: #f0f0f0;
+/* Animasi FadeIn */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .judul-wedding {
   font-family: 'Great Vibes', cursive;
-  font-size: 2em;
-  font-weight: normal;
-  margin: 0;
+  font-size: 2.5em;
+  margin-bottom: 0.5em;
+  color: #fff;
+}
+
+#countdown-section h1#weddingNames {
+  font-family: 'Playfair Display', serif;
+  font-weight: bold;
+  font-size: 3em;
+  margin: 0.2em 0;
+  color: #fff;
+}
+
+#countdown-section h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5em;
+  font-weight: 400;
+  color: #e0e0e0;
+}
+
+.tanggal-acara {
+  font-family: 'Playfair Display', serif;
+  font-size: 1em;
+  margin-top: 0.5em;
+  color: #dcdcdc;
+}
+
+#countdown {
+  margin-top: 1em;
+  font-size: 1.2em;
+  color: #ffffff;
 }
 
 .nama-pasangan {
@@ -186,14 +267,14 @@ body {
 
 #countdown-section {
   position: relative;
-  min-height: 100vh; /* ✅ Wajib 1 layar penuh */
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   flex-direction: column;
   text-align: center;
-  background: #000; /* fallback kalau gambar belum load */
+  background: url('https://undangan-bdg.vercel.app/Asset/bg-countdown.jpg') no-repeat center/cover;
 }
 
 #countdown-section h1 span {
@@ -202,12 +283,12 @@ body {
 }
 
 #countdown-section .overlay {
-  background: rgba(0, 0, 0, 0.4);
-  padding: 2em;
-  border-radius: 10px;
-  text-align: center;
-  width: 100%;
-  max-width: 600px;
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.2); /* ✅ overlay putih soft */
+  backdrop-filter: blur(3px); /* ✅ efek blur kaca */
+  -webkit-backdrop-filter: blur(3px);
+  z-index: 0; /* di bawah tulisan */
 }
 
 /* ANIMASI FADE-IN */
@@ -1133,10 +1214,83 @@ body.loading-filter::before {
 }
 
 .shimmer-wrapper {
-  display: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   padding: 20px;
-  animation: fadeIn 0.3s ease-in;
 }
+
+.skeleton-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #f6f7f8;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  animation: skeletonPulse 4.0s infinite ease-in-out;
+}
+
+.skeleton-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(
+    90deg,
+    #eeeeee 25%,
+    #dddddd 50%,
+    #eeeeee 75%
+  );
+  background-size: 400% 100%;
+  animation: shimmerMove 3.8s infinite linear;
+}
+
+.skeleton-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeleton-line {
+  height: 14px;
+  background: linear-gradient(
+    90deg,
+    #eeeeee 25%,
+    #dddddd 50%,
+    #eeeeee 75%
+  );
+  background-size: 400% 100%;
+  border-radius: 8px;
+  animation: shimmerMove 3.8s infinite linear;
+}
+
+.skeleton-line.short {
+  width: 40%;
+}
+
+@keyframes shimmerMove {
+  0% {
+    background-position: -400% 0;
+  }
+  100% {
+    background-position: 400% 0;
+  }
+}
+
+@keyframes skeletonPulse {
+  0% {
+    background-color: #f6f7f8;
+  }
+  50% {
+    background-color: #ececec;
+  }
+  100% {
+    background-color: #f6f7f8;
+  }
+}
+
 
 .shimmer-bubble {
   height: 80px;
@@ -1161,12 +1315,29 @@ body.loading-filter::before {
 
 
 .shimmer-card {
-  background: linear-gradient(90deg, #f3f3f3 25%, #ececec 50%, #f3f3f3 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-  height: 100px;
+  height: 120px;
   border-radius: 12px;
-  margin-bottom: 12px;
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e0e0e0 50%,
+    #f0f0f0 75%
+  );
+  background-size: 400% 100%;
+  animation: shimmerMove 3.2s infinite ease-in-out;
+}
+
+.shimmer-hidden {
+  display: none !important;
+}
+
+@keyframes shimmerMove {
+  0% {
+    background-position: -400% 0;
+  }
+  100% {
+    background-position: 400% 0;
+  }
 }
 
 @keyframes shimmer {
@@ -1452,22 +1623,20 @@ body.loading-filter {
 }
 
 .parallax-bg {
-  background: url('https://undangan-bdg.vercel.app/Asset/bg-countdown.jpg') center center / cover no-repeat;
-  background-color: #d8f3dc; /* ✅ fallback kalau gambar gagal */
-  width: 100%;
-  height: 100%;
   position: absolute;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* ✅ supaya gambar penuh cover */
   z-index: -1;
 }
 
 .parallax-content {
   position: relative;
   z-index: 2;
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 1s ease, transform 1s ease;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.5); /* ✅ supaya tulisan tetap kebaca */
 }
 
 /* Saat muncul di viewport */
@@ -1506,9 +1675,14 @@ body.loading-filter {
 
 #ayat-section {
   position: relative;
-  overflow: hidden;
   padding: 80px 20px;
   background: url('https://undangan-bdg.vercel.app/Asset/bg-islamic.png') center center / cover no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .ayat-wrapper {
@@ -2374,16 +2548,7 @@ body.loading-filter {
   background-size: cover;
 }
 
-.parallax-wrapper {
-  position: relative;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  flex-direction: column;
-  text-align: center;
-}
+
 
 .main-content {
   scroll-snap-type: y mandatory;
@@ -2605,46 +2770,80 @@ body.loading-filter {
 .ayat-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.4); /* Transparan putih soft */
-  backdrop-filter: blur(3px) saturate(140%);
-  -webkit-backdrop-filter: blur(3px) saturate(140%);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(6px);
+  z-index: 1;
 }
 
 .ayat-container {
   position: relative;
-  z-index: 1;
-  background: rgba(255, 255, 255, 0.5); /* semi transparan */
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.75);
   border-radius: 20px;
   padding: 40px 30px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
   max-width: 700px;
-  margin: auto;
   text-align: center;
-  font-family: 'Playfair Display', serif;
-  animation: fadeInUp 1.5s ease both;
+  animation: fadeZoomIn 1s ease forwards;
+  opacity: 0;
+  transform: scale(0.95);
+  overflow: hidden;
 }
 
+/* Pelan shimmer */
+.shimmer-slow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-20deg);
+  animation: shimmer-slow 5s infinite;
+  z-index: 3;
+}
+
+
+@keyframes shimmer-slow {
+  0% { left: -50%; }
+  100% { left: 150%; }
+}
+
+/* Fade + Zoom In saat muncul */
+@keyframes fadeZoomIn {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Typography */
 .ayat-arabic {
   font-family: 'Scheherazade', serif;
-  font-size: 1.8em;
-  margin-bottom: 20px;
-  line-height: 1.5;
+  font-size: 2.2em;
   color: #333;
-  line-height: 1.8;
+  margin-bottom: 1em;
+  line-height: 1.6;
 }
 
 .ayat-latin {
   font-family: 'Playfair Display', serif;
+  font-size: 1.4em;
   font-style: italic;
-  font-size: 1.2em;
-  margin-bottom: 10px;
-  color: #666;
+  color: #555;
+  margin-bottom: 1em;
 }
 
 .ayat-terjemahan {
   font-family: 'Playfair Display', serif;
-  font-size: 1em;
-  color: #444;
+  font-size: 1.1em;
+  color: #666;
   line-height: 1.6;
 }
 
@@ -2881,6 +3080,123 @@ Hi <strong>NamaUser</strong> 👋
 
 .toast-info {
   background-color: #17a2b8; /* Biru info */
+}
+
+/* BottomSheet Base */
+.bottom-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+/* Overlay abu-abu */
+.bottom-sheet-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+/* Konten BottomSheet */
+.bottom-sheet-content {
+  width: 100%;
+  max-width: 480px;
+  background: #fff;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  padding: 24px;
+  text-align: center;
+  transform: translateY(100%);
+  transition: all 0.4s ease;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+  pointer-events: auto;
+}
+
+/* Tombol close (X) */
+.close-button {
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  font-size: 1.8em;
+  color: #555;
+  cursor: pointer;
+}
+
+/* Saat aktif */
+.bottom-sheet.active .bottom-sheet-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.bottom-sheet.active .bottom-sheet-content {
+  transform: translateY(0);
+}
+
+
+.rsvp-heading-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.rsvp-heading-wrapper h2 {
+  margin: 0;
+  font-size: 2em;
+}
+
+.info-icon-wrapper {
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  position: relative;
+}
+
+.info-icon {
+  width: 100%;
+  height: 100%;
+}
+
+/* Tooltip optional kalau mau tetap ada saat hover */
+.tooltip-text {
+  visibility: hidden;
+  width: 200px;
+  background-color: #ffeaa7;
+  color: #6d4c41;
+  text-align: center;
+  border-radius: 8px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: all 0.3s ease;
+  font-size: 0.85em;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.info-icon-wrapper:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+
+/* Saat hidden */
+.hidden {
+  display: none !important;
 }
 
 

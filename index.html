@@ -46,18 +46,20 @@
 <div id="toastNotification" class="toast-notification"></div>
 
 <div id="splash" class="splash">
-  <h1 style="font-family:'Great Vibes', cursive; font-size: 2em;">Devi & Sandro</h1>
-  <p class="handwrite-effect">Special Invitation to</p>
-  <p>Tanpa mengurangi rasa hormat, kami mengundang Bapak/Ibu/Saudara/i untuk hadir di acara pernikahan kami</p>
-  <button onclick="openInvitation()">🎉 Open Invitation</button>
+  <div class="splash-overlay"></div> <!-- ✅ Tambahan untuk overlay gelap -->
+
+  <h1 class="splash-title">Devi & Sandro</h1>
+  <p class="splash-subtitle handwrite-effect">Special Invitation to</p>
+  <p class="splash-desc">Tanpa mengurangi rasa hormat, kami mengundang Bapak/Ibu/Saudara/i untuk hadir di acara pernikahan kami</p>
+  
+  <button class="splash-button" onclick="openInvitation()">🎉 Open Invitation</button>
 </div>
 
 <div id="mainContent" class="main-content">
 
 <section class="parallax-wrapper" id="countdown-section">
-  <img src="https://undangan-bdg.vercel.app/Asset/bg-countdown.jpg" alt="Background" class="parallax-bg" loading="lazy">
-  
-  <div class="parallax-content scroll-reveal">
+<div class="countdown-overlay"></div> 
+    <div class="parallax-content scroll-reveal">
     <h2 class="judul-wedding">The Wedding of</h2>
     <h1 id="weddingNames" class="letter-drop">Devi & Sandro</h1>
     <h3>Rustic Elegance Morning</h3>
@@ -88,7 +90,8 @@
 
 <section id="ayat-section" class="ayat-deluxe">
   <div class="ayat-overlay"></div>
-  <div class="ayat-container scroll-reveal">
+
+  <div class="ayat-container scroll-reveal shimmer-slow"> <!-- ✅ tambah shimmer-slow -->
     <h2 class="ayat-arabic">
       بَارَكَ اللهُ لَكَ وَبَارَكَ عَلَيْكَ وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ
     </h2>
@@ -101,6 +104,7 @@
     </p>
   </div>
 </section>
+
 
 
 
@@ -224,8 +228,14 @@
 </section>
 
 
+
 <div class="rsvp-heading">
-  <h2>RSVP</h2>
+  <div class="rsvp-heading-wrapper">
+    <h2>RSVP</h2>
+    <div class="info-icon-wrapper" onclick="openBottomSheet()" title="Klik untuk info lebih lanjut!">
+      <img src="https://undangan-bdg.vercel.app/Asset/information.png" alt="Info" class="info-icon" />
+    </div>
+  </div>
   <p class="handwrite-effect">
     Yuk, isi kehadiran kamu di bawah ini.
   </p>
@@ -265,6 +275,9 @@
   <div class="shimmer-card"></div>
   <div class="shimmer-card"></div>
 </div>
+
+
+
 
 <section id="doa-section">
   <h2 class="doa-title">
@@ -359,6 +372,20 @@
     <button onclick="kirimBalasanAdmin()">Kirim</button>
     <button onclick="tutupModalBalas()" style="margin-left:1em;">Batal</button>
     <input type="hidden" id="balasIdTarget">
+  </div>
+</div>
+
+<!-- === BottomSheet Info Souvenir === -->
+<div id="bottomSheet" class="bottom-sheet hidden">
+  <div class="bottom-sheet-overlay" onclick="closeBottomSheet()"></div>
+  <div class="bottom-sheet-content">
+    <button class="close-button" onclick="closeBottomSheet()">×</button>
+    <h3>🎁 Souvenir Spesial untuk Tamu Hadir!</h3>
+    <p>
+      Jika Anda memilih <strong>Datang</strong> dalam RSVP,
+      Anda berkesempatan mendapatkan <strong>souvenir spesial</strong> dari pengantin!  
+      Terima kasih atas doa dan kehadiran Anda. 💖
+    </p>
   </div>
 </div>
 

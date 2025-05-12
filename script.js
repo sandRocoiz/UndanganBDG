@@ -89,56 +89,53 @@ function startCountdown() {
 
 // === 4. UCAPAN (SUBMIT - AMBIL - RENDER - LIKE) ===
 function ambilUcapan() {
-  const loading = document.getElementById("ucapanLoading") || { style: {} };
-  const daftar = document.getElementById("daftarUcapan") || { style: {} };
+  const daftar = document.getElementById("daftarUcapan") || { innerHTML: "" };
   const filterCheckbox = document.getElementById("filterByUser");
   const filterAktif = filterCheckbox?.checked;
-  const userId = getUserId();
   const url = new URL(endpoint);
 
   if (!filterAktif) {
     url.searchParams.set("limit", perPage);
     url.searchParams.set("page", currentPage);
+    url.searchParams.set("actionType", "filterUnchecked");
   } else {
-    url.searchParams.delete("limit");
-    url.searchParams.delete("page");
+    url.searchParams.set("actionType", "filterChecked");
   }
 
-  loading.style.display = "block";
-  daftar.style.display = "none";
+  // ✨ GANTI ISI daftarUcapan dengan skeleton box dulu
+  daftar.innerHTML = generateSkeletonCards(4); // 4 dummy card
 
   fetch(url.toString())
     .then(res => res.json())
     .then(result => {
-      let semuaData = Array.isArray(result) ? result : result.data || [];
-
-      if (filterAktif) {
-        const approved = semuaData.filter(d => d.approved === "Y" || d.approved === true);
-        
-        const filtered = approved.filter(d => 
-          (d.userId === userId && (d.is_ucapan === true || d.is_ucapan === "TRUE")) ||
-          (d.thread && semuaData.find(ucapan => ucapan.id == d.thread && ucapan.userId === userId))
-        );
-
-        // ❗ TIDAK perlu pagination kalau filter aktif
-        renderUcapan(filtered, filtered.length);
-
-        // Scroll otomatis ke bawah setelah render (kaya WhatsApp)
-        setTimeout(() => {
-          daftar.scrollTop = daftar.scrollHeight;
-        }, 500);
-
-      } else {
-        // Mode normal pakai pagination
-        renderUcapan(semuaData, result.total || semuaData.length);
-      }
+      const semuaData = Array.isArray(result) ? result : result.data || [];
+      renderUcapan(semuaData, result.total || semuaData.length);
     })
-    .catch(err => console.error("Gagal ambil ucapan:", err))
-    .finally(() => {
-      loading.style.display = "none";
-      daftar.style.display = "block";
-    });
+    .catch(err => console.error("Gagal ambil ucapan:", err));
 }
+
+// ✨ Function generate skeleton dummy
+function generateSkeletonCards(jumlah) {
+  let skeletonHTML = "";
+  for (let i = 0; i < jumlah; i++) {
+    skeletonHTML += `
+      <div class="skeleton-card">
+        <div class="skeleton-avatar"></div>
+        <div class="skeleton-lines">
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line"></div>
+        </div>
+      </div>
+    `;
+  }
+  return skeletonHTML;
+}
+
+
+
+
+
+
 
 
 
@@ -747,7 +744,7 @@ if (filterAktif) {
 } else {
   // Kalau filter tidak aktif, hitung total ucapan utama (is_ucapan == true saja)
   const totalUcapanFiltered = data.filter(msg => msg.is_ucapan === true || msg.is_ucapan === "TRUE").length;
-  const totalPages = Math.max(1, Math.ceil(totalUcapanFiltered / perPage));
+  const totalPages = Math.max(1, Math.ceil(totalUcapan / perPage));
 
   renderPagination(totalPages);
 
@@ -1103,37 +1100,106 @@ async function startPollingUcapan() {
   pollingInterval = setInterval(async () => {
     try {
       const url = new URL(endpoint);
-      url.searchParams.set("limit", "1");
-      url.searchParams.set("page", "1");
+      const filterCheckbox = document.getElementById("filterByUser");
+      const filterAktif = filterCheckbox?.checked;
+
+      if (!filterAktif) {
+        // Mode lihat semua ucapan
+        url.searchParams.set("limit", "1");
+        url.searchParams.set("page", "1");
+        url.searchParams.set("actionType", "filterUnchecked");
+      } else {
+        // Mode chat personal ➔ lihat semua thread
+        url.searchParams.set("actionType", "filterChecked");
+      }
 
       const res = await fetch(url.toString());
       const result = await res.json();
-      const totalSekarang = result.total || 0;
+      const semuaData = Array.isArray(result) ? result : result.data || [];
 
-      if (totalSekarang !== lastTotalUcapan) {
-        console.log("🚀 Ada perubahan ucapan! Refresh daftar...");
-        lastTotalUcapan = totalSekarang;
-        ambilUcapan();
-        playNotificationSound();
+      if (!filterAktif) {
+        // Mode lihat semua ucapan
+        const totalSekarang = result.total || 0;
 
-        // 🚨 Tampilkan dan shake bell
-        const bell = document.getElementById("notificationBell");
-        if (bell) {
-          bell.style.display = "block";
-          bell.classList.remove("shake"); // Reset animasi
-          void bell.offsetWidth; // Trigger reflow
-          bell.classList.add("shake");
-
-          setTimeout(() => {
-            bell.style.display = "none";
-          }, 4000); // Bell hilang setelah 4 detik
+        if (totalSekarang !== lastTotalUcapan) {
+          console.log("🚀 Ada perubahan ucapan di umum!");
+          lastTotalUcapan = totalSekarang;
+          ambilUcapan();
+          playNotificationSound();
+        }
+      } else {
+        // Mode chat ➔ cek thread saya
+        if (semuaData.length !== lastTotalUcapan) {
+          console.log("🚀 Ada update balasan chat baru!");
+          lastTotalUcapan = semuaData.length;
+          ambilUcapan();
+          playNotificationSound();
         }
       }
+      
+      // Bell animasi
+      const bell = document.getElementById("notificationBell");
+      if (bell) {
+        bell.style.display = "block";
+        bell.classList.remove("shake");
+        void bell.offsetWidth;
+        bell.classList.add("shake");
+
+        setTimeout(() => {
+          bell.style.display = "none";
+        }, 4000);
+      }
+
     } catch (err) {
       console.warn("Polling error:", err);
     }
-  }, 10000);
+  }, 10000); // polling 10 detik
 }
+
+
+
+
+async function fetchAndAppendNewUcapan() {
+  try {
+    const url = new URL(endpoint);
+    url.searchParams.set("limit", "1");
+    url.searchParams.set("page", "1");
+    url.searchParams.set("actionType", "filterUnchecked");
+
+    const res = await fetch(url.toString());
+    const result = await res.json();
+    const newUcapan = Array.isArray(result) ? result[0] : (result.data ? result.data[0] : null);
+
+    if (newUcapan) {
+      const daftar = document.getElementById("daftarUcapan");
+      const card = createUcapanCard(newUcapan);
+      daftar.appendChild(card);
+    }
+  } catch (err) {
+    console.error("Gagal fetch ucapan baru:", err);
+  }
+}
+
+// 🔥 Helper buat create 1 card ucapan
+function createUcapanCard(data) {
+  const div = document.createElement("div");
+  div.className = "ucapan-card"; // masih ucapan-card biasa dulu
+  div.innerHTML = `
+    <strong>${data.nama || 'Anonim'}</strong>
+    <p>${data.ucapan || ''}</p>
+    <small>${formatWaktuIndo(data.timestamp)}</small>
+    <div class="likes">❤️ ${Array.isArray(data.likes) ? data.likes.length : 0}</div>
+  `;
+
+  // Setelah element sudah ada di DOM ➔ kasih class .show
+  setTimeout(() => {
+    div.classList.add("show");
+  }, 50); // kasih sedikit delay supaya animasi jalan
+
+  return div;
+}
+
+
 
 
 
@@ -1214,6 +1280,23 @@ function playPopSound() {
   popSound.volume = 0.5;
   popSound.play().catch(err => console.warn("Pop sound gagal:", err));
 }
+
+function openBottomSheet() {
+  const sheet = document.getElementById("bottomSheet");
+  sheet.classList.remove("hidden");
+  setTimeout(() => {
+    sheet.classList.add("active");
+  }, 10);
+}
+
+function closeBottomSheet() {
+  const sheet = document.getElementById("bottomSheet");
+  sheet.classList.remove("active");
+  setTimeout(() => {
+    sheet.classList.add("hidden");
+  }, 300);
+}
+
 
 
 function tampilkanReservasiSudahSubmit() {
@@ -1346,17 +1429,19 @@ document.addEventListener("visibilitychange", () => {
       clearInterval(pollingInterval);
       pollingInterval = null;
     }
-
   } else {
     // Kalau user balik ke tab
     if (sessionStorage.getItem("invitationOpened") === "true") {
       bgm?.play().catch(err => console.warn("Autoplay gagal saat kembali ke tab:", err));
     }
-    
-    // ❗ Mulai polling ucapan lagi
-    startPollingUcapan();
+
+    // ❗ Mulai polling ucapan lagi (pastikan polling belum jalan)
+    if (!pollingInterval) {
+      startPollingUcapan();
+    }
   }
 });
+
 
 
 
