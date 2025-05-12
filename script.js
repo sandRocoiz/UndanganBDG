@@ -1091,14 +1091,28 @@ async function startPollingUcapan() {
       if (totalSekarang !== lastTotalUcapan) {
         console.log("🚀 Ada perubahan ucapan! Refresh daftar...");
         lastTotalUcapan = totalSekarang;
-        ambilUcapan(); // Hanya ambil ulang kalau beda
-        playPopSound(); // 🔥 Tambahkan suara pop kalau mau
+        ambilUcapan();
+        playNotificationSound();
+
+        // 🚨 Tampilkan dan shake bell
+        const bell = document.getElementById("notificationBell");
+        if (bell) {
+          bell.style.display = "block";
+          bell.classList.remove("shake"); // Reset animasi
+          void bell.offsetWidth; // Trigger reflow
+          bell.classList.add("shake");
+
+          setTimeout(() => {
+            bell.style.display = "none";
+          }, 4000); // Bell hilang setelah 4 detik
+        }
       }
     } catch (err) {
       console.warn("Polling error:", err);
     }
-  }, 10000); // 10 detik hemat
+  }, 10000);
 }
+
 
 function animateWords(selector) {
   const container = document.querySelector(selector);
@@ -1116,6 +1130,12 @@ function animateWords(selector) {
     span.style.animationDelay = `${idx * 0.25}s`; // ✨ Delay antar kata 0.25s slow
     container.appendChild(span);
   });
+}
+
+function playNotificationSound() {
+  const popSound = new Audio('https://undangan-bdg.vercel.app/Asset/bell-notification.mp3');
+  popSound.volume = 0.5;
+  popSound.play().catch(err => console.warn("Pop sound gagal:", err));
 }
 
 function playPopSound() {

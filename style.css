@@ -2788,6 +2788,19 @@ Hi <strong>NamaUser</strong> 👋
   opacity: 0;
 }
 
+@keyframes bell-shake {
+  0% { transform: rotate(0deg); }
+  20% { transform: rotate(-15deg); }
+  40% { transform: rotate(10deg); }
+  60% { transform: rotate(-10deg); }
+  80% { transform: rotate(5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.notification-bell.shake {
+  animation: bell-shake 1s ease;
+}
+
 html {
   scroll-behavior: smooth;
 }
