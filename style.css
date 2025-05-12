@@ -37,17 +37,16 @@ html, body {
 }
 
 .ucapan-thread {
-  background: #fff;
-  border: 1px solid #f0e6dc;
-  border-radius: 12px;
-  padding: 1.2em;
-  margin: 2em auto;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-  max-width: 700px;
+  background: #fdfdfd;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
 .bubble-wrapper {
-  animation: bubbleEntry 0.8s ease-out forwards;
+  display: flex;
+  margin: 6px 0;
 }
 
 @keyframes bubbleEntry {
@@ -835,23 +834,20 @@ body {
 }
 
 
+/* Untuk form balasan */
 .reply-form {
   display: flex;
-  gap: 0.5em;
-  margin-top: 1em;
-  background: #f9f9f9;
-  padding: 10px;
-  border-radius: 1em;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  gap: 10px;
+  margin-top: 10px;
+  align-items: center;
 }
 
 .reply-input {
-  flex: 1;
-  padding: 10px 15px;
+  flex-grow: 1;
+  padding: 8px 10px;
   border: 1px solid #ccc;
-  border-radius: 1em;
-  font-size: 1rem;
-  outline: none;
+  border-radius: 20px;
+  font-size: 0.9em;
 }
 
 .reply-input:focus {
@@ -860,19 +856,18 @@ body {
 }
 
 .reply-button {
-  padding: 10px 20px;
-  background-color: #5e9ed6;
-  border: none;
-  border-radius: 1em;
+  padding: 8px 14px;
+  background: #5f27cd;
   color: white;
-  font-weight: bold;
-  font-size: 1.1rem;
+  border: none;
+  border-radius: 50%;
+  font-size: 1em;
   cursor: pointer;
   transition: background 0.3s;
 }
 
 .reply-button:hover {
-  background-color: #3c8ac9;
+  background: #341f97;
 }
 
 .reply-form textarea {
@@ -912,13 +907,17 @@ body {
 }
 
 .bubble {
-  background-color: #FDF9F4;
-  color: #6B4F2B;
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 10px;
-  border-left: 4px solid #E6DCD1;
-  animation: fadeIn 0.4s ease-in-out;
+  padding: 12px 16px;
+  max-width: 75%;
+  border-radius: 18px;
+  font-size: 0.95em;
+  line-height: 1.4;
+  position: relative;
+  background: #eee;
+  color: #333;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeSlideUp 0.6s ease forwards;
 }
 
 .bubble:hover {
@@ -946,25 +945,28 @@ body {
 }
 
 .head-ucapan .bubble {
-  background: #ffffff;
-  border: 1px solid #ddd;
+  background: #f9f9f9;
+  color: #444;
+  font-weight: bold;
 }
 
 .reply-admin .bubble {
-  background: #d1e7dd;
-  border: 1px solid #a7d7c5;
+  background: #d5f4e6;
+  color: #315c4b;
+  align-self: flex-end;
 }
 
 .reply-user .bubble {
-  background: #fdf0d5;
-  border: 1px solid #f4d7ab;
+  background: #ffe8c8;
+  color: #5b4332;
+  align-self: flex-start;
 }
 
+/* Waktu kirim */
 .ucapan-time {
-  font-size: 11px;
-  margin-top: 5px;
-  text-align: right;
-  color: #666;
+  font-size: 0.7em;
+  color: #999;
+  margin-top: 6px;
 }
 
 
@@ -994,6 +996,13 @@ body {
   font-weight: bold;
   cursor: pointer;
   font-family: 'Playfair Display', serif;
+}
+
+@keyframes fadeSlideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* === LIKE BUTTON === */
@@ -2718,6 +2727,66 @@ Hi <strong>NamaUser</strong> 👋
   100% { transform: scale(1); opacity: 1; }
 }
 
+.ucapan-card.winner-card {
+  position: relative;
+  background: linear-gradient(135deg, #fff8e1, #ffe57f);
+  border: 2px solid #ffca28;
+  box-shadow: 0 0 10px rgba(255, 202, 40, 0.7);
+  animation: shimmerWinner 3s infinite linear;
+  overflow: hidden;
+}
+
+/* ✨ Shimmer effect */
+@keyframes shimmerWinner {
+  0% {
+    background-position: -500px 0;
+  }
+  100% {
+    background-position: 500px 0;
+  }
+}
+
+@keyframes gentleShake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-2px); }
+  40% { transform: translateX(2px); }
+  60% { transform: translateX(-1px); }
+  80% { transform: translateX(1px); }
+  100% { transform: translateX(0); }
+}
+
+/* Style untuk bubble reply supaya ada animasi */
+.reply-user .bubble,
+.reply-admin .bubble {
+  animation: gentleShake 0.6s ease-out;
+}
+
+@keyframes bubbleFadeInShake {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(0px) scale(1.02);
+  }
+  70% {
+    transform: translateX(-2px) scale(1);
+  }
+  90% {
+    transform: translateX(2px) scale(1);
+  }
+  100% {
+    transform: translateX(0px) scale(1);
+  }
+}
+
+/* Khusus bubble reply (admin dan user) */
+.reply-user .bubble,
+.reply-admin .bubble {
+  animation: bubbleFadeInShake 0.8s ease-out forwards;
+  opacity: 0;
+}
 
 html {
   scroll-behavior: smooth;
