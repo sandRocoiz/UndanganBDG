@@ -274,12 +274,16 @@ async function cekHadiahSetelahUcapan() {
 
 // Fungsi membuka Scratch Card
 function bukaScratchCard() {
-  const container = document.getElementById('scratchCardContainer');
+  const sheet = document.getElementById('bottomSheetScratch');
   const rewardImage = document.getElementById('scratchRewardImage');
   const resultText = document.getElementById('scratchResultText');
-  const closeBtn = document.getElementById('closeScratchBtn');
   const canvas = document.getElementById('scratchCanvas');
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+  if (!sheet || !rewardImage || !canvas || !ctx) {
+    console.error("❗ Ada elemen ScratchCard yang tidak ditemukan!");
+    return;
+  }
 
   const menang = localStorage.getItem("scratchResult") === "MENANG";
 
@@ -287,16 +291,19 @@ function bukaScratchCard() {
     ? "https://undangan-bdg.vercel.app/Asset/win.png"
     : "https://undangan-bdg.vercel.app/Asset/lose.png";
 
-  // ✅ Set Wording Instruksi saat pertama buka
+  // ✅ Set teks instruksi awal
   resultText.innerHTML = `
     <div class="scratch-message" style="font-size: 0.9rem; color: #555;">
       📜 <em>Mohon gosok bagian ini untuk melihat apakah Anda mendapatkan souvenir spesial!</em>
     </div>`;
   resultText.style.display = 'block';
-  closeBtn.style.display = 'none';
 
-  container.classList.remove('scratch-flash-win');
-  container.style.display = 'flex';
+  // 🔥 Buka BottomSheet Scratch dengan animasi
+  sheet.classList.remove('hidden');
+  setTimeout(() => {
+    sheet.classList.add('active');
+    vibrateShort();
+  }, 10);
 
   rewardImage.onload = () => {
     canvas.width = rewardImage.offsetWidth;
@@ -310,123 +317,104 @@ function bukaScratchCard() {
   };
 
   let isDrawing = false;
-  
   let scratchFinished = false;
 
   function setupScratchEvents() {
-  const scratchSound = new Audio("https://undangan-bdg.vercel.app/Asset/scratch-sound.mp3"); 
-  scratchSound.loop = true;
-  scratchSound.volume = 0.3;
+    const scratchSound = new Audio("https://undangan-bdg.vercel.app/Asset/scratch-sound.mp3");
+    scratchSound.loop = true;
+    scratchSound.volume = 0.3;
 
-  // === MOUSE EVENTS ===
-  canvas.addEventListener('mousedown', () => {
-    isDrawing = true;
-    scratchSound.play().catch(() => {}); // Play suara saat mulai gosok
-  });
+    // MOUSE
+    canvas.addEventListener('mousedown', () => {
+      isDrawing = true;
+      scratchSound.play().catch(() => {});
+    });
 
-  canvas.addEventListener('mouseup', () => {
-    isDrawing = false;
-    scratchSound.pause(); // Stop suara saat selesai gosok
-  });
+    canvas.addEventListener('mouseup', () => {
+      isDrawing = false;
+      scratchSound.pause();
+    });
 
-  canvas.addEventListener('mousemove', scratch);
+    canvas.addEventListener('mousemove', scratch);
 
-  // === TOUCH EVENTS (Mobile) ===
-  canvas.addEventListener('touchstart', () => {
-    isDrawing = true;
-    scratchSound.play().catch(() => {});
-  });
+    // TOUCH (Mobile)
+    canvas.addEventListener('touchstart', () => {
+      isDrawing = true;
+      scratchSound.play().catch(() => {});
+    });
 
-  canvas.addEventListener('touchend', () => {
-    isDrawing = false;
-    scratchSound.pause();
-  });
+    canvas.addEventListener('touchend', () => {
+      isDrawing = false;
+      scratchSound.pause();
+    });
 
-  canvas.addEventListener('touchmove', scratch);
-}
-
+    canvas.addEventListener('touchmove', scratch);
+  }
 
   function scratch(e) {
-  if (!isDrawing) return;
+    if (!isDrawing) return;
 
-  const rect = canvas.getBoundingClientRect();
-  const x = (e.clientX || e.touches?.[0]?.clientX) - rect.left;
-  const y = (e.clientY || e.touches?.[0]?.clientY) - rect.top;
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX || e.touches?.[0]?.clientX) - rect.left;
+    const y = (e.clientY || e.touches?.[0]?.clientY) - rect.top;
 
-  ctx.beginPath();
-  ctx.arc(x, y, 25, 0, Math.PI * 2);
-  ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x, y, 25, 0, Math.PI * 2);
+    ctx.fill();
 
-  // 🚀 Cek langsung progress gosokan
-  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  let cleared = 0;
-  for (let i = 0; i < imgData.data.length; i += 4) {
-    if (imgData.data[i + 3] === 0) cleared++;
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let cleared = 0;
+    for (let i = 0; i < imgData.data.length; i += 4) {
+      if (imgData.data[i + 3] === 0) cleared++;
+    }
+    const percent = (cleared / (canvas.width * canvas.height)) * 100;
+
+    if (percent > 50 && !scratchFinished) {
+      scratchFinished = true;
+      finishScratch();
+    }
   }
-  const percent = (cleared / (canvas.width * canvas.height)) * 100;
-  
-  scratchProgress = percent; // simpan progress di global variable
-
-  if (percent > 50 && !scratchFinished) {
-    scratchFinished = true;
-    finishScratch();
-  }
-}
-
-
-
-  
 
   function finishScratch() {
-  canvas.style.pointerEvents = "none"; // Disable scratch interaksi
-
-  setTimeout(() => {
-    // Fade-out canvas pelan
-    canvas.style.transition = "opacity 0.5s ease";
-    canvas.style.opacity = "0";
+    canvas.style.pointerEvents = "none";
 
     setTimeout(() => {
-      // Setelah canvas hilang, tampilkan hasil Win/Lose
-      resultText.innerHTML = menang
-        ? `<div class="scratch-message">
-             🎉 <strong>Selamat!</strong><br>
-             Kamu mendapatkan souvenir spesial!<br>
-             📸 <small>Screenshot layar ini & tunjukkan ke panitia ya!</small>
-           </div>`
-        : `<div class="scratch-message">
-             😢 <em>Belum beruntung!</em><br>
-             ✨ Terima kasih atas partisipasimu.<br>
-           </div>`;
+      canvas.style.transition = "opacity 0.5s ease";
+      canvas.style.opacity = "0";
 
-      closeBtn.style.display = 'block';
+      setTimeout(() => {
+        resultText.innerHTML = menang
+          ? `<div class="scratch-message">
+               🎉 <strong>Selamat!</strong><br>
+               Kamu mendapatkan souvenir spesial!<br>
+               📸 <small>Screenshot layar ini & tunjukkan ke panitia ya!</small>
+             </div>`
+          : `<div class="scratch-message">
+               😢 <em>Belum beruntung!</em><br>
+               ✨ Terima kasih atas partisipasimu.<br>
+             </div>`;
 
-      // 🔥 Vibrasi sesuai hasil
-      if (typeof window.navigator.vibrate === "function") {
-        if (menang) {
-          window.navigator.vibrate([100, 50, 100]);
-        } else {
-          window.navigator.vibrate(50);
+
+        // Vibration sesuai hasil
+        if (typeof window.navigator.vibrate === "function") {
+          window.navigator.vibrate(menang ? [100, 50, 100] : 50);
         }
-      }
 
-      // 🔥 Flash efek kalau menang
-      if (menang) {
-        container.classList.add('scratch-flash-win');
-        playSound('https://undangan-bdg.vercel.app/Asset/win-sound.mp3');
-        container.style.animation = "flashBlink 0.7s ease-in-out";
-      } else {
-        playSound('https://undangan-bdg.vercel.app/Asset/lose-sound.mp3');
-      }
+        if (menang) {
+          sheet.classList.add('scratch-flash-win');
+          playSound('https://undangan-bdg.vercel.app/Asset/win-sound.mp3');
+          sheet.style.animation = "flashBlink 0.7s ease-in-out";
+        } else {
+          playSound('https://undangan-bdg.vercel.app/Asset/lose-sound.mp3');
+        }
 
-    }, 500); // Delay setelah canvas fade-out
-  }, 300); // Delay setelah scratch selesai
+      }, 500);
+    }, 300);
+  }
+
+  
 }
 
-
-  closeBtn.onclick = () => {
-    container.style.display = 'none';
-  };
-}
 
 
 
@@ -980,7 +968,56 @@ function animateLetterDropById(id) {
   observer.observe(h1);
 }
 
+// === Animate Slider on Scroll into View ===
+function animateSliderOnView() {
+  const sliders = document.querySelectorAll('.slider');
 
+  sliders.forEach(slider => {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Reveal foto otomatis
+          slider.value = 0;
+          let progress = 0;
+          const animate = setInterval(() => {
+            progress += 2;
+            slider.value = progress;
+            const wrapper = slider.previousElementSibling;
+            if (wrapper) wrapper.style.width = progress + "%";
+            if (progress >= 100) {
+              clearInterval(animate);
+              setTimeout(() => {
+                slider.value = 50;
+                if (wrapper) wrapper.style.width = "50%";
+              }, 400);
+            }
+          }, 20);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    observer.observe(slider);
+  });
+}
+
+// ✨ Zoom Foto Belakang saat in-view
+function animateZoomFoto() {
+  const fotos = document.querySelectorAll('.zoomable');
+
+  fotos.forEach(foto => {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          foto.classList.add('in-view');
+          observer.unobserve(foto);
+        }
+      });
+    }, { threshold: 0.4 });
+
+    observer.observe(foto);
+  });
+}
 
 
 
@@ -990,6 +1027,10 @@ function animateLetterDropById(id) {
 
 // === INISIALISASI FINAL PATCH ===
 document.addEventListener("DOMContentLoaded", () => {
+	
+	animateSliderOnView();
+    animateZoomFoto();
+	
   const userId = getUserId();
   const display = document.getElementById("userIdValue");
   const namaUser = localStorage.getItem("nama");
@@ -1281,21 +1322,66 @@ function playPopSound() {
   popSound.play().catch(err => console.warn("Pop sound gagal:", err));
 }
 
-function openBottomSheet() {
-  const sheet = document.getElementById("bottomSheet");
+const bottomSheetConfigs = {
+  bottomSheet: 60,       // ID "bottomSheet" (RSVP) swipe threshold 60px
+  bottomSheetDoa: 50,    // ID "bottomSheetDoa" (Ucapan & Doa) swipe threshold 50px
+  bottomSheetScratch: 40 // ID "bottomSheetScratch" (Scratch & Win) swipe threshold 40px
+};
+
+function openBottomSheetGeneric(sheetId) {
+  const sheet = document.getElementById(sheetId);
+  if (!sheet) return;
+
   sheet.classList.remove("hidden");
   setTimeout(() => {
     sheet.classList.add("active");
+    vibrateShort();
   }, 10);
+
+  const content = sheet.querySelector('.bottom-sheet-content');
+  let startY = 0;
+  let isSwiping = false;
+
+  if (content) {
+    content.addEventListener('touchstart', e => {
+      startY = e.touches[0].clientY;
+      isSwiping = true;
+    });
+
+    content.addEventListener('touchmove', e => {
+      if (!isSwiping) return;
+      const currentY = e.touches[0].clientY;
+      const swipeThreshold = bottomSheetConfigs[sheetId] || 60; // fallback default 60px
+
+      if (currentY - startY > swipeThreshold) {
+        closeBottomSheetGeneric(sheetId);
+        isSwiping = false;
+      }
+    });
+
+    content.addEventListener('touchend', () => {
+      isSwiping = false;
+    });
+  }
 }
 
-function closeBottomSheet() {
-  const sheet = document.getElementById("bottomSheet");
+function closeBottomSheetGeneric(sheetId) {
+  const sheet = document.getElementById(sheetId);
+  if (!sheet) return;
+
   sheet.classList.remove("active");
   setTimeout(() => {
     sheet.classList.add("hidden");
   }, 300);
 }
+
+// ✨ Vibration Short
+function vibrateShort() {
+  if (navigator.vibrate) {
+    navigator.vibrate(50); // 50ms
+  }
+}
+
 
 
 

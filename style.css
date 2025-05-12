@@ -670,12 +670,7 @@ body {
 #unduhmantu-section p:nth-of-type(5) { animation-delay: 1.5s; }
 
 /* Animasi */
-@keyframes fadeSlideUpSlow {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+
 
 #doa-section {
   padding: 4em 1em;
@@ -2555,30 +2550,68 @@ body.loading-filter {
 }
 
 .penutup-section {
+  
   position: relative;
-  overflow: hidden;
+  background: linear-gradient(135deg, #fef9f4, #f1f8f5);
+  padding: 4em 2em;
   text-align: center;
-  padding: 80px 20px 100px; /* tambahin padding bawah supaya turun */
-  background: url('https://undangan-bdg.vercel.app/Asset/bg-footer.jpg') center center / cover no-repeat;
-  font-family: 'Playfair Display', serif;
-  color: white;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end; /* ini supaya tulisan auto ke bawah */
-  align-items: center;
+  overflow: hidden;
 }
 
 .penutup-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('https://undangan-bdg.vercel.app/Asset/flower-overlay.jpeg'); /* ❗ Pakai overlay bunga transparan */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  opacity: 0.05;
+  z-index: 0;
+}
+
+.penutup-section > * {
   position: relative;
-  background: rgba(255, 255, 255, 0.3); /* semi transparan */
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  padding: 20px;
-  border-radius: 15px;
-  max-width: 90%;
-  margin-bottom: 40px; /* kasih jarak dari bawah */
-  animation: fadeInUp 1s ease forwards, shimmerGlow 4s ease-in-out infinite;
+  z-index: 1;
+}
+
+/* === Animasi Salam Slide Up === */
+@keyframes slideUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.animate-slide-up {
+  opacity: 0;
+  transform: translateY(40px);
+  animation: slideUp 1s ease forwards;
+  animation-delay: 0.3s;
+}
+
+/* === Animasi Fade In Slow Text === */
+.fade-in-text {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 1.5s ease-out forwards;
+  animation-delay: 1s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .penutup-salam {
@@ -2636,12 +2669,7 @@ body.loading-filter {
 }
 
 
-@keyframes fadeSlideUpSlow {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+
 
 .map-link {
   display: inline-flex;
@@ -3092,17 +3120,17 @@ Hi <strong>NamaUser</strong> 👋
   justify-content: flex-end;
   align-items: center;
   pointer-events: none;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
 }
 
 /* Overlay abu-abu */
 .bottom-sheet-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(2px);
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(4px); /* ✨ Blur background */
   opacity: 0;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
 }
 
 /* Konten BottomSheet */
@@ -3112,10 +3140,10 @@ Hi <strong>NamaUser</strong> 👋
   background: #fff;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
-  padding: 24px;
+  padding: 24px 20px 32px;
   text-align: center;
-  transform: translateY(100%);
-  transition: all 0.4s ease;
+  transform: translateY(100%) scale(0.98);
+  transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1); /* ✨ Animasi halus */
   box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
   pointer-events: auto;
 }
@@ -3139,7 +3167,7 @@ Hi <strong>NamaUser</strong> 👋
 }
 
 .bottom-sheet.active .bottom-sheet-content {
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
 }
 
 
@@ -3151,16 +3179,27 @@ Hi <strong>NamaUser</strong> 👋
   margin-bottom: 8px;
 }
 
+.rsvp-heading-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  position: relative;
+}
+
 .rsvp-heading-wrapper h2 {
   margin: 0;
   font-size: 2em;
 }
 
 .info-icon-wrapper {
-  width: 28px;
-  height: 28px;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
   cursor: pointer;
-  position: relative;
 }
 
 .info-icon {
@@ -3193,6 +3232,215 @@ Hi <strong>NamaUser</strong> 👋
   opacity: 1;
 }
 
+.rsvp-tooltip {
+  font-size: 0.9em;
+  color: #7a5c34;
+  background: #fff8e7;
+  border: 1px dashed #deb887;
+  padding: 8px 12px;
+  margin-top: 8px;
+  border-radius: 8px;
+  text-align: center;
+  animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.rsvp-info-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.info-icon-wrapper {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  animation: bounceIcon 2s infinite; /* ✨ Tambah animasi bounce */
+}
+
+/* Icon Image */
+.info-icon {
+  width: 100%;
+  height: 100%;
+}
+
+/* ✨ Animasi Bounce */
+@keyframes bounceIcon {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(-50%) translateY(0);
+  }
+  40% {
+    transform: translateY(-50%) translateY(-8px);
+  }
+  60% {
+    transform: translateY(-50%) translateY(-4px);
+  }
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: 200px;
+  background-color: #ffeaa7;
+  color: #6d4c41;
+  text-align: center;
+  border-radius: 8px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: all 0.3s ease;
+  font-size: 0.85em;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Saat hover ke icon */
+.info-icon-wrapper:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.doa-heading-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.doa-heading-wrapper h2 {
+  margin: 0;
+  font-size: 2em;
+}
+
+.info-icon-wrapper-doa {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+}
+
+.info-icon-doa {
+  width: 100%;
+  height: 100%;
+}
+
+/* Tooltip untuk icon info */
+.tooltip-text-doa {
+  visibility: hidden;
+  width: 200px;
+  background-color: #ffeaa7;
+  color: #6d4c41;
+  text-align: center;
+  border-radius: 8px;
+  padding: 8px;
+  position: absolute;
+  z-index: 1;
+  top: -50px;
+  right: 0;
+  opacity: 0;
+  transition: all 0.3s ease;
+  font-size: 0.8em;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.info-icon-wrapper-doa:hover .tooltip-text-doa {
+  visibility: visible;
+  opacity: 1;
+}
+
+.bottom-sheet-content.animate-pop {
+  animation: popUp 0.5s ease-out forwards;
+}
+
+@keyframes popUp {
+  0% {
+    transform: translateY(100px) scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.bottom-title {
+  background: linear-gradient(90deg, #ffc107, #ff4081, #ffc107);
+  background-size: 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmerTitle 4s linear infinite;
+}
+
+@keyframes shimmerTitle {
+  0% { background-position: 0%; }
+  50% { background-position: 100%; }
+  100% { background-position: 0%; }
+}
+
+/* === Background Gradient Soft === */
+.gradient-bg {
+  background: linear-gradient(135deg, #e6f7f1, #fdf6f0);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* === Zoomable Background (Foto Belakang) === */
+.zoomable {
+  transition: transform 10s ease;
+}
+.zoomable.in-view {
+  transform: scale(1.08);
+}
+
+/* === Heartbeat Effect untuk Nama === */
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.heartbeat {
+  animation: heartbeat 2.5s ease-in-out infinite;
+}
+
+/* === Social Media Styling === */
+.social a {
+  text-decoration: none;
+  color: #555;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.95em;
+}
+.social a:hover {
+  color: #ff7f50;
+  transition: color 0.3s ease;
+}
+
+@keyframes fadeSlideUpSlow {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
 /* Saat hidden */
 .hidden {

@@ -179,6 +179,27 @@
     font-size: 1rem;
   }
   
+  .couple-container {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .couple-block {
+    width: 100%;
+  }
+  .reveal-container {
+    width: 100%;
+  }
+  
+  .penutup-salam {
+    font-size: 1.4em;
+  }
+  .pantun-container {
+    font-size: 1.2em;
+  }
+  .penutup-invite {
+    font-size: 1.1em;
+  }
+  
 }
 
 
@@ -354,6 +375,19 @@
   .map-link img {
     width: 20px;
     height: 20px;
+  }
+  
+  .info-icon-wrapper {
+    width: 24px;
+    height: 24px;
+    right: 12px;
+  }
+  
+  .info-icon-wrapper-doa {
+    .info-icon-wrapper-doa {
+    width: 24px;
+    height: 24px;
+    right: 12px;
   }
 
   

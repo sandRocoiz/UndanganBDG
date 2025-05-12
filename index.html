@@ -111,41 +111,53 @@
 
 <section id="couple-section" class="scroll-reveal">
   <div class="couple-container">
+  
     <!-- Mempelai Wanita -->
     <div class="couple-block">
-  <div class="reveal-container">
-    <img src="https://i.imgur.com/1nnw0Hk.jpeg" class="foto-belakang" />
-    <div class="reveal-wrapper">
-      <img src="https://i.imgur.com/gvXAGTq.jpeg" class="foto-depan" />
+      <div class="reveal-container gradient-bg">
+        <img src="https://i.imgur.com/1nnw0Hk.jpeg" class="foto-belakang zoomable" />
+        <div class="reveal-wrapper">
+          <img src="https://i.imgur.com/gvXAGTq.jpeg" class="foto-depan" />
+        </div>
+        <input type="range" min="0" max="100" value="50" class="slider" />
+      </div>
+      <div class="couple-desc fade-in-up">
+        <h3 class="role">Mempelai Wanita</h3>
+        <h2 class="name heartbeat">Devi Desviani</h2>
+        <p>Putri dari pasangan Bapak Bambang Pratioto & Ibu Linna Nurliana</p>
+        <div class="social">
+          <a href="https://instagram.com/devidesviani" target="_blank">
+            <i class="fab fa-instagram"></i> @devidesviani
+          </a>
+        </div>
+      </div>
     </div>
-    <input type="range" min="0" max="100" value="50" class="slider" />
-  </div>
-  <div class="couple-desc">
-    <h3 class="role">Mempelai Wanita</h3>
-    <h2 class="name">Devi Desviani</h2>
-    <p>Putri dari pasangan Bapak Bambang Pratioto & Ibu Linna Nurliana</p>
-    <div class="social">@devidesviani</div>
-  </div>
-</div>
 
     <!-- Mempelai Pria -->
     <div class="couple-block reverse">
-      <div class="reveal-container">
-    <img src="https://i.imgur.com/IEj2ZPl.jpeg" class="foto-belakang" />
-    <div class="reveal-wrapper">
-      <img src="https://i.imgur.com/lpEuk7w.jpeg" class="foto-depan" />
-    </div>
-    <input type="range" min="0" max="100" value="50" class="slider" />
-  </div>
-      <div class="couple-desc">
+      <div class="reveal-container gradient-bg">
+        <img src="https://i.imgur.com/IEj2ZPl.jpeg" class="foto-belakang zoomable" />
+        <div class="reveal-wrapper">
+          <img src="https://i.imgur.com/lpEuk7w.jpeg" class="foto-depan" />
+        </div>
+        <input type="range" min="0" max="100" value="50" class="slider" />
+      </div>
+      <div class="couple-desc fade-in-up">
         <h3 class="role">Mempelai Pria</h3>
-        <h2 class="name">Sandro Dwicahyo</h2>
+        <h2 class="name heartbeat">Sandro Dwicahyo</h2>
         <p>Putra dari pasangan Bapak Agus Mediarto Mulya & Ibu Nuryati</p>
-        <div class="social">@sandro.dwicahyo</div>
+        <div class="social">
+          <a href="https://instagram.com/sandro.dwicahyo" target="_blank">
+            <i class="fab fa-instagram"></i> @sandro.dwicahyo
+          </a>
+        </div>
       </div>
     </div>
+
   </div>
 </section>
+
+
 
 <section id="weddingdate-section">
 	<h2 class="weddingdate-title">
@@ -232,9 +244,14 @@
 <div class="rsvp-heading">
   <div class="rsvp-heading-wrapper">
     <h2>RSVP</h2>
-    <div class="info-icon-wrapper" onclick="openBottomSheet()" title="Klik untuk info lebih lanjut!">
+    <div class="info-icon-wrapper" onclick="openBottomSheetGeneric('bottomSheet')" title="Klik untuk info lebih lanjut!">
       <img src="https://undangan-bdg.vercel.app/Asset/information.png" alt="Info" class="info-icon" />
+    <div class="tooltip-text-doa">
+      📢 Klik aku untuk informasi lebih lengkap!
     </div>
+	</div>
+	
+		
   </div>
   <p class="handwrite-effect">
     Yuk, isi kehadiran kamu di bawah ini.
@@ -280,10 +297,17 @@
 
 
 <section id="doa-section">
-  <h2 class="doa-title">
-    <span class="doa-title-main">Ucapan &</span>
-    <span class="doa-title-sub">Doa</span>
-  </h2>
+  <div class="doa-heading-wrapper">
+  <h2>Ucapan & <span class="doa-title-sub">Doa</span></h2>
+
+  <!-- ✨ Icon Info di Kanan Atas -->
+  <div class="info-icon-wrapper-doa" onclick="openBottomSheetGeneric('bottomSheetDoa')" title="Klik untuk info lebih lanjut!">
+    <img src="https://undangan-bdg.vercel.app/Asset/information.png" alt="Info" class="info-icon-doa" />
+    <div class="tooltip-text-doa">
+      📢 Klik aku untuk informasi lebih lengkap!
+    </div>
+  </div>
+</div>
 
   <form id="formUcapan" onsubmit="submitUcapan(event)" class="form-doa">
     <input type="text" name="nama" id="nama" placeholder="Tulis namamu di sini..." class="input-nama" required>
@@ -318,25 +342,27 @@
   
 
 
-<div id="scratchCardContainer" class="scratch-container" style="display: none;">
-  <div class="scratch-card-wrapper">
-    <img id="scratchRewardImage" src="" alt="Reward" class="reward-image">
-    <canvas id="scratchCanvas"></canvas>
 
-    <!-- Tambahkan Progress Bar + Text di bawah Canvas -->
-    <div id="progressContainer" style="width: 100%; height: 5px; background: #eee; margin-top: 10px; display: none;">
-      <div id="progressBar" style="height: 100%; width: 0; background: #4caf50;"></div>
-    </div>
 
-    <div id="progressText" style="margin-top: 10px; font-size: 14px; color: #777; text-align: center; display: none;">
-      Keep scratching...
-    </div>
-    <!-- Akhir progress -->
 
+<!-- === BottomSheet Info Scratch & Win === -->
+<div id="bottomSheetDoa" class="bottom-sheet hidden">
+  <div class="bottom-sheet-overlay" onclick="closeBottomSheetGeneric('bottomSheetDoa')"></div>
+  <div class="bottom-sheet-content">
+    <button class="close-button" onclick="closeBottomSheetGeneric('bottomSheetDoa')">×</button>
+    <h3>🎁 Scratch & Win Souvenir Spesial!</h3>
+    <p style="text-align: left;">
+      Terima kasih telah mengirimkan konfirmasi kehadiran! 🙏<br><br>
+
+      Kini, Anda mendapatkan kesempatan untuk bermain <strong>Scratch & Win</strong>:
+      <ul style="text-align: left; margin-top: 8px;">
+        <li>1. Klik dan gesek Scratch Card yang akan muncul.</li>
+        <li>2. Jika beruntung, Anda akan mendapatkan souvenir spesial dari pengantin! 🎉</li>
+        <li>3. Kesempatan ini hanya diberikan untuk tamu yang telah mengisi kehadiran dan memberikan ucapan.</li>
+      </ul>
+      Selamat mencoba dan semoga beruntung! 🍀
+    </p>
   </div>
-
-  <p id="scratchResultText" class="scratch-result-text"></p>
-  <button id="closeScratchBtn" class="scratch-close-btn">Tutup</button>
 </div>
 
 
@@ -347,16 +373,21 @@
 
 
 
+<section id="penutupSection" class="penutup-section scroll-reveal">
+  <div class="penutup-overlay"></div> <!-- ✅ Tambahan Background soft -->
 
+  <p class="penutup-salam animate-slide-up">
+    Wassalamu’alaikum warahmatullahi wabarakatuh
+  </p>
 
-<section id="penutupSection" class="penutup-section">
-  <p class="penutup-salam">Wassalamu’alaikum warahmatullahi wabarakatuh</p>
-  <div id="pantunContainer" class="pantun-container"></div>
-  <p class="penutup-invite">
-    Dengan penuh sukacita, kami mengundang Bapak/Ibu/Saudara/i untuk menjadi saksi perjalanan kami.<br>
-    Terima kasih atas kehangatan dan doa restunya.
+  <div id="pantunContainer" class="pantun-container animate-words"></div>
+
+  <p class="penutup-invite fade-in-text">
+    💌 Dengan penuh sukacita, kami mengundang Bapak/Ibu/Saudara/i untuk menjadi saksi perjalanan kami.<br>
+    Terima kasih atas kehangatan dan doa restunya. 🌸
   </p>
 </section>
+
 
 <audio id="bgm" loop style="display: none;">
   <source src="/Asset/music-bg.mp3" type="audio/mp3">
@@ -377,16 +408,46 @@
 
 <!-- === BottomSheet Info Souvenir === -->
 <div id="bottomSheet" class="bottom-sheet hidden">
-  <div class="bottom-sheet-overlay" onclick="closeBottomSheet()"></div>
-  <div class="bottom-sheet-content">
-    <button class="close-button" onclick="closeBottomSheet()">×</button>
-    <h3>🎁 Souvenir Spesial untuk Tamu Hadir!</h3>
-    <p>
-      Jika Anda memilih <strong>Datang</strong> dalam RSVP,
-      Anda berkesempatan mendapatkan <strong>souvenir spesial</strong> dari pengantin!  
-      Terima kasih atas doa dan kehadiran Anda. 💖
+  <div class="bottom-sheet-overlay" onclick="closeBottomSheetGeneric('bottomSheet')"></div>
+
+  <div class="bottom-sheet-content animate-pop">
+    <button class="close-button" onclick="closeBottomSheetGeneric('bottomSheet')">×</button>
+
+    <h3 class="bottom-title">🎁 Your Chance to Win an Exclusive Souvenir!</h3>
+
+    <p style="text-align: center; margin-top: 1em;">
+      Dengan memilih <strong>Datang</strong> dalam RSVP,
+      Anda berhak mengikuti <strong>Scratch & Win Experience</strong> yang kami sediakan untuk tamu spesial.<br><br>
+      🎉 Hadiah berupa <strong>souvenir eksklusif</strong> telah kami siapkan untuk <strong>10 tamu beruntung</strong>.<br><br>
+      Terima kasih telah menjadi bagian dari momen istimewa kami. Kehadiran Anda sungguh berarti. 💖
     </p>
   </div>
+</div>
+
+<!-- === BottomSheet Scratch & Win === -->
+<div id="bottomSheetScratch" class="bottom-sheet hidden">
+  <div class="bottom-sheet-overlay" onclick="closeBottomSheetGeneric('bottomSheetScratch')"></div>
+
+  <div class="bottom-sheet-content">
+    <button class="close-button" onclick="closeBottomSheetGeneric('bottomSheetScratch')">×</button>
+
+    <!-- Scratch Card Content -->
+    <div class="scratch-card-wrapper">
+      <img id="scratchRewardImage" src="" alt="Reward" class="reward-image">
+      <canvas id="scratchCanvas"></canvas>
+
+      <!-- Progress Bar + Text -->
+      <div id="progressContainer" style="width: 100%; height: 5px; background: #eee; margin-top: 10px; display: none;">
+        <div id="progressBar" style="height: 100%; width: 0; background: #4caf50;"></div>
+      </div>
+
+      <div id="progressText" style="margin-top: 10px; font-size: 14px; color: #777; text-align: center; display: none;">
+        Keep scratching...
+      </div>
+    </div>
+
+    <p id="scratchResultText" class="scratch-result-text"></p>
+    </div>
 </div>
 
 <audio id="winSound" src="https://undangan-bdg.vercel.app/Asset/win-sound.mp3"></audio>
