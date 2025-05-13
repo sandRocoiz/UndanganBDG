@@ -1387,12 +1387,17 @@ function openBottomSheetGeneric(sheetId) {
       const swipeThreshold = bottomSheetConfigs[sheetId] || 60; // fallback default 60px
 
       if (currentY - startY > swipeThreshold) {
-        closeBottomSheetGeneric(sheetId);
-        isSwiping = false;
-      }
-    });
+      if (sheetId === 'bottomSheetScratch' && !scratchFinished) {
+      alert("Selesaikan scratch dulu ya sebelum menutup! 🎯");
+      isSwiping = false;
+      return;
+     }
+     closeBottomSheetGeneric(sheetId);
+     isSwiping = false;
+     }
+     });
 
-    content.addEventListener('touchend', () => {
+     content.addEventListener('touchend', () => {
       isSwiping = false;
     });
   }
