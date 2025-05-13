@@ -246,31 +246,46 @@ function tampilkanStatusMsg(idElement, pesan, tipe = "success") {
 
 // Fungsi setelah submit ucapan (untuk cek hadiah)
 async function cekHadiahSetelahUcapan() {
-  const menang = Math.random() < 0.8; // 80% chance
-  localStorage.setItem("scratchResult", menang ? "MENANG" : "KALAH");
+  const userId = getUserId();
+  try {
+    const res = await fetch(`${endpoint}?action=checkPrize&userId=${userId}`);
+    const result = await res.json();
 
-  if (menang) {
-    const form = new URLSearchParams();
-    form.append("action", "win"); // <== penting!
-    form.append("userId", getUserId());
-
-    try {
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: form.toString()
-      });
-
-      const text = await res.text();
-      console.log("Update Winner Response:", text);
-
-    } catch (err) {
-      console.error("Gagal update winner ke server:", err);
+    if (result.error) {
+      console.error("Gagal cek prize:", result.error);
+      return;
     }
-  }
 
-  bukaScratchCard();
+    const menang = result.winner === true;
+    localStorage.setItem("scratchResult", menang ? "MENANG" : "KALAH");
+
+    if (menang) {
+      const form = new URLSearchParams();
+      form.append("action", "win"); // <== penting!
+      form.append("userId", userId);
+
+      try {
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: form.toString()
+        });
+
+        const text = await res.text();
+        console.log("Update Winner Response:", text);
+
+      } catch (err) {
+        console.error("Gagal update winner ke server:", err);
+      }
+    }
+
+    bukaScratchCard();
+
+  } catch (err) {
+    console.error("Gagal fetch cek prize:", err);
+  }
 }
+
 
 // Fungsi membuka Scratch Card
 function bukaScratchCard() {
@@ -976,11 +991,10 @@ function animateSliderOnView() {
     const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          // Reveal foto otomatis
           slider.value = 0;
           let progress = 0;
           const animate = setInterval(() => {
-            progress += 2;
+            progress += 1; // 🔥 diperlambat: tambah 1 saja tiap cycle
             slider.value = progress;
             const wrapper = slider.previousElementSibling;
             if (wrapper) wrapper.style.width = progress + "%";
@@ -989,9 +1003,9 @@ function animateSliderOnView() {
               setTimeout(() => {
                 slider.value = 50;
                 if (wrapper) wrapper.style.width = "50%";
-              }, 400);
+              }, 500); // lebih lambat juga delay reset
             }
-          }, 20);
+          }, 30); // 🔥 diperlambat: dari 20ms jadi 30ms
           observer.unobserve(entry.target);
         }
       });
@@ -1000,6 +1014,7 @@ function animateSliderOnView() {
     observer.observe(slider);
   });
 }
+
 
 // ✨ Zoom Foto Belakang saat in-view
 function animateZoomFoto() {
@@ -1247,20 +1262,34 @@ function createUcapanCard(data) {
 function animateWords(selector) {
   const container = document.querySelector(selector);
   if (!container) return;
-  const text = container.innerText.trim();
+  const html = container.innerHTML.trim();
   container.innerHTML = "";
 
-  text.split(" ").forEach((word, idx) => {
-    const span = document.createElement("span");
-    span.textContent = word + " ";
-    span.style.opacity = 0;
-    span.style.display = "inline-block";
-    span.style.transform = "translateY(20px)";
-    span.style.animation = "fadeSlideUpSlow 1.5s ease-out forwards";
-    span.style.animationDelay = `${idx * 0.25}s`; // ✨ Delay antar kata 0.25s slow
-    container.appendChild(span);
+  const parts = html.split(/(\s+|<br\s*\/?>)/gi);
+
+  let delayIndex = 0;
+
+  parts.forEach((part) => {
+    if (/<br\s*\/?>/i.test(part)) { // 🔥 pakai regex test yang aman
+      container.appendChild(document.createElement("br"));
+    } else if (part.trim() !== "") {
+      const span = document.createElement("span");
+      span.innerHTML = part + " "; // Tetap pakai innerHTML
+      span.style.opacity = 0;
+      span.style.display = "inline-block";
+      span.style.transform = "translateY(20px)";
+      span.style.animation = "fadeSlideUpSlow 1.5s ease-out forwards";
+      span.style.animationDelay = `${delayIndex * 0.25}s`;
+      container.appendChild(span);
+      delayIndex++;
+    }
   });
 }
+
+
+
+
+
 
 function showToast(message, tipe = "success") {
   let toast = document.getElementById('toastNotification');

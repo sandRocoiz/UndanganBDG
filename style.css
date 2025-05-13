@@ -737,14 +737,27 @@ body {
   border-bottom-color: #6d4c3d;
 }
 
+.form-doa input,
+.form-doa select,
+.form-doa textarea {
+  width: 100%;
+  padding: 10px 8px;
+  margin-bottom: 1.2em;
+  border: none;
+  border-bottom: 2px solid #8b5e3c; /* warna underline */
+  background: transparent;
+  font-size: 1em;
+  outline: none;
+  box-shadow: none;
+  border-radius: 0; /* Hapus sudut rounded */
+}
+
 .form-doa select {
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  appearance: none; /* Hilangkan panah bawaan */
+  background-image: url('data:image/svg+xml;utf8,<svg fill=\"brown\" height=\"24\" viewBox=\"0 0 24 24\" width=\"24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M7 10l5 5 5-5z\"/></svg>');
   background-repeat: no-repeat;
   background-position: right 8px center;
-  background-size: 18px;
-  padding-right: 30px;
+  background-size: 24px;
 }
 
 .form-doa button[type="submit"] {
@@ -1788,11 +1801,22 @@ body.loading-filter {
 #formReservasi input,
 #formReservasi select {
   width: 100%;
-  max-width: 320px;
+  /* HAPUS max-width */
   padding: 0.8rem;
   font-size: 1rem;
-  border-radius: 10px;
-  border: 1px solid #ccc;
+  border: none;
+  border-bottom: 2px solid #8b5e3c;
+  background: transparent;
+  font-family: 'Playfair Display', serif;
+  color: #5c4436;
+  border-radius: 0;
+  outline: none;
+}
+
+#formReservasi .input-wrapper {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 0 1.2em 0;
 }
 
 #formReservasi button.btn-konfirmasi {
@@ -1818,7 +1842,7 @@ body.loading-filter {
 }
 
 #reservasiThanks .thank-you-img {
-  width: 180px;
+  width: 500px;
   margin: 0 auto 1.5em auto;
   display: block;
   animation: floating 4s ease-in-out infinite;
@@ -1826,7 +1850,7 @@ body.loading-filter {
 
 #reservasiThanks .thanks-wording {
   font-family: 'Playfair Display', serif;
-  font-size: 0.7rem; /* <= dikecilin, info aja */
+  font-size: 0.6rem; /* <= dikecilin, info aja */
   font-weight: 100; /* <= normal, bukan bold */
   color: #6D4C41; /* earthy tone */
   margin-top: 1em;
@@ -2141,9 +2165,6 @@ body.loading-filter {
   margin-top: 1em;
 }
 
-.thanks-message img {
-  max-width: 180px;
-}
 
 .thanks-message p {
   font-size: 2em;
@@ -2152,7 +2173,7 @@ body.loading-filter {
 }
 
 .thanks-message img {
-  max-width: 100px;
+  max-width: 50px;
   animation: fadeIn 1s ease;
 }
 
@@ -2218,7 +2239,7 @@ body.loading-filter {
 
 /* Floating + Rotate Smooth Animation */
 .floating-animate {
-  width: 140px;
+  width: 500px;
   margin-bottom: 10px;
   animation: floating 4s ease-in-out infinite;
 }
@@ -2436,7 +2457,7 @@ body.loading-filter {
 }
 
 #ucapanThanks .floating-animate {
-  width: 180px;
+  width: 500px;
   margin: 0 auto 1.5em auto;
   display: block;
   animation: floating 4s ease-in-out infinite;
@@ -2444,7 +2465,7 @@ body.loading-filter {
 
 #ucapanThanks .thanks-wording {
   font-family: 'Playfair Display', serif;
-  font-size: 0.7rem; /* <= KECIL dan rapi */
+  font-size: 0.6rem; /* <= KECIL dan rapi */
   font-weight: 100;
   color: #6D4C41;
   margin-top: 1em;
@@ -2634,6 +2655,8 @@ body.loading-filter {
   transform: translateY(20px);
   animation: fadeInUp 1.5s ease-out forwards;
   animation-delay: 0.5s;
+  white-space: normal; /* ✅ Biar teks tetap wrap normal */
+  word-break: break-word; /* ✅ Biar teks rapi */
 }
 
 .penutup-invite {
@@ -3277,6 +3300,7 @@ Hi <strong>NamaUser</strong> 👋
 .info-icon {
   width: 100%;
   height: 100%;
+  animation: bounceTooltip 2s infinite;
 }
 
 /* ✨ Animasi Bounce */
@@ -3343,7 +3367,22 @@ Hi <strong>NamaUser</strong> 👋
 .info-icon-doa {
   width: 100%;
   height: 100%;
+  animation: bounceTooltip 2s infinite;
 }
+
+/* ✨ Definisi keyframes bounce */
+@keyframes bounceTooltip {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-6px);
+  }
+  60% {
+    transform: translateY(-3px);
+  }
+}
+
 
 /* Tooltip untuk icon info */
 .tooltip-text-doa {
@@ -3445,6 +3484,47 @@ Hi <strong>NamaUser</strong> 👋
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+#countdown-section #weddingNames {
+  font-size: 8vw; /* Responsive, fleksibel tergantung layar */
+  max-font-size: 3.2rem; /* Batas atas */
+  min-font-size: 1.8rem; /* Batas bawah */
+  letter-spacing: 0.5px;
+  word-break: break-word;
+  white-space: normal;
+}
+
+@keyframes bounceTooltip {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-6px);
+  }
+  60% {
+    transform: translateY(-3px);
+  }
+}
+
+.tooltip-text-doa {
+  animation: bounceTooltip 2s infinite; /* ✨ Efek bounce jalan terus */
+}
+
+.pantun-container span,
+.penutup-invite span {
+  margin-right: 4px; /* ✅ kasih spasi antar kata */
+}
+
+#bottomSheetScratch {
+  opacity: 0;
+  transform: translateY(100px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+#bottomSheetScratch.active {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Saat hidden */

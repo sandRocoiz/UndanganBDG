@@ -15,8 +15,8 @@
   
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="responsive.css">
-  <link rel="stylesheet" href="style-protect.css">
-  <script defer src="protect.js"></script>
+  <!--<link rel="stylesheet" href="style-protect.css">-->
+  <!--<script defer src="protect.js"></script>-->
 
   <script defer src="script.js"></script>
 
@@ -263,19 +263,24 @@
 </div>
 
 <form id="formReservasi" class="form-doa">
-  <input type="text" id="namaReservasi" placeholder="Tulis Nama Anda" required />
+  <div class="input-wrapper">
+    <input type="text" id="namaReservasi" placeholder="Tulis namamu di sini..." required />
+  </div>
   
-  <select id="statusReservasi" required>
-    <option value="" disabled selected>Konfirmasi Kehadiran Anda</option>
-    <option value="datang">Datang</option>
-    <option value="tidak">Tidak Datang</option>
-    <option value="ragu-ragu">Masih Ragu</option>
-  </select>
-  
-  <button type="submit" class="btn-konfirmasi">Konfirmasi</button>
-  
-  <p id="statusReservasiMsg" class="status-msg"></p>
+  <div class="input-wrapper">
+    <select id="statusReservasi" required>
+      <option value="" disabled selected>Konfirmasi Kehadiran Anda</option>
+      <option value="datang">Datang</option>
+      <option value="tidak">Tidak Datang</option>
+      <option value="ragu-ragu">Masih Ragu</option>
+    </select>
+  </div>
+
+  <button type="submit" class="btn-submit">Konfirmasi</button>
 </form>
+
+
+
 
 <div id="reservasiThanks" class="thanks-message" style="display:none;">
   <img src="https://undangan-bdg.vercel.app/Asset/thank-you.png" alt="Terima kasih" class="thank-you-img floating-animate">
@@ -354,18 +359,22 @@
   <div class="bottom-sheet-overlay" onclick="closeBottomSheetGeneric('bottomSheetDoa')"></div>
   <div class="bottom-sheet-content">
     <button class="close-button" onclick="closeBottomSheetGeneric('bottomSheetDoa')">×</button>
-    <h3>🎁 Scratch & Win Souvenir Spesial!</h3>
-    <p style="text-align: left;">
-      Terima kasih telah mengirimkan konfirmasi kehadiran! 🙏<br><br>
+    <!-- 🎮 OPSI 2: Fun Playful Version -->
+<h3>🎯 Let's Play: Scratch & Win Souvenir Spesial!</h3>
 
-      Kini, Anda mendapatkan kesempatan untuk bermain <strong>Scratch & Win</strong>:
-      <ul style="text-align: left; margin-top: 8px;">
-        <li>1. Klik dan gesek Scratch Card yang akan muncul.</li>
-        <li>2. Jika beruntung, Anda akan mendapatkan souvenir spesial dari pengantin! 🎉</li>
-        <li>3. Kesempatan ini hanya diberikan untuk tamu yang telah mengisi kehadiran dan memberikan ucapan.</li>
-      </ul>
-      Selamat mencoba dan semoga beruntung! 🍀
-    </p>
+<p style="text-align: left;">
+  Woohoo! Terima kasih sudah konfirmasi hadir! 🙌<br><br>
+
+  Sekarang saatnya bersenang-senang di <strong>Scratch & Win</strong>:
+  <ul style="text-align: left; margin-top: 8px;">
+    <li>1. Kirim ucapan dan doa gokil kamu untuk kami. 📝💬</li>
+    <li>2. Klik dan gosok Scratch Card yang bakal muncul! 🎯✨</li>
+    <li>3. Kalau beruntung, hadiah <strong>Souvenir Eksklusif</strong> siap kamu bawa pulang! 🎉🎁</li>
+  </ul>
+
+  🎊 Hanya untuk tamu kece yang udah RSVP dan kirim ucapan! <br><br>
+  Yuk buruan, semoga kamu yang beruntung dapetin hadiahnya! 🍀🔥
+</p>
   </div>
 </div>
 
@@ -417,14 +426,19 @@
   <div class="bottom-sheet-content animate-pop">
     <button class="close-button" onclick="closeBottomSheetGeneric('bottomSheet')">×</button>
 
-    <h3 class="bottom-title">🎁 Your Chance to Win an Exclusive Souvenir!</h3>
+    <h3 class="bottom-title">🎯 Let's Win Some Fun: Scratch & Win Time!</h3>
 
-    <p style="text-align: center; margin-top: 1em;">
-      Dengan memilih <strong>Datang</strong> dalam RSVP,
-      Anda berhak mengikuti <strong>Scratch & Win Experience</strong> yang kami sediakan untuk tamu spesial.<br><br>
-      🎉 Hadiah berupa <strong>souvenir eksklusif</strong> telah kami siapkan untuk <strong>10 tamu beruntung</strong>.<br><br>
-      Terima kasih telah menjadi bagian dari momen istimewa kami. Kehadiran Anda sungguh berarti. 💖
-    </p>
+<p style="text-align: center; margin-top: 1em;">
+  Udah konfirmasi HADIR? Keren! 🎉<br><br>
+
+  Sekarang saatnya buktikan hoki kamu di <strong>Scratch & Win</strong> kami! 🚀<br><br>
+
+  🎁 Ada <strong>Souvenir Eksklusif</strong> yang siap dibawa pulang buat <strong>10 tamu beruntung</strong>!<br><br>
+
+  Jangan sampe kelewatan serunya — hadir di hari spesial kami, bawa pulang hadiah kece! 🎁💖
+</p>
+
+
   </div>
 </div>
 
