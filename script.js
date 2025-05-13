@@ -1,5 +1,6 @@
 // === 1. KONSTANTA DAN UTILITAS ===
 const endpoint = "https://undangan-bdg.vercel.app/api/proxy";
+const endpointvoice = "https://undangan-bdg.vercel.app/api/proxy_voice";
 const perPage = 5;
 let currentPage = 1;
 const maxWinners = 10;
@@ -12,6 +13,11 @@ let lastTotalUcapan = 0;
 
 //SNW
 let scratchFinished = false;
+
+//Voice Note
+let mediaRecorder;
+let audioChunks = [];
+let recordTimer;
 
 // === USER ID ===
 function generateUserId() {
@@ -1055,6 +1061,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	
 	animateSliderOnView();
     animateZoomFoto();
+	loadVoiceNotes();
 	
   const userId = getUserId();
   const display = document.getElementById("userIdValue");
@@ -1560,6 +1567,146 @@ document.querySelectorAll(".slider").forEach(slider => {
     wrapper.style.width = this.value + "%";
   });
 });
+
+
+
+
+
+function openVoiceRecorder() {
+  const sheet = document.getElementById('voiceRecorderSheet');
+  sheet.classList.remove('hidden');
+  setTimeout(() => sheet.classList.add('active'), 10);
+}
+
+
+
+document.getElementById('startRecord').onclick = async () => {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  mediaRecorder = new MediaRecorder(stream);
+  mediaRecorder.start();
+  audioChunks = [];
+
+  mediaRecorder.addEventListener("dataavailable", event => {
+    audioChunks.push(event.data);
+  });
+
+  mediaRecorder.addEventListener("stop", () => {
+    clearTimeout(recordTimer); // Clear timer
+    const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+    const audioUrl = URL.createObjectURL(audioBlob);
+    const audio = document.getElementById('audioPlayback');
+    audio.src = audioUrl;
+    audio.style.display = "block";
+
+    document.getElementById('uploadVoice').disabled = false;
+    document.getElementById('uploadVoice').onclick = () => {
+      uploadAudio(audioBlob);
+    };
+  });
+
+  // ✅ Auto Stop setelah 30 detik
+  recordTimer = setTimeout(() => {
+    if (mediaRecorder.state === "recording") {
+      mediaRecorder.stop();
+      //alert("⏳ Rekaman otomatis dihentikan setelah 30 detik!");
+	  showToast("⏳ Rekaman otomatis dihentikan setelah 30 detik!", "success");
+    }
+  }, 30000);
+
+  document.getElementById('stopRecord').disabled = false;
+};
+
+
+
+document.getElementById('stopRecord').onclick = () => {
+  mediaRecorder.stop();
+  document.getElementById('stopRecord').disabled = true;
+};
+
+
+
+async function uploadAudio(blob) {
+  const formData = new FormData();
+  
+  const arrayBuffer = await blob.arrayBuffer();
+  const base64String = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+  
+  formData.append("file", base64String);
+
+  try {
+    const response = await fetch(endpointvoice, {
+      method: "POST",
+      body: formData
+    });
+    const result = await response.json();
+
+    if (result.success) {
+      alert("🎤 Voice Note berhasil diupload! Lihat: " + result.url);
+      await loadVoiceNotes(); // 🚀 Reload daftar suara otomatis
+    } else {
+      alert("❗ Upload gagal: " + result.message);
+    }
+  } catch (err) {
+    console.error("Upload Error:", err);
+    alert("❗ Gagal upload suara, coba lagi ya!");
+  }
+}
+
+
+async function loadVoiceNotes() {
+  const container = document.getElementById('voiceList');
+  if (!container) return;
+
+  // ✨ Tampilkan shimmer loading dulu
+  container.innerHTML = `
+    <div class="voice-loading"></div>
+    <div class="voice-loading"></div>
+    <div class="voice-loading"></div>
+  `;
+
+  try {
+    const res = await fetch(endpointvoice, {
+      method: "GET"
+    });
+    const urls = await res.json();
+
+    if (!urls || urls.length === 0) {
+      container.innerHTML = "<p style='text-align:center; color: #777;'>Belum ada ucapan suara 😢</p>";
+      return;
+    }
+
+    // ✨ Clear loading, render voice notes
+    container.innerHTML = "";
+    urls.forEach(url => {
+      const card = document.createElement('div');
+      card.className = "voice-card";
+      card.innerHTML = `
+        <audio controls src="${url}"></audio>
+      `;
+      container.appendChild(card);
+    });
+  } catch (err) {
+    console.error("Gagal load voice notes:", err);
+    container.innerHTML = "<p style='text-align:center; color: red;'>Gagal load suara tamu 😢</p>";
+  }
+}
+
+
+
+
+function renderVoiceNotes(urls) {
+  const container = document.getElementById('voiceList');
+  container.innerHTML = "";
+  urls.forEach(url => {
+    const card = document.createElement('div');
+    card.className = "voice-card";
+    card.innerHTML = `
+      <audio controls src="${url}" style="width: 100%;"></audio>
+    `;
+    container.appendChild(card);
+  });
+}
+
 
 // === Background Handling
 const bgm = document.getElementById("bgm");

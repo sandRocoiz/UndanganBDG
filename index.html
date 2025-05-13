@@ -308,6 +308,21 @@
 <section id="doa-section">
   <div class="doa-heading-wrapper">
   <h2>Ucapan & <span class="doa-title-sub">Doa</span></h2>
+  
+  <!-- 🎤 Tombol di Ucapan -->
+<button onclick="openVoiceRecorder()">🎤 Kirim Ucapan Suara</button>
+
+<!-- 🎤 BottomSheet untuk Rekam -->
+<div id="voiceRecorderSheet" class="bottom-sheet hidden">
+  <div class="bottom-sheet-content">
+    <h3>🎙️ Rekam Ucapan Anda</h3>
+    <button id="startRecord">Mulai Rekam</button>
+    <button id="stopRecord" disabled>Stop</button>
+    <audio id="audioPlayback" controls style="margin-top: 10px; display:none;"></audio>
+    <button id="uploadVoice" disabled>Kirim Ucapan Suara</button>
+    <button onclick="closeBottomSheetGeneric('voiceRecorderSheet')">Tutup</button>
+  </div>
+</div>
 
   <!-- ✨ Icon Info di Kanan Atas -->
   <div class="info-icon-wrapper-doa" onclick="openBottomSheetGeneric('bottomSheetDoa')" title="Klik untuk info lebih lanjut!">
@@ -342,6 +357,13 @@
   <div id="noUcapanMsg" class="no-ucapan-message" style="display: none;">
     <p>💬 Belum ada ucapan yang masuk.</p>
   </div>
+
+<section id="voiceGuestbookSection" class="scroll-reveal">
+  <h2>🎧 Guestbook Suara</h2>
+  <div id="voiceList" class="voice-list"></div>
+</section>
+
+<p style="text-align:center; color:#777;">Belum ada ucapan suara 😢</p>
 
   <div id="pageInfo"></div>
   <div id="pagination"></div>
@@ -475,6 +497,18 @@
 
 <audio id="winSound" src="https://undangan-bdg.vercel.app/Asset/win-sound.mp3"></audio>
 <audio id="loseSound" src="https://undangan-bdg.vercel.app/Asset/lose-sound.mp3"></audio>
+
+<!-- === BottomSheet Voice Recorder (Tambahan Baru) === -->
+<div id="voiceRecorderSheet" class="bottom-sheet hidden">
+  <div class="bottom-sheet-content">
+    <h3>🎙️ Rekam Ucapan Anda</h3>
+    <button id="startRecord">Mulai Rekam</button>
+    <button id="stopRecord" disabled>Stop</button>
+    <audio id="audioPlayback" controls style="margin-top: 10px; display:none;"></audio>
+    <button id="uploadVoice" disabled>Kirim Ucapan Suara</button>
+    <button onclick="closeBottomSheetGeneric('voiceRecorderSheet')">Tutup</button>
+  </div>
+</div>
 
 
 </body>
