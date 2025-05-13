@@ -698,12 +698,21 @@ body {
 }
 
 .form-doa {
-  max-width: 600px;
-  margin: 0 auto 3em;
-  background: #fffaf5;
-  padding: 2em;
-  border-radius: 12px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 20px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.input-nama, .input-ucapan {
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid #c7a17a;
+  padding: 10px;
+  font-size: 1rem;
 }
 
 .form-doa h3 {
@@ -3141,14 +3150,16 @@ Hi <strong>NamaUser</strong> 👋
 /* BottomSheet Base */
 .bottom-sheet {
   position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-  pointer-events: none;
-  transition: all 0.4s ease;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  padding: 20px;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  z-index: 999;
 }
 
 /* Overlay abu-abu */
@@ -3186,6 +3197,10 @@ Hi <strong>NamaUser</strong> 👋
   font-size: 1.8em;
   color: #555;
   cursor: pointer;
+}
+
+.bottom-sheet.active {
+  transform: translateY(0);
 }
 
 /* Saat aktif */
@@ -3529,10 +3544,10 @@ Hi <strong>NamaUser</strong> 👋
 
 /* 🎧 Voice Guestbook List */
 .voice-list {
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-top: 20px;
+  gap: 10px;
 }
 
 .voice-card {
@@ -3559,7 +3574,6 @@ Hi <strong>NamaUser</strong> 👋
 /* 🎧 Audio Player Style */
 .voice-card audio {
   width: 100%;
-  outline: none;
 }
 
 
@@ -3651,10 +3665,119 @@ Hi <strong>NamaUser</strong> 👋
   object-fit: contain;
 }
 
+/* Wrapper kedua tombol icon */
+.icon-button-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 15px;
+}
+
+/* Style icon button */
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.icon-button img {
+  width: 48px;
+  height: 48px;
+}
+
+/* Hover effect */
+.icon-button:hover img {
+  transform: scale(1.15);
+  opacity: 0.9;
+}
+
+/* Hapus background khusus untuk tombol dalam .icon-button-wrapper */
+.icon-button-wrapper button {
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+/* Icon normal */
+.icon-button-wrapper img {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Hover zoom */
+.icon-button-wrapper button:hover img {
+  transform: scale(1.2);
+  opacity: 0.8;
+}
+
+.form-doa input,
+.form-doa textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid #c7a17a;
+  padding: 8px 5px;
+  font-size: 1rem;
+  color: #333;
+  transition: all 0.3s ease;
+}
+
+.form-doa input:focus,
+.form-doa textarea:focus {
+  border-bottom: 2px solid #a87c4f;
+  outline: none;
+}
+
+.icon-send-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  gap: 16px;
+}
+
+.icon-send-wrapper button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.icon-send-wrapper img {
+  width: 48px; /* 🔥 ukuran pas banget di atas mobile */
+  height: 48px;
+  object-fit: contain;
+}
+
+.icon-send-wrapper button:hover img {
+  transform: scale(1.1);
+  opacity: 0.85;
+}
+
+#timerVoice {
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+.voice-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 10px;
+}
+
+#voiceWave {
+  height: 40px;
+  background: #eee;
+  margin: 10px 0;
+  border-radius: 8px;
+}
+
 
 /* Saat hidden */
 .hidden {
-  display: none !important;
+  display: none;
 }
 
 

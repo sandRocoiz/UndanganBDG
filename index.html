@@ -310,20 +310,6 @@
   <div class="doa-heading-wrapper">
     <h2>Ucapan & <span class="doa-title-sub">Doa</span></h2>
 
-
-
-    <!-- BottomSheet Rekam -->
-    <div id="voiceRecorderSheet" class="bottom-sheet hidden">
-      <div class="bottom-sheet-content">
-        <h3>🎙️ Rekam Ucapan Anda</h3>
-        <button id="startRecord">Mulai Rekam</button>
-        <button id="stopRecord" disabled>Stop</button>
-        <audio id="audioPlayback" controls style="margin-top: 10px; display:none;"></audio>
-        <button id="uploadVoice" disabled>Kirim Ucapan Suara</button>
-        <button onclick="closeBottomSheetGeneric('voiceRecorderSheet')">Tutup</button>
-      </div>
-    </div>
-
     <!-- Icon Info -->
     <div class="info-icon-wrapper-doa" onclick="openBottomSheetGeneric('bottomSheetDoa')" title="Klik untuk info lebih lanjut!">
       <img src="https://undangan-bdg.vercel.app/Asset/information.png" alt="Info" class="info-icon-doa" />
@@ -337,24 +323,33 @@
   <form id="formUcapan" onsubmit="submitUcapan(event)" class="form-doa">
     <input type="text" name="nama" id="nama" placeholder="Tulis namamu di sini..." class="input-nama" required>
     <textarea name="ucapan" placeholder="Tulis ucapan dan doa untuk Devi & Sandro..." class="input-ucapan" required></textarea>
-    
-	<div class="button-group-ucapan">
-  <!-- Tombol Kirim Ucapan Teks -->
-  <button type="submit" form="formUcapan" class="btn-ucapan">
-    <img src="https://undangan-bdg.vercel.app/Asset/message.png" alt="Kirim Ucapan" class="btn-icon">
-    <span>Kirim Ucapan</span>
-  </button>
 
-  <!-- Tombol Kirim Voice Ucapan -->
-  <button type="button" class="btn-voice" onclick="openVoiceRecorder()">
-    <img src="https://undangan-bdg.vercel.app/Asset/voice-message.png" alt="Kirim Suara" class="btn-icon">
-    <span>Kirim Voice</span>
-  </button>
-</div>
-	
-	
+    <div class="icon-send-wrapper">
+      <!-- ✅ Tombol Icon Kirim Ucapan -->
+      <button type="submit" id="btnKirimUcapan" class="icon-button">
+        <img src="https://undangan-bdg.vercel.app/Asset/message.png" alt="Kirim Ucapan" />
+      </button>
+
+      <!-- ✅ Tombol Icon Kirim Voice -->
+      <button type="button" id="startVoiceButton" class="icon-button">
+        <img src="https://undangan-bdg.vercel.app/Asset/voice-message.png" alt="Voice" />
+      </button>
+    </div>
+
     <p id="ucapanStatusMsg" class="status-msg"></p>
   </form>
+
+  <!-- BottomSheet Voice Recorder -->
+  <div id="voiceRecorderSheet" class="bottom-sheet hidden">
+    <div class="bottom-sheet-content">
+      <h3 id="timerVoice">00:00</h3>
+      <div id="voiceWave" class="wave-placeholder"></div>
+      <div class="voice-actions">
+        <button id="cancelVoice" class="icon-button">🗑️</button>
+        <button id="sendVoice" class="icon-button">📤</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Thank you after ucapan -->
   <div id="ucapanThanks" class="thanks-message" style="display: none;">
@@ -379,6 +374,7 @@
   <div id="pagination"></div>
 
 </section> <!-- ✅ Ini tutup doa-section -->
+
 
 <!-- Section Voice Guestbook -->
 <section id="voiceGuestbookSection" class="scroll-reveal">
@@ -516,17 +512,18 @@
 <audio id="winSound" src="https://undangan-bdg.vercel.app/Asset/win-sound.mp3"></audio>
 <audio id="loseSound" src="https://undangan-bdg.vercel.app/Asset/lose-sound.mp3"></audio>
 
-<!-- === BottomSheet Voice Recorder (Tambahan Baru) === -->
-<div id="voiceRecorderSheet" class="bottom-sheet hidden">
-  <div class="bottom-sheet-content">
-    <h3>🎙️ Rekam Ucapan Anda</h3>
-    <button id="startRecord">Mulai Rekam</button>
-    <button id="stopRecord" disabled>Stop</button>
-    <audio id="audioPlayback" controls style="margin-top: 10px; display:none;"></audio>
-    <button id="uploadVoice" disabled>Kirim Ucapan Suara</button>
-    <button onclick="closeBottomSheetGeneric('voiceRecorderSheet')">Tutup</button>
+<!-- BottomSheet Voice Recorder -->
+  <div id="voiceRecorderSheet" class="bottom-sheet hidden">
+    <div class="bottom-sheet-content">
+      <h3 id="timerVoice">00:00</h3>
+      <div id="voiceWave" class="wave-placeholder"></div>
+      <div class="voice-actions">
+        <button id="cancelVoice" class="icon-button">🗑️</button>
+        <button id="sendVoice" class="icon-button" disabled>📤</button>
+      </div>
+    </div>
   </div>
-</div>
+</section>
 
 
 </body>

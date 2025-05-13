@@ -1,51 +1,26 @@
 export default async function handler(req, res) {
-  const baseUrl = 'https://script.google.com/macros/s/AKfycbyUOWRVZJ96CPeno-Ku2j5z1Vy9AdTxT6xLRJpKd6GSvbYeC4aFBK7cjtosczphmwzXYA/exec';
+  const BASE_URL = "https://script.google.com/macros/s/AKfycbwSX-fBpM5dbcYgjeAWJv6zEn21nGRS0E-jC21o6OJQRjiwEq8wVdnLefrtMX4EFo31PA/exec";
 
-  // Handle preflight
-  if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    return res.status(200).end();
-  }
-
-  const url = new URL(baseUrl);
-  Object.entries(req.query || {}).forEach(([key, value]) => {
-    url.searchParams.append(key, value);
-  });
+  const method = req.method;
+  const headers = { ...req.headers };
+  delete headers["host"];
+  delete headers["content-length"];
 
   const fetchOptions = {
-    method: req.method,
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
+    method,
+    headers,
+    body: method === "POST" ? req.body : undefined,
   };
 
-  if (req.method === 'POST') {
-    let body = '';
-    for await (const chunk of req) {
-      body += chunk;
-    }
-    fetchOptions.body = body;
-  }
+  const response = await fetch(BASE_URL, fetchOptions);
 
-try {
-  const response = await fetch(url.toString(), fetchOptions);
-  const contentType = response.headers.get('content-type') || '';
+  const contentType = response.headers.get("content-type") || "";
 
-  res.setHeader('Access-Control-Allow-Origin', '*');
-
-  if (contentType.includes('application/json')) {
-    const json = await response.json();
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).json(json);
+  if (contentType.includes("application/json")) {
+    const data = await response.json();
+    res.status(response.status).json(data);
   } else {
     const text = await response.text();
-    res.setHeader('Content-Type', 'text/plain');
-    res.status(200).send(text);
+    res.status(response.status).send(text);
   }
-} catch (err) {
-  res.status(500).json({ error: 'Proxy failed', message: err.message });
-}
-
 }
