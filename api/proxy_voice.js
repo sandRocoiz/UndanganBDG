@@ -1,4 +1,4 @@
-// === Proxy Endpoint for Voice Note ===
+export default async function handler(req, res) {
 const baseUrl = "https://script.google.com/macros/s/AKfycbyUOWRVZJ96CPeno-Ku2j5z1Vy9AdTxT6xLRJpKd6GSvbYeC4aFBK7cjtosczphmwzXYA/exec";
 
   // Handle preflight
