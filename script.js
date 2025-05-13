@@ -49,9 +49,9 @@ function openInvitation() {
     bgm.play().then(() => {
       let vol = 0;
       const fadeIn = setInterval(() => {
-        if (vol < 0.5) {
-          vol += 0.05;
-          bgm.volume = Math.min(vol, 0.5);
+        if (vol < 0.2) {
+          vol += 0.02;
+          bgm.volume = Math.min(vol, 0.2);
         } else {
           clearInterval(fadeIn);
         }
