@@ -1,26 +1,51 @@
 export default async function handler(req, res) {
-  const BASE_URL = "https://script.google.com/macros/s/AKfycbwSX-fBpM5dbcYgjeAWJv6zEn21nGRS0E-jC21o6OJQRjiwEq8wVdnLefrtMX4EFo31PA/exec";
+  const baseUrl = 'https://script.google.com/macros/s/AKfycbwSX-fBpM5dbcYgjeAWJv6zEn21nGRS0E-jC21o6OJQRjiwEq8wVdnLefrtMX4EFo31PA/exec';
 
-  const method = req.method;
-  const headers = { ...req.headers };
-  delete headers["host"];
-  delete headers["content-length"];
+  // Handle preflight
+  if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    return res.status(200).end();
+  }
+
+  const url = new URL(baseUrl);
+  Object.entries(req.query || {}).forEach(([key, value]) => {
+    url.searchParams.append(key, value);
+  });
 
   const fetchOptions = {
-    method,
-    headers,
-    body: method === "POST" ? req.body : undefined,
+    method: req.method,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
   };
 
-  const response = await fetch(BASE_URL, fetchOptions);
+  if (req.method === 'POST') {
+    let body = '';
+    for await (const chunk of req) {
+      body += chunk;
+    }
+    fetchOptions.body = body;
+  }
 
-  const contentType = response.headers.get("content-type") || "";
+try {
+  const response = await fetch(url.toString(), fetchOptions);
+  const contentType = response.headers.get('content-type') || '';
 
-  if (contentType.includes("application/json")) {
-    const data = await response.json();
-    res.status(response.status).json(data);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  if (contentType.includes('application/json')) {
+    const json = await response.json();
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).json(json);
   } else {
     const text = await response.text();
-    res.status(response.status).send(text);
+    res.setHeader('Content-Type', 'text/plain');
+    res.status(200).send(text);
   }
+} catch (err) {
+  res.status(500).json({ error: 'Proxy failed', message: err.message });
+}
+
 }
