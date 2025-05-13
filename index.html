@@ -305,41 +305,58 @@
 
 
 
+<!-- Section Doa -->
 <section id="doa-section">
   <div class="doa-heading-wrapper">
-  <h2>Ucapan & <span class="doa-title-sub">Doa</span></h2>
-  
-  <!-- 🎤 Tombol di Ucapan -->
-<button onclick="openVoiceRecorder()">🎤 Kirim Ucapan Suara</button>
+    <h2>Ucapan & <span class="doa-title-sub">Doa</span></h2>
 
-<!-- 🎤 BottomSheet untuk Rekam -->
-<div id="voiceRecorderSheet" class="bottom-sheet hidden">
-  <div class="bottom-sheet-content">
-    <h3>🎙️ Rekam Ucapan Anda</h3>
-    <button id="startRecord">Mulai Rekam</button>
-    <button id="stopRecord" disabled>Stop</button>
-    <audio id="audioPlayback" controls style="margin-top: 10px; display:none;"></audio>
-    <button id="uploadVoice" disabled>Kirim Ucapan Suara</button>
-    <button onclick="closeBottomSheetGeneric('voiceRecorderSheet')">Tutup</button>
-  </div>
-</div>
 
-  <!-- ✨ Icon Info di Kanan Atas -->
-  <div class="info-icon-wrapper-doa" onclick="openBottomSheetGeneric('bottomSheetDoa')" title="Klik untuk info lebih lanjut!">
-    <img src="https://undangan-bdg.vercel.app/Asset/information.png" alt="Info" class="info-icon-doa" />
-    <div class="tooltip-text-doa">
-      📢 Klik aku untuk informasi lebih lengkap!
+
+    <!-- BottomSheet Rekam -->
+    <div id="voiceRecorderSheet" class="bottom-sheet hidden">
+      <div class="bottom-sheet-content">
+        <h3>🎙️ Rekam Ucapan Anda</h3>
+        <button id="startRecord">Mulai Rekam</button>
+        <button id="stopRecord" disabled>Stop</button>
+        <audio id="audioPlayback" controls style="margin-top: 10px; display:none;"></audio>
+        <button id="uploadVoice" disabled>Kirim Ucapan Suara</button>
+        <button onclick="closeBottomSheetGeneric('voiceRecorderSheet')">Tutup</button>
+      </div>
+    </div>
+
+    <!-- Icon Info -->
+    <div class="info-icon-wrapper-doa" onclick="openBottomSheetGeneric('bottomSheetDoa')" title="Klik untuk info lebih lanjut!">
+      <img src="https://undangan-bdg.vercel.app/Asset/information.png" alt="Info" class="info-icon-doa" />
+      <div class="tooltip-text-doa">
+        📢 Klik aku untuk informasi lebih lengkap!
+      </div>
     </div>
   </div>
-</div>
 
+  <!-- Form Ucapan -->
   <form id="formUcapan" onsubmit="submitUcapan(event)" class="form-doa">
     <input type="text" name="nama" id="nama" placeholder="Tulis namamu di sini..." class="input-nama" required>
     <textarea name="ucapan" placeholder="Tulis ucapan dan doa untuk Devi & Sandro..." class="input-ucapan" required></textarea>
-    <button type="submit" class="btn-kirim">Kirim Ucapan</button>
+    
+	<div class="button-group-ucapan">
+  <!-- Tombol Kirim Ucapan Teks -->
+  <button type="submit" form="formUcapan" class="btn-ucapan">
+    <img src="https://undangan-bdg.vercel.app/Asset/message.png" alt="Kirim Ucapan" class="btn-icon">
+    <span>Kirim Ucapan</span>
+  </button>
+
+  <!-- Tombol Kirim Voice Ucapan -->
+  <button type="button" class="btn-voice" onclick="openVoiceRecorder()">
+    <img src="https://undangan-bdg.vercel.app/Asset/voice-message.png" alt="Kirim Suara" class="btn-icon">
+    <span>Kirim Voice</span>
+  </button>
+</div>
+	
+	
     <p id="ucapanStatusMsg" class="status-msg"></p>
   </form>
 
+  <!-- Thank you after ucapan -->
   <div id="ucapanThanks" class="thanks-message" style="display: none;">
     <img src="https://undangan-bdg.vercel.app/Asset/thank-you.png" alt="Terima kasih" class="floating-animate">
     <p class="thanks-wording">🎉 Terima kasih atas ucapan dan doanya!</p>
@@ -348,9 +365,9 @@
   <div id="userIdValue" class="user-frame"></div>
 
   <div class="filter-wrapper">
-  <input type="checkbox" id="filterByUser" />
-  <label id="filterByUserLabel" for="filterByUser">Sorot ucapan saya</label>
-</div>
+    <input type="checkbox" id="filterByUser" />
+    <label id="filterByUserLabel" for="filterByUser">Sorot ucapan saya</label>
+  </div>
 
   <div id="daftarUcapan"></div>
 
@@ -358,16 +375,17 @@
     <p>💬 Belum ada ucapan yang masuk.</p>
   </div>
 
+  <div id="pageInfo"></div>
+  <div id="pagination"></div>
+
+</section> <!-- ✅ Ini tutup doa-section -->
+
+<!-- Section Voice Guestbook -->
 <section id="voiceGuestbookSection" class="scroll-reveal">
   <h2>🎧 Guestbook Suara</h2>
   <div id="voiceList" class="voice-list"></div>
 </section>
 
-<p style="text-align:center; color:#777;">Belum ada ucapan suara 😢</p>
-
-  <div id="pageInfo"></div>
-  <div id="pagination"></div>
-</section>
 
 
 

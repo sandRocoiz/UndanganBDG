@@ -1,6 +1,5 @@
 // === 1. KONSTANTA DAN UTILITAS ===
 const endpoint = "https://undangan-bdg.vercel.app/api/proxy";
-const endpointvoice = "https://undangan-bdg.vercel.app/api/proxy_voice";
 const perPage = 5;
 let currentPage = 1;
 const maxWinners = 10;
@@ -1634,7 +1633,7 @@ async function uploadAudio(blob) {
   formData.append("file", base64String);
 
   try {
-    const response = await fetch(endpointvoice, {
+    const response = await fetch(endpoint, {
       method: "POST",
       body: formData
     });
@@ -1665,7 +1664,7 @@ async function loadVoiceNotes() {
   `;
 
   try {
-    const res = await fetch(endpointvoice, {
+    const res = await fetch(endpoint, {
       method: "GET"
     });
     const urls = await res.json();

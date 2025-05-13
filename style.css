@@ -3527,34 +3527,49 @@ Hi <strong>NamaUser</strong> 👋
   transform: translateY(0);
 }
 
+/* 🎧 Voice Guestbook List */
 .voice-list {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  margin-top: 15px;
+  gap: 16px;
+  margin-top: 20px;
 }
 
 .voice-card {
   background: #f9f9f9;
-  border-radius: 10px;
-  padding: 10px 15px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   align-items: center;
+  animation: fadeSlideUp 0.6s ease forwards;
+  opacity: 0;
+  transform: translateY(20px);
 }
 
+/* 🎧 Voice Card muncul efek */
+@keyframes fadeSlideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 🎧 Audio Player Style */
 .voice-card audio {
   width: 100%;
   outline: none;
 }
 
+
+/* 🎧 Loading Shimmer */
 .voice-loading {
-  background: linear-gradient(90deg, #f9f9f9 25%, #e0e0e0 50%, #f9f9f9 75%);
-  background-size: 400% 100%;
-  animation: shimmer 1.2s infinite;
   height: 60px;
   border-radius: 10px;
+  background: linear-gradient(90deg, #f1f1f1 25%, #e0e0e0 50%, #f1f1f1 75%);
+  background-size: 400% 100%;
+  animation: shimmer 1.5s infinite;
 }
 
 @keyframes shimmer {
@@ -3565,6 +3580,77 @@ Hi <strong>NamaUser</strong> 👋
     background-position: 400px 0;
   }
 }
+
+/* 🎧 Belum ada ucapan */
+.no-voice-message {
+  text-align: center;
+  color: #777;
+  margin-top: 20px;
+  font-size: 1rem;
+}
+
+/* 🎤 Button Kirim Ucapan Suara */
+.voice-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #5c4436;
+  color: #fff;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 24px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: background 0.3s ease, transform 0.2s ease;
+  position: absolute;
+  top: 10px;
+  right: 60px; /* kasih jarak dari info icon */
+}
+
+.voice-button:hover {
+  background: #472e23;
+  transform: translateY(-2px);
+}
+
+/* 🎯 Grup Tombol Ucapan */
+.button-group-ucapan {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+/* 🎯 Tombol */
+.button-group-ucapan button {
+  background: #5c4436;
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 8px 16px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.button-group-ucapan button:hover {
+  background: #472e23;
+  transform: translateY(-2px);
+}
+
+/* 🎯 Icon di tombol */
+.btn-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
 
 /* Saat hidden */
 .hidden {

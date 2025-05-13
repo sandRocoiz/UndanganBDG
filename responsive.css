@@ -223,6 +223,20 @@
     font-size: 1rem;
   }
   
+  .voice-list {
+    gap: 12px;
+    margin-top: 15px;
+  }
+
+  .voice-card {
+    padding: 14px 16px;
+    border-radius: 12px;
+  }
+
+  .voice-card audio {
+    width: 100%;
+  }
+  
 }
 
 
@@ -418,6 +432,10 @@
     font-size: 7vw;
     letter-spacing: 0.5px;
     white-space: nowrap;
+  }
+  
+  .voice-card {
+    padding: 12px 14px;
   }
 
   
