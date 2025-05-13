@@ -10,6 +10,9 @@ const namaReservasiKey = "namaReservasi";
 let pollingInterval = null;
 let lastTotalUcapan = 0;
 
+//SNW
+let scratchFinished = false;
+
 // === USER ID ===
 function generateUserId() {
   const id = "usr_" + Math.random().toString(36).substring(2, 11);
@@ -329,7 +332,7 @@ function bukaScratchCard() {
   };
 
   let isDrawing = false;
-  let scratchFinished = false;
+  
 
   function setupScratchEvents() {
     const scratchSound = new Audio("https://undangan-bdg.vercel.app/Asset/scratch-sound.mp3");
@@ -381,55 +384,58 @@ function scratch(e) {
   }
   const percent = (cleared / (canvas.width * canvas.height)) * 100;
 
-  // ✨ Update progress ke HTML
   const progressDisplay = document.getElementById('scratchProgress');
   if (progressDisplay) {
     progressDisplay.innerText = `Progress: ${percent.toFixed(1)}%`;
   }
 
   if (percent > 50 && !scratchFinished) {
+    // ✨ Set LANGSUNG scratchFinished = true!
     scratchFinished = true;
-    finishScratch();
+
+    // ✨ Baru jalanin finishScratch() terpisah
+    setTimeout(() => {
+      finishScratch();
+    }, 300); // kasih delay dikit biar animasi enak
   }
 }
 
 
   function finishScratch() {
-    canvas.style.pointerEvents = "none";
+  scratchFinished = true; // 🔥 Force set saat finish
+  canvas.style.pointerEvents = "none";
+
+  setTimeout(() => {
+    canvas.style.transition = "opacity 0.5s ease";
+    canvas.style.opacity = "0";
 
     setTimeout(() => {
-      canvas.style.transition = "opacity 0.5s ease";
-      canvas.style.opacity = "0";
+      resultText.innerHTML = menang
+        ? `<div class="scratch-message">
+             🎉 <strong>Wuihh, Selamat!</strong><br>
+             Kamu dapetin <strong>Souvenir Eksklusif</strong> dari kami! 🎁<br>
+             📸 <small>Jangan lupa screenshot layar ini & tunjukin ke panitia ya!</small>
+           </div>`
+        : `<div class="scratch-message">
+             😢 <em>Belum hoki nih!</em><br>
+             🎉 Tetap makasih banyak udah ikut seru-seruan bareng! 💖
+           </div>`;
+      resultText.style.display = "block";
 
-      setTimeout(() => {
-        resultText.innerHTML = menang
-  ? `<div class="scratch-message">
-       🎉 <strong>Wuihh, Selamat!</strong><br>
-       Kamu dapetin <strong>Souvenir Eksklusif</strong> dari kami! 🎁<br>
-       📸 <small>Jangan lupa screenshot layar ini & tunjukin ke panitia ya!</small>
-     </div>`
-  : `<div class="scratch-message">
-       😢 <em>Belum hoki nih!</em><br>
-       🎉 Tetap makasih banyak udah ikut seru-seruan bareng! 💖
-     </div>`;
+      if (typeof navigator.vibrate === "function") {
+        navigator.vibrate(menang ? [100, 50, 100] : 50);
+      }
 
+      if (menang) {
+        sheet.classList.add('scratch-flash-win');
+        playSound('https://undangan-bdg.vercel.app/Asset/win-sound.mp3');
+      } else {
+        playSound('https://undangan-bdg.vercel.app/Asset/lose-sound.mp3');
+      }
 
-        // Vibration sesuai hasil
-        if (typeof window.navigator.vibrate === "function") {
-          window.navigator.vibrate(menang ? [100, 50, 100] : 50);
-        }
-
-        if (menang) {
-          sheet.classList.add('scratch-flash-win');
-          playSound('https://undangan-bdg.vercel.app/Asset/win-sound.mp3');
-          sheet.style.animation = "flashBlink 0.7s ease-in-out";
-        } else {
-          playSound('https://undangan-bdg.vercel.app/Asset/lose-sound.mp3');
-        }
-
-      }, 500);
-    }, 300);
-  }
+    }, 500);
+  }, 300);
+}
 
   
 }
@@ -1375,38 +1381,46 @@ function openBottomSheetGeneric(sheetId) {
   let startY = 0;
   let isSwiping = false;
 
+  // 🔥 Clean event listener dulu supaya tidak dobel
   if (content) {
-    content.addEventListener('touchstart', e => {
+    // Remove previous listeners by cloning node
+    const newContent = content.cloneNode(true);
+    content.parentNode.replaceChild(newContent, content);
+
+    newContent.addEventListener('touchstart', e => {
       startY = e.touches[0].clientY;
       isSwiping = true;
     });
 
-    content.addEventListener('touchmove', e => {
+    newContent.addEventListener('touchmove', e => {
       if (!isSwiping) return;
       const currentY = e.touches[0].clientY;
-      const swipeThreshold = bottomSheetConfigs[sheetId] || 60; // fallback default 60px
+      const swipeThreshold = bottomSheetConfigs[sheetId] || 60;
 
       if (currentY - startY > swipeThreshold) {
-      if (sheetId === 'bottomSheetScratch' && !scratchFinished) {
-      alert("Selesaikan scratch dulu ya sebelum menutup! 🎯");
-      isSwiping = false;
-      return;
-     }
-     closeBottomSheetGeneric(sheetId);
-     isSwiping = false;
-     }
-     });
+        if (sheetId === 'bottomSheetScratch' && !scratchFinished) {
+          //alert("Selesaikan scratch dulu ya sebelum menutup! 🎯");
+		  showToast("Selesaikan scratch dulu ya sebelum menutup! 🎯", "error");
+          isSwiping = false;
+          return;
+        }
+        closeBottomSheetGeneric(sheetId);
+        isSwiping = false;
+      }
+    });
 
-     content.addEventListener('touchend', () => {
+    newContent.addEventListener('touchend', () => {
       isSwiping = false;
     });
   }
 }
 
+
 function closeBottomSheetGeneric(id) {
   if (id === 'bottomSheetScratch' && !scratchFinished) {
     // Kalau sheet scratch dan belum selesai ➔ blokir
-    alert("Selesaikan scratch dulu ya sebelum menutup! 🎯");
+    //alert("Selesaikan scratch dulu ya sebelum menutup! 🎯");
+	showToast("Selesaikan scratch dulu ya sebelum menutup! 🎯", "error");
     return;
   }
   
