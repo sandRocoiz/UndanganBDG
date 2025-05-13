@@ -307,11 +307,8 @@ function bukaScratchCard() {
     : "https://undangan-bdg.vercel.app/Asset/lose.png";
 
   // ✅ Set teks instruksi awal
-  resultText.innerHTML = `
-    <div class="scratch-message" style="font-size: 0.9rem; color: #555;">
-      📜 <em>Mohon gosok bagian ini untuk melihat apakah Anda mendapatkan souvenir spesial!</em>
-    </div>`;
-  resultText.style.display = 'block';
+  resultText.innerHTML = "";
+  resultText.style.display = "none";
 
   // 🔥 Buka BottomSheet Scratch dengan animasi
   sheet.classList.remove('hidden');
@@ -366,29 +363,36 @@ function bukaScratchCard() {
     canvas.addEventListener('touchmove', scratch);
   }
 
-  function scratch(e) {
-    if (!isDrawing) return;
+function scratch(e) {
+  if (!isDrawing) return;
 
-    const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX || e.touches?.[0]?.clientX) - rect.left;
-    const y = (e.clientY || e.touches?.[0]?.clientY) - rect.top;
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX || e.touches?.[0]?.clientX) - rect.left;
+  const y = (e.clientY || e.touches?.[0]?.clientY) - rect.top;
 
-    ctx.beginPath();
-    ctx.arc(x, y, 25, 0, Math.PI * 2);
-    ctx.fill();
+  ctx.beginPath();
+  ctx.arc(x, y, 25, 0, Math.PI * 2);
+  ctx.fill();
 
-    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    let cleared = 0;
-    for (let i = 0; i < imgData.data.length; i += 4) {
-      if (imgData.data[i + 3] === 0) cleared++;
-    }
-    const percent = (cleared / (canvas.width * canvas.height)) * 100;
-
-    if (percent > 50 && !scratchFinished) {
-      scratchFinished = true;
-      finishScratch();
-    }
+  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  let cleared = 0;
+  for (let i = 0; i < imgData.data.length; i += 4) {
+    if (imgData.data[i + 3] === 0) cleared++;
   }
+  const percent = (cleared / (canvas.width * canvas.height)) * 100;
+
+  // ✨ Update progress ke HTML
+  const progressDisplay = document.getElementById('scratchProgress');
+  if (progressDisplay) {
+    progressDisplay.innerText = `Progress: ${percent.toFixed(1)}%`;
+  }
+
+  if (percent > 50 && !scratchFinished) {
+    scratchFinished = true;
+    finishScratch();
+  }
+}
+
 
   function finishScratch() {
     canvas.style.pointerEvents = "none";
@@ -399,15 +403,15 @@ function bukaScratchCard() {
 
       setTimeout(() => {
         resultText.innerHTML = menang
-          ? `<div class="scratch-message">
-               🎉 <strong>Selamat!</strong><br>
-               Kamu mendapatkan souvenir spesial!<br>
-               📸 <small>Screenshot layar ini & tunjukkan ke panitia ya!</small>
-             </div>`
-          : `<div class="scratch-message">
-               😢 <em>Belum beruntung!</em><br>
-               ✨ Terima kasih atas partisipasimu.<br>
-             </div>`;
+  ? `<div class="scratch-message">
+       🎉 <strong>Wuihh, Selamat!</strong><br>
+       Kamu dapetin <strong>Souvenir Eksklusif</strong> dari kami! 🎁<br>
+       📸 <small>Jangan lupa screenshot layar ini & tunjukin ke panitia ya!</small>
+     </div>`
+  : `<div class="scratch-message">
+       😢 <em>Belum hoki nih!</em><br>
+       🎉 Tetap makasih banyak udah ikut seru-seruan bareng! 💖
+     </div>`;
 
 
         // Vibration sesuai hasil
