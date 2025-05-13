@@ -1398,15 +1398,22 @@ function openBottomSheetGeneric(sheetId) {
   }
 }
 
-function closeBottomSheetGeneric(sheetId) {
-  const sheet = document.getElementById(sheetId);
-  if (!sheet) return;
-
-  sheet.classList.remove("active");
-  setTimeout(() => {
-    sheet.classList.add("hidden");
-  }, 300);
+function closeBottomSheetGeneric(id) {
+  if (id === 'bottomSheetScratch' && !scratchFinished) {
+    // Kalau sheet scratch dan belum selesai ➔ blokir
+    alert("Selesaikan scratch dulu ya sebelum menutup! 🎯");
+    return;
+  }
+  
+  const sheet = document.getElementById(id);
+  if (sheet) {
+    sheet.classList.remove('active');
+    setTimeout(() => {
+      sheet.classList.add('hidden');
+    }, 300); // sesuai animasi fade
+  }
 }
+
 
 // ✨ Vibration Short
 function vibrateShort() {
