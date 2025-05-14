@@ -4,10 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Devi & Sandro - Wedding Invitation</title>
+  
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Scheherazade&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/rellax/1.12.1/rellax.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="responsive.css">
+  <!--<link rel="stylesheet" href="style-protect.css">-->
+  <!--<script defer src="protect.js"></script>-->
+
+  <script defer src="script.js"></script>
+
+  
+  
+
+  
+  
+
+  
 
   
   
@@ -19,722 +38,130 @@
   
   <style>
   
-  * {
-  box-sizing: border-box;
-}
   
-    html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
-  
-    body { margin: 0; font-family: 'Playfair Display', serif; background: #fff; color: #333; }
-    .splash, .main-content { display: none; text-align: center; padding:0; }
-    .splash { background: url('https://i.imgur.com/JaO8Pi8.jpeg') no-repeat center/cover; color: white; height: 100vh; justify-content: center; display: flex; flex-direction: column; }
-    
-	
-.splash button {
-  padding: 0.6em 1.5em;
-  font-size: 0.9em;
-  background: white;
-  color: black;
-  border: none;
-  border-radius: 30px;
-  cursor: pointer;
-  font-weight: 600;
-  white-space: nowrap;
-  display: inline-block;
-  margin-top: 1.5em;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
-}
-
-.splash button:hover {
-  background-color: #f0f0f0;
-}
-
-/* Responsive adjustment (mobile) */
-@media (max-width: 480px) {
-  .splash button {
-    padding: 0.5em 1em;
-    font-size: 0.85em;
-  }
-}
-
-
-.judul-wedding {
-  font-family: 'Great Vibes', cursive;
-  font-size: 2em;
-  font-weight: normal;
-  margin: 0;
-}
-
-.nama-pasangan {
-  font-family: 'Playfair Display', serif;
-  font-size: 3.2em;
-  font-weight: bold;
-  margin: 0.2em 0;
-}
-
-.tanggal-acara {
-  font-family: 'Playfair Display', serif;
-  font-size: 1em;
-  font-weight: normal;
-  margin-bottom: 1em;
-}
-	
-    section {
-  padding: 3em 1em;
-  box-sizing: border-box;
-}
-    iframe { width: 100%; height: 300px; border: none; }
-    img { max-width: 300px; margin: 1em; border-radius: 10px; }
-    .thanks { background-color: #f9f9f9; padding: 4em 2em; }
-	
-body {
-  overflow-x: hidden;
-}
-
-
-#countdown-section {
-  padding: 0 !important;
-  margin: 0 !important;
-  width: 100vw;
-  height: 100vh;
-  background: url('https://i.imgur.com/BVpngIG.jpeg') center center / cover no-repeat;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-}
-
-#countdown-section .overlay {
-  background: rgba(0, 0, 0, 0.4);
-  padding: 2em;
-  border-radius: 10px;
-  text-align: center;
-  width: 100%;
-  max-width: 600px;
-}
-
-.fade-in {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.7s ease-out, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform;
-}
-
-.fade-in.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-
-.ayat-frame {
-  text-align: center;
-  padding: 2em 1em;
-  background: #f9f9f9;
-}
-
-.ayat-box {
-  border: 2px solid #ddd;
-  padding: 1.5em;
-  border-radius: 12px;
-  background-color: #fff;
-  max-width: 800px;
-  margin: 1.5em auto;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-}
-
-.arabic {
-  font-family: 'Scheherazade', serif;
-  font-size: 1.7em;
-  direction: rtl;
-  margin-bottom: 1em;
-  line-height: 2em;
-}
-
-.latin {
-  font-style: italic;
-  font-size: 1em;
-  color: #444;
-  margin-bottom: 1em;
-}
-
-.translation {
-  font-size: 1em;
-  color: #555;
-}
-
-#couple-section {
-  padding: 5em 1em;
-  background-color: #fafafa;
-}
-
-.couple-container {
-  max-width: 1100px;
-  margin: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 5em;
-}
-
-.couple-block {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 3em;
-  flex-wrap: wrap;
-}
-
-.couple-block.reverse {
-  flex-direction: row-reverse;
-}
-
-.photo-group {
-  position: relative;
-  width: 280px;
-}
-
-.photo-group .main-photo {
-  width: 100%;
-  border-radius: 10px;
-  z-index: 1;
-  position: relative;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.1);
-}
-
-.photo-group.kiri .overlay-photo {
-  width: 80%;
-  position: absolute;
-  bottom: -100px; /* Tambah jarak ke bawah */
-  left: -200px;  /* Tambah jarak ke samping */
-  border-radius: 10px;
-  opacity: 0.9;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
-
-.photo-group.kanan .overlay-photo {
-  width: 80%;
-  position: absolute;
-  bottom: -100px; /* Tambah jarak ke bawah */
-  right: -200px;  /* Tambah jarak ke samping */
-  border-radius: 10px;
-  opacity: 0.9;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
-
-
-
-.couple-desc {
-  max-width: 400px;
-  text-align: left;
-}
-
-.couple-block.reverse .couple-desc {
-  text-align: right;
-}
-
-.role {
-  font-family: 'Great Vibes', cursive;
-  font-size: 1.6em;
-  color: #777;
-  margin-bottom: 0;
-}
-
-.name {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.2em;
-  margin: 0.1em 0 0.4em;
-  color: #111;
-}
-
-.couple-desc p {
-  font-size: 1em;
-  line-height: 1.6;
-  color: #444;
-}
-
-.social {
-  margin-top: 1em;
-  background: #2c3e50;
-  color: #fff;
-  padding: 0.4em 1em;
-  display: inline-block;
-  border-radius: 6px;
-  font-size: 0.9em;
-}
-
-/* Responsive */
-@media screen and (max-width: 768px) {
-  .couple-block,
-  .couple-block.reverse {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .photo-group .overlay-photo {
-    position: absolute;
-    right: 0;
-    bottom: -30px;
-  }
-
-  .couple-block.reverse .couple-desc {
-    text-align: center;
-  }
-}
-
-#gallery-section {
-  padding: 4em 1em;
-  background: #f9f9f9;
-}
-
-.gallery-wrapper {
-  display: flex;
-  align-items: flex-start;
-  gap: 2em;
-  max-width: 900px;
-  margin: auto;
-  overflow: hidden;
-}
-
-.gallery-title-container {
-  flex: 0 0 150px;
-}
-
-.gallery-title {
-  font-size: 2.5em;
-  line-height: 1.2;
-}
-
-.title-main {
-  font-family: 'Playfair Display', serif;
-  font-weight: bold;
-  color: #111;
-}
-
-.title-sub {
-  font-family: 'Great Vibes', cursive;
-  font-size: 0.7em;
-  color: #555;
-  margin-left: 0.3em;
-}
-
-.gallery-carousel {
-  overflow: hidden;
-  cursor: grab;
-}
-
-.carousel-track {
-  display: flex;
-  gap: 1em;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  padding: 1em 0;
-}
-
-.carousel-track img {
-  width: 250px;
-  height: auto;
-  border-radius: 10px;
-  flex: 0 0 auto;
-}
-
-.gallery-static {
-  display: flex;
-  justify-content: center;
-  gap: 1em;
-  flex-wrap: wrap;
-  padding-top: 1em;
-}
-
-.gallery-static img {
-  width: 280px;
-  height: auto;
-  border-radius: 10px;
-}
-
-
-
-
-#weddingdate-section {
-  padding: 0 !important;
-  margin: 0 !important;
-  width: 100vw;
-  height: 30vh;
-  background: url('https://i.imgur.com/40hYGRP.jpeg') center center / cover no-repeat;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-}
-
-.weddingdate-title {
-  font-size: 2.5em;
-  line-height: 1.2;
-}
-
-.weddingdate-title-main {
-  font-family: 'Playfair Display', serif;
-  font-weight: bold;
-  color: white
-}
-
-.weddingdate-title-sub {
-  font-family: 'Great Vibes', cursive;
-  font-size: 0.7em;
-  color: white
-  margin-left: 0.3em;
-}
-
-#unduhmantu-section {
-  padding: 4em 1em;
-  background: #f9f9f9;
-}
-
-.unduhmantu-title {
-  font-size: 2.5em;
-  line-height: 1.2;
-}
-
-.unduhmantu-title-main {
-  font-family: 'Playfair Display', serif;
-  font-weight: bold;
-  color: #111;
-}
-
-.unduhmantu-title-sub {
-  font-family: 'Great Vibes', cursive;
-  font-size: 0.7em;
-  color: #555;
-  margin-left: 0.3em;
-}
-
-#doa-section {
-  padding: 4em 1em;
-  background: linear-gradient(to bottom, #f8f4f0, #fff);
-  text-align: center;
-  font-family: 'Playfair Display', serif;
-}
-
-.doa-title {
-  font-size: 2.8em;
-  margin-bottom: 1.2em;
-}
-
-.doa-title-main {
-  font-family: 'Playfair Display', serif;
-  font-weight: bold;
-  color: #8B5E3C;
-}
-
-.doa-title-sub {
-  font-family: 'Great Vibes', cursive;
-  font-size: 0.8em;
-  color: #B58E6F;
-  margin-left: 0.4em;
-}
-
-.form-doa {
-  max-width: 600px;
-  margin: 0 auto 3em;
-  background: #fffaf5;
-  padding: 2em;
-  border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
-}
-
-.form-doa h3 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.5em;
-  margin-bottom: 1em;
-  color: #5c4436;
-}
-
-.form-doa input,
-.form-doa textarea {
-  width: 100%;
-  padding: 1em 1.2em;
-  font-size: 1em;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-family: 'Playfair Display', serif;
-  background-color: #fff;
-  transition: 0.3s ease;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-}
-
-.form-doa input:focus,
-.form-doa textarea:focus {
-  outline: none;
-  border-color: #c9a27e;
-  box-shadow: 0 0 0 3px rgba(201, 162, 126, 0.2);
-}
-
-.form-doa textarea {
-  resize: vertical;
-  height: 120px;
-}
-
-.form-doa button {
-  margin-top: 1em;
-  padding: 0.75em 2.5em;
-  background-color: #5c4436;
-  color: white;
-  font-weight: bold;
-  font-size: 1em;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  font-family: 'Playfair Display', serif;
-}
-
-.form-doa button:hover {
-  background-color: #3e2d23;
-}
-
-.ucapan-card {
-  max-width: 600px;
-  margin: 1.5em auto;
-  padding: 1.5em;
-  border-radius: 12px;
-  border: 1px solid #f0e6dc;
-  background: #fff;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-  text-align: left;
-  font-family: 'Playfair Display', serif;
-  position: relative;
-  card.className = 'ucapan-card fade-in';
-  balasanDiv.className = 'balasan-card fade-in';
-}
-
-.ucapan-card strong {
-  display: block;
-  font-size: 1.1em;
-  color: #8B5E3C;
-  margin-bottom: 0.4em;
-}
-
-.ucapan-time {
-  font-size: 0.85em;
-  color: #999;
-  margin-top: 0.8em;
-  font-style: italic;
-  text-align: right;
-}
-
-#pagination {
-  text-align: center;
-  margin-top: 2.5em;
-}
-
-#pagination button {
-  margin: 0 6px;
-  padding: 6px 12px;
-  font-size: 0.9em;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background: #f5f5f5;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-#pagination button:hover:not(:disabled) {
-  background: #ddd;
-}
-
-#pagination button:disabled {
-  background: #eee;
-  color: #aaa;
-  cursor: default;
-}
-
-.balasan-card {
-  margin-top: 1em;
-  padding: 0.8em 1em;
-  background-color: #f0f0f0;
-  border-left: 4px solid #2c3e50;
-  border-radius: 6px;
-  font-size: 0.95em;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-  card.className = 'ucapan-card fade-in';
-  balasanDiv.className = 'balasan-card fade-in';
-}
-
-.balasan-label {
-  font-weight: bold;
-  margin-bottom: 0.3em;
-  color: #2c3e50;
-}
-
-.balasan-teks {
-  color: #333;
-}
-
-.balasan-time {
-  font-size: 0.8em;
-  font-style: italic;
-  color: #777;
-  margin-top: 0.5em;
-}
-
-
-#gift-section {
-  background-color: #f9f9f9;
-  padding: 4em 1em;
-  text-align: center;
-}
-
-.gift-title {
-  font-size: 2.5em;
-  line-height: 1.2;
-}
-
-.gift-title-main {
-  font-family: 'Playfair Display', serif;
-  font-weight: bold;
-  color: #111;
-}
-
-.gift-title-sub {
-  font-family: 'Great Vibes', cursive;
-  font-size: 0.7em;
-  color: #555;
-  margin-left: 0.3em;
-}
-
-.btn-saweria {
-  display: inline-block;
-  padding: 0.7em 1.5em;
-  background: #f8e9d2;
-  color: #5a3e2b;
-  font-weight: bold;
-  text-decoration: none;
-  border-radius: 30px;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
-  font-family: 'Playfair Display', serif;
-}
-
-.btn-saweria:hover {
-  background: #f2d4a6;
-  color: #4a321f;
-}
-
-
-
-
-
-#thanks-section {
-  padding: 0 !important;
-  margin: 0 !important;
-  width: 100vw;
-  height: 30vh;
-  background: url('https://i.imgur.com/WardSOa.jpeg') center center / cover no-repeat;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-}
-
-.thanks-title {
-  font-size: 2.5em;
-  line-height: 1.2;
-}
-
-.thanks-title-main {
-  font-family: 'Playfair Display', serif;
-  font-weight: bold;
-  color: #111;
-}
-
-.thanks-title-sub {
-  font-family: 'Great Vibes', cursive;
-  font-size: 0.7em;
-  color: #555;
-  margin-left: 0.3em;
-}
 	
   </style>
 </head>
 <body>
 
-<audio autoplay loop style="display: none;">
-  <source src="public/islamic-background.mp3" type="audio/mp3">
-</audio>
+
+
+
+<div id="toastNotification" class="toast-notification"></div>
 
 <div id="splash" class="splash">
-  <h1 style="font-family:'Great Vibes', cursive; font-size: 5em;">Devi & Sandro</h1>
-  <h2>Special Invitation to</h2>
-  <p>Tanpa mengurangi rasa hormat, kami mengundang Bapak/Ibu/Saudara/i untuk hadir di acara pernikahan kami</p>
-  <button onclick="openInvitation()">🎉 Open Invitationn</button>
+  <div class="splash-overlay"></div> <!-- ✅ Tambahan untuk overlay gelap -->
+
+  <h1 class="splash-title">Devi & Sandro</h1>
+  <p class="splash-subtitle handwrite-effect">Special Invitation to</p>
+  <p class="splash-desc">Tanpa mengurangi rasa hormat, kami mengundang Bapak/Ibu/Saudara/i untuk hadir di acara pernikahan kami</p>
+  
+  <button class="splash-button" onclick="openInvitation()">🎉 Open Invitation</button>
 </div>
 
 <div id="mainContent" class="main-content">
 
-<section id="countdown-section">
-  <div class="overlay">
+<section class="parallax-wrapper" id="countdown-section">
+<div class="countdown-overlay"></div> 
+    <div class="parallax-content scroll-reveal">
     <h2 class="judul-wedding">The Wedding of</h2>
-    <h1 style="font-family:'Great Vibes', cursive; font-size: 5em;">Devi & Sandro</h1>
+    <h1 id="weddingNames" class="letter-drop">Devi & Sandro</h1>
+    <h3>Rustic Elegance Morning</h3>
     <p class="tanggal-acara">Jumat, 13 Juni 2025</p>
     <div id="countdown" style="margin-top: 20px; font-size: 1.2em;"></div>
   </div>
 </section>
 
+<div id="ucapanTutupOverlay" class="ucapan-tutup-overlay" style="display: none;" role="dialog" aria-modal="true">
+  <img src="https://undangan-bdg.vercel.app/Asset/closed.png" alt="Acara Telah Selesai">
+  <div class="ucapan-tutup-box">
+    <h2>⏳ Ucapan Telah Ditutup</h2>
+    <p>Terima kasih atas doa dan ucapannya 💌</p>
+  </div>
+</div>
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+  <path fill="#d8f3dc" fill-opacity="1" d="M0,160L80,133.3C160,107,320,53,480,74.7C640,96,800,192,960,229.3C1120,267,1280,245,1360,234.7L1440,224L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path>
+</svg>
 
 
 
 
 
-<section class="ayat-frame">
-  <h2 style="font-family: 'Scheherazade', serif; font-size: 2em; margin-bottom: 0.5em;">
-    بَارَكَ اللَّهُ لَك، وَبَارَكَ عَلَيْك، وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ
-  </h2>
-  <div class="ayat-box">
-    <p class="latin" style="font-style: italic;">
+
+
+
+
+<section id="ayat-section" class="ayat-deluxe">
+  <div class="ayat-overlay"></div>
+
+  <div class="ayat-container scroll-reveal shimmer-slow"> <!-- ✅ tambah shimmer-slow -->
+    <h2 class="ayat-arabic">
+      بَارَكَ اللهُ لَكَ وَبَارَكَ عَلَيْكَ وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ
+    </h2>
+    <p class="ayat-latin">
       Bārakallāhu laka, wa bāraka ‘alaika, wa jama‘a bainakumā fī khair.
     </p>
-    <p class="translation">
-      Semoga Allah memberkahimu, memberkahi atasmu, dan mempersatukan kalian berdua dalam kebaikan.
-      <br><em>(HR. Abu Dawud, At-Tirmidzi)</em>
+    <p class="ayat-terjemahan">
+      Semoga Allah memberkahimu, memberkahi atasmu, dan mempersatukan kalian berdua dalam kebaikan.<br>
+      <em>(HR. Abu Dawud, At-Tirmidzi)</em>
     </p>
   </div>
 </section>
 
-<section id="couple-section">
+
+
+
+
+<section id="couple-section" class="scroll-reveal">
   <div class="couple-container">
+  
     <!-- Mempelai Wanita -->
     <div class="couple-block">
-      <div class="photo-group kiri">
-        <img src="https://i.imgur.com/WardSOa.jpeg" class="photo main-photo" alt="Devi">
-        <img src="https://i.imgur.com/WWF9npo.jpeg" class="photo overlay-photo" alt="Devi 2">
+      <div class="reveal-container gradient-bg">
+        <img src="https://i.imgur.com/1nnw0Hk.jpeg" class="foto-belakang zoomable" />
+        <div class="reveal-wrapper">
+          <img src="https://i.imgur.com/gvXAGTq.jpeg" class="foto-depan" />
+        </div>
+        <input type="range" min="0" max="100" value="50" class="slider" />
       </div>
-      <div class="couple-desc">
+      <div class="couple-desc fade-in-up">
         <h3 class="role">Mempelai Wanita</h3>
-        <h2 class="name">Devi Desviani</h2>
+        <h2 class="name heartbeat">Devi Desviani</h2>
         <p>Putri dari pasangan Bapak Bambang Pratioto & Ibu Linna Nurliana</p>
-        <div class="social">@devidesviani</div>
+        <div class="social">
+          <a href="https://instagram.com/devidesviani" target="_blank">
+            <i class="fab fa-instagram"></i> @devidesviani
+          </a>
+        </div>
       </div>
     </div>
 
     <!-- Mempelai Pria -->
     <div class="couple-block reverse">
-      <div class="photo-group kanan">
-        <img src="https://i.imgur.com/40hYGRP.jpeg" class="photo main-photo" alt="Sandro">
-        <img src="https://i.imgur.com/WWF9npo.jpeg" class="photo overlay-photo" alt="Sandro 2">
+      <div class="reveal-container gradient-bg">
+        <img src="https://i.imgur.com/IEj2ZPl.jpeg" class="foto-belakang zoomable" />
+        <div class="reveal-wrapper">
+          <img src="https://i.imgur.com/lpEuk7w.jpeg" class="foto-depan" />
+        </div>
+        <input type="range" min="0" max="100" value="50" class="slider" />
       </div>
-      <div class="couple-desc">
+      <div class="couple-desc fade-in-up">
         <h3 class="role">Mempelai Pria</h3>
-        <h2 class="name">Sandro Dwicahyo</h2>
+        <h2 class="name heartbeat">Sandro Dwicahyo</h2>
         <p>Putra dari pasangan Bapak Agus Mediarto Mulya & Ibu Nuryati</p>
-        <div class="social">@sandro.dwicahyo</div>
+        <div class="social">
+          <a href="https://instagram.com/sandro.dwicahyo" target="_blank">
+            <i class="fab fa-instagram"></i> @sandro.dwicahyo
+          </a>
+        </div>
       </div>
     </div>
+
   </div>
 </section>
+
+
 
 <section id="weddingdate-section">
 	<h2 class="weddingdate-title">
@@ -744,19 +171,29 @@ body {
 </section>
 
 
-<section id="unduhmantu-section">
-<h2 class="unduhmantu-title">
-        <span class="unduhmantu-title-main">Unduh</span>
-        <span class="unduhmantu-title-sub">Mantu</span>
-      </h2>
-    <p>Jumat, 13 Juni 2025<br>Akad: 10.00 WIB | Resepsi: 13.00 WIB</p>
-    <p>Paragraph Coffee and Eatery</p>
-    <p>Jl. Nanas No.13, Cihapit, Kec. Bandung Wetan, Kota Bandung, Jawa Barat 40114</p>
-    <a href="https://maps.app.goo.gl/fHxLopzy8KhSEneRA" target="_blank">
-  <i class="fas fa-map-marker-alt"></i> Google Maps
-</a>
 
-  </section>
+<section id="unduhmantu-section">
+  <h2 class="unduhmantu-title">
+    <span class="unduhmantu-title-main">Tasyakuran</span>
+    <span class="unduhmantu-title-sub">Pernikahan</span>
+  </h2>
+
+  <p>Jumat, 13 Juni 2025<br>Akad: 07.00 WIB | Resepsi: 09.00 WIB</p>
+  <p>Paragraph Coffee and Eatery</p>
+  <p>Jl. Nanas No.13, Cihapit, Kec. Bandung Wetan, Kota Bandung, Jawa Barat 40114</p>
+
+  <a href="https://maps.app.goo.gl/fHxLopzy8KhSEneRA" target="_blank" class="map-link">
+    <img src="https://undangan-bdg.vercel.app/Asset/map.png" alt="Lokasi" width="24" height="24" style="vertical-align: middle; margin-right: 8px;">
+    Google Maps
+  </a>
+
+  <p style="margin-top: 1.5em; font-weight: bold;">Dresscode:</p>
+  <p>Putih / Sage Green / Beige</p>
+</section>
+
+  
+  
+
 
 <section id="gallery-section">
   <div class="gallery-wrapper">
@@ -769,10 +206,18 @@ body {
 
     <div class="gallery-carousel" id="galleryCarousel">
       <div class="carousel-track" id="carouselTrack">
-        <img src="https://i.imgur.com/40hYGRP.jpeg" alt="Photo 1">
-        <img src="https://i.imgur.com/WardSOa.jpeg" alt="Photo 2">
-        <img src="https://i.imgur.com/40hYGRP.jpeg" alt="Photo 3">
-        <img src="https://i.imgur.com/WardSOa.jpeg" alt="Photo 4">
+        <img src="https://undangan-bdg.vercel.app/Asset/devi1.jpg" alt="Photo 1">
+        <img src="https://undangan-bdg.vercel.app/Asset/san1.jpg" alt="Photo 2">
+        <img src="https://undangan-bdg.vercel.app/Asset/cou1.jpg" alt="Photo 3">
+        <img src="https://undangan-bdg.vercel.app/Asset/devi2.jpg" alt="Photo 4">
+		<img src="https://undangan-bdg.vercel.app/Asset/san2.jpg" alt="Photo 5">
+        <img src="https://undangan-bdg.vercel.app/Asset/cou2.jpg" alt="Photo 6">
+        <img src="https://undangan-bdg.vercel.app/Asset/devi3.jpg" alt="Photo 7">
+        <img src="https://undangan-bdg.vercel.app/Asset/san3.jpg" alt="Photo 8">
+		<img src="https://undangan-bdg.vercel.app/Asset/cou3.jpg" alt="Photo 9">
+        <img src="https://undangan-bdg.vercel.app/Asset/devi4.jpg" alt="Photo 10">
+        <img src="https://undangan-bdg.vercel.app/Asset/san4.jpg" alt="Photo 11">
+        <img src="https://undangan-bdg.vercel.app/Asset/cou4.jpg" alt="Photo 12">
       </div>
     </div>
   </div>
@@ -780,265 +225,312 @@ body {
 
 </section>
 
-
-
-
-<section id="doa-section">
-  <h2 class="doa-title">
-    <span class="doa-title-main">Ucapan &</span>
-    <span class="doa-title-sub">Doa</span>
-  </h2>
-<form id="formUcapan" onsubmit="submitUcapan(event)" class="form-doa">
-  <input type="text" name="nama" placeholder="Tulis namamu di sini..." class="input-nama" required>
-  <textarea name="ucapan" placeholder="Tulis ucapan dan doa untuk Devi & Sandro..." class="input-ucapan" required></textarea>
-  <button type="submit" class="btn-kirim">Kirim Ucapan</button>
-</form>
-
-
-    <div id="daftarUcapan"></div>
-	<div id="pagination"></div>
-
-  </section>
-
 <section id="gift-section">
   <h2 class="gift-title">
     <span class="gift-title-main">Wedding</span>
     <span class="gift-title-sub">Gift</span>
   </h2>
-  <p>Tanpa mengurangi rasa hormat, kehadiran Anda sudah menjadi anugerah terindah bagi kami.<br>
-  Namun jika berkenan berbagi kebahagiaan dari jauh, dapat melalui:</p>
-  <ul>
-    <li>
-  <a href="https://saweria.co/CZhappy" target="_blank" class="btn-saweria">
-    💝 Beri Hadiah via Saweria
-  </a>
-</li>
-  </ul>
+
+  <p class="gift-intro">
+    Kehadiranmu adalah hadiah terindah.<br>
+    Jika berkenan berbagi kebahagiaan dari jauh, berikut opsinya:
+  </p>
+
+  <div class="gift-card scroll-reveal">
+    <a href="https://saweria.co/CZhappy" target="_blank" class="btn-saweria">
+      💝 Kirim Hadiah via Saweria
+    </a>
+  </div>
 </section>
 
-<section id="thanks-section">
-  <h2 class="thanks-title">
-    <span class="thanks-title-main">Terima</span>
-    <span class="thanks-title-sub">Kasih</span>
-  </h2>
-    <p>Dengan penuh rasa syukur dan bahagia,<br>
-    kami mengharapkan kehadiran Bapak/Ibu/Saudara/i untuk menjadi saksi awal perjalanan baru kami dan memberi doa restu yang tulus.</p>
-    <p>Atas kehadiran dan doa restunya kami ucapkan terimakasih.</p>
-    <p>Wassalamu’alaikum warahmatullahi wabarakatuh</p>
-	<p>@ Copyright -CZHappy</p>
-  </section>
+
+
+<div class="rsvp-heading">
+  <div class="rsvp-heading-wrapper">
+    <h2>RSVP</h2>
+    <div class="info-icon-wrapper" onclick="openBottomSheetGeneric('bottomSheet')" title="Klik untuk info lebih lanjut!">
+      <img src="https://undangan-bdg.vercel.app/Asset/information.png" alt="Info" class="info-icon" />
+    <div class="tooltip-text-doa">
+      📢 Klik aku untuk informasi lebih lengkap!
+    </div>
+	</div>
+	
+		
+  </div>
+  <p class="handwrite-effect">
+    Yuk, isi kehadiran kamu di bawah ini.
+  </p>
 </div>
 
+<form id="formReservasi" class="form-doa">
+  <div class="input-wrapper">
+    <input type="text" id="namaReservasi" placeholder="Tulis namamu di sini..." required />
+  </div>
+  
+  <div class="input-wrapper">
+    <select id="statusReservasi" required>
+      <option value="" disabled selected>Konfirmasi Kehadiran Anda</option>
+      <option value="datang">Datang</option>
+      <option value="tidak">Tidak Datang</option>
+      <option value="ragu-ragu">Masih Ragu</option>
+    </select>
+  </div>
+
+  <button type="submit" class="btn-submit">Konfirmasi</button>
+</form>
+
+
+
+
+<div id="reservasiThanks" class="thanks-message" style="display:none;">
+  <img src="https://undangan-bdg.vercel.app/Asset/thank-you.png" alt="Terima kasih" class="thank-you-img floating-animate">
+  
+  <p class="thanks-wording">
+    🎉 Terima kasih, konfirmasi kehadiran Anda telah tercatat.
+  </p>
+</div>
+
+<div class="decor-divider"></div>
+
+<div id="notificationBell" class="notification-bell" style="position: fixed; top: 20px; right: 20px; cursor: pointer; display: none; z-index: 999;">
+  <img src="https://undangan-bdg.vercel.app/Asset/notification.png" alt="Notifikasi" style="width: 32px; height: 32px;">
+</div>
+
+<div id="ucapanLoading" class="shimmer-wrapper" style="display: none;">
+  <div class="shimmer-card"></div>
+  <div class="shimmer-card"></div>
+  <div class="shimmer-card"></div>
+</div>
+
+
+
+
+<!-- Section Doa -->
+<section id="doa-section">
+  <div class="doa-heading-wrapper">
+    <h2>Ucapan & <span class="doa-title-sub">Doa</span></h2>
+
+    <!-- Icon Info -->
+    <div class="info-icon-wrapper-doa" onclick="openBottomSheetGeneric('bottomSheetDoa')" title="Klik untuk info lebih lanjut!">
+      <img src="https://undangan-bdg.vercel.app/Asset/information.png" alt="Info" class="info-icon-doa" />
+      <div class="tooltip-text-doa">
+        📢 Klik aku untuk informasi lebih lengkap!
+      </div>
+    </div>
+  </div>
+
+<!-- Form Ucapan -->
+<!-- Tombol Voice (di luar form!) -->
+<button type="button" id="startVoiceButton" class="voice-floating-button" aria-label="Rekam Voice">
+  <img src="https://undangan-bdg.vercel.app/Asset/voice-message.png" alt="Voice" />
+</button>
+
+<!-- Form Ucapan -->
+<form id="formUcapan" onsubmit="submitUcapan(event)" class="form-doa">
+  <input type="text" name="nama" id="nama" placeholder="Tulis namamu di sini..." class="input-nama" required>
+  <textarea name="ucapan" placeholder="Tulis ucapan dan doa untuk Devi & Sandro..." class="input-ucapan" required></textarea>
+
+  <div class="icon-send-wrapper">
+    <!-- ✅ Tombol Icon Kirim Ucapan -->
+    <button type="submit" id="btnKirimUcapan" class="icon-button">
+      <img src="https://undangan-bdg.vercel.app/Asset/message.png" alt="Kirim Ucapan" />
+    </button>
+  </div>
+
+  <p id="ucapanStatusMsg" class="status-msg"></p>
+</form>
+
+
+
+
+
+  <!-- Thank you after ucapan -->
+  <div id="ucapanThanks" class="thanks-message" style="display: none;">
+    <img src="https://undangan-bdg.vercel.app/Asset/thank-you.png" alt="Terima kasih" class="floating-animate">
+    <p class="thanks-wording">🎉 Terima kasih atas ucapan dan doanya!</p>
+  </div>
+
+  <div id="userIdValue" class="user-frame"></div>
+
+  <div class="filter-wrapper">
+    <input type="checkbox" id="filterByUser" />
+    <label id="filterByUserLabel" for="filterByUser">Sorot ucapan saya</label>
+  </div>
+
+  <div id="daftarUcapan"></div>
+
+  <div id="noUcapanMsg" class="no-ucapan-message" style="display: none;">
+    <p>💬 Belum ada ucapan yang masuk.</p>
+  </div>
+
+  <div id="pageInfo"></div>
+  <div id="pagination"></div>
+
+</section> <!-- ✅ Ini tutup doa-section -->
+
+
+<!-- Section Voice Guestbook -->
+<section id="voiceGuestbookSection" class="scroll-reveal">
+  <h2>🎧 Guestbook Suara</h2>
+  <div id="voiceList" class="voice-list"></div>
+</section>
+
+
+
+
+  
+
+
+
+
+
+<!-- === BottomSheet Info Scratch & Win === -->
+<div id="bottomSheetDoa" class="bottom-sheet hidden">
+  <div class="bottom-sheet-overlay" onclick="closeBottomSheetGeneric('bottomSheetDoa')"></div>
+  <div class="bottom-sheet-content">
+    <button class="close-button" onclick="closeBottomSheetGeneric('bottomSheetDoa')">×</button>
+    <!-- 🎮 OPSI 2: Fun Playful Version -->
+<h3>🎯 Let's Play: Scratch & Win Souvenir Spesial!</h3>
+
+<p style="text-align: left;">
+  Woohoo! Terima kasih sudah konfirmasi hadir! 🙌<br><br>
+
+  Sekarang saatnya bersenang-senang di <strong>Scratch & Win</strong>:
+  <ul style="text-align: left; margin-top: 8px;">
+    <li>1. Kirim ucapan dan doa gokil kamu untuk kami. 📝💬</li>
+    <li>2. Klik dan gosok Scratch Card yang bakal muncul! 🎯✨</li>
+    <li>3. Kalau beruntung, hadiah <strong>Souvenir Eksklusif</strong> siap kamu bawa pulang! 🎉🎁</li>
+  </ul>
+
+  🎊 Hanya untuk tamu kece yang udah RSVP dan kirim ucapan! <br><br>
+  Yuk buruan, semoga kamu yang beruntung dapetin hadiahnya! 🍀🔥
+</p>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+<section id="penutupSection" class="penutup-section scroll-reveal">
+  <div class="penutup-overlay"></div> <!-- ✅ Tambahan Background soft -->
+
+  <p class="penutup-salam animate-slide-up">
+    Wassalamu’alaikum warahmatullahi wabarakatuh
+  </p>
+
+  <div id="pantunContainer" class="pantun-container animate-words"></div>
+
+  <p class="penutup-invite fade-in-text">
+    💌 Dengan penuh sukacita, kami mengundang Bapak/Ibu/Saudara/i untuk menjadi saksi perjalanan kami.<br>
+    Terima kasih atas kehangatan dan doa restunya. 🌸
+  </p>
+</section>
+
+
 <audio id="bgm" loop style="display: none;">
-  <source src="/islamic-background.mp3" type="audio/mp3">
+  <source src="/Asset/music-bg.mp3" type="audio/mp3">
 </audio>
 
-<script>
-
-function openInvitation() {
-  sessionStorage.setItem("invitationOpened", "true");
-  document.getElementById('splash').style.display = 'none';
-  document.getElementById('mainContent').style.display = 'block';
-  const bgm = document.getElementById('bgm');
-  if (bgm && typeof bgm.play === 'function') {
-    bgm.play().catch(err => {
-      console.warn("Autoplay gagal, browser mungkin memblokir:", err);
-    });
-  }
-  startCountdown();
-  ambilUcapan();
-}
 
 
+<div id="modalBalas" style="display:none; position:fixed; top:0; left:0; 
+  width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center;">
+  <div style="background:white; padding:2em; border-radius:10px; max-width:400px; width:90%;">
+    <h3>Balas ke Admin</h3>
+    <textarea id="inputBalasanAdmin" placeholder="Tulis balasanmu..." style="width:100%; padding:1em;"></textarea>
+    <button onclick="kirimBalasanAdmin()">Kirim</button>
+    <button onclick="tutupModalBalas()" style="margin-left:1em;">Batal</button>
+    <input type="hidden" id="balasIdTarget">
+  </div>
+</div>
 
-window.onload = () => {
-  document.getElementById('splash').style.display = 'flex';
-  document.getElementById('mainContent').style.display = 'none';
-  ambilUcapan(); 
-};
+<!-- === BottomSheet Info Souvenir === -->
+<div id="bottomSheet" class="bottom-sheet hidden">
+  <div class="bottom-sheet-overlay" onclick="closeBottomSheetGeneric('bottomSheet')"></div>
 
-function startCountdown() {
-  const countdownEl = document.getElementById('countdown');
-  const target = new Date('2025-06-13T10:00:00').getTime();
-  const interval = setInterval(() => {
-    const now = new Date().getTime();
-    const diff = target - now;
-    if (diff <= 0) {
-      clearInterval(interval);
-      countdownEl.innerHTML = "Countdown telah berakhir. Atas kehadiran dan doa restunya kami ucapkan terima kasih.";
-      return;
-    }
-    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const s = Math.floor((diff % (1000 * 60)) / 1000);
-    countdownEl.innerHTML = `${d} hari ${h} jam ${m} menit ${s} detik`;
-  }, 1000);
-}
+  <div class="bottom-sheet-content animate-pop">
+    <button class="close-button" onclick="closeBottomSheetGeneric('bottomSheet')">×</button>
 
-const endpoint = "https://script.google.com/macros/s/AKfycbypZbnVQ1RzjFGXpvTecG-YIvOod4_4oA-fSUl_sCo79LDe_UbU0jgP6vOrzrGpAJKE/exec";
+    <h3 class="bottom-title">🎯 Let's Win Some Fun: Scratch & Win Time!</h3>
 
-function submitUcapan(e) {
-  e.preventDefault();
-  
-  const now = new Date().getTime();
-  const deadline = new Date('2025-06-13T10:00:00').getTime();
-  if (now > deadline) {
-    alert("Ucapan telah ditutup. Terimakasih atas doa restunya.");
-    return;
-  }
-  
-  const nama = e.target.nama.value;
-  const ucapan = e.target.ucapan.value;
+<p style="text-align: center; margin-top: 1em;">
+  Udah konfirmasi HADIR? Keren! 🎉<br><br>
 
-  fetch(endpoint, {
-    method: "POST",
-    mode: "no-cors",
-    body: JSON.stringify({ nama, ucapan }),
-    headers: { "Content-Type": "application/json" }
-  }).then(() => {
-    alert("Ucapan berhasil dikirim!");
-    document.getElementById("formUcapan").reset();
-    ambilUcapan();
-  }).catch(error => {
-    alert("Gagal mengirim ucapan.");
-    console.error("Submit error:", error);
-  });
-}
+  Sekarang saatnya buktikan hoki kamu di <strong>Scratch & Win</strong> kami! 🚀<br><br>
 
-let currentPage = 1;
-const perPage = 3;
+  🎁 Ada <strong>Souvenir Eksklusif</strong> yang siap dibawa pulang buat <strong>10 tamu beruntung</strong>!<br><br>
 
-function formatWaktuIndo(isoStr) {
-  const date = new Date(isoStr);
-  if (isNaN(date.getTime())) return "Waktu tidak diketahui";
-
-  const optionsTanggal = { day: '2-digit', month: 'long', year: 'numeric' };
-  const optionsWaktu = { hour: '2-digit', minute: '2-digit', hour12: false };
-  const tanggal = date.toLocaleDateString('id-ID', optionsTanggal);
-  const waktu = date.toLocaleTimeString('id-ID', optionsWaktu);
-
-  return `${tanggal}, ${waktu} WIB`;
-}
+  Jangan sampe kelewatan serunya — hadir di hari spesial kami, bawa pulang hadiah kece! 🎁💖
+</p>
 
 
-function ambilUcapan() {
-  fetch(endpoint)
-    .then(res => res.json())
-    .then(data => {
-      const container = document.getElementById('daftarUcapan');
-      const pagination = document.getElementById('pagination') || document.createElement('div');
-      pagination.id = 'pagination';
-      container.innerHTML = '';
+  </div>
+</div>
 
-      const filtered = data.filter(item => item.approved === "Y");
-      const sorted = filtered.reverse();
-      const totalPages = Math.ceil(sorted.length / perPage);
-      const start = (currentPage - 1) * perPage;
-      const end = start + perPage;
-      const pageData = sorted.slice(start, end);
+<!-- === BottomSheet Scratch & Win === -->
+<div id="bottomSheetScratch" class="bottom-sheet hidden">
+  <div class="bottom-sheet-overlay" onclick="closeBottomSheetGeneric('bottomSheetScratch')"></div>
 
-      pageData.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'ucapan-card animate-fade-in'; // untuk animasi scroll
-        card.innerHTML = `
-          <strong>${item.nama}</strong>
-          <div>${item.ucapan}</div>
-          <div class="ucapan-time">${formatWaktuIndo(item.timestamp)}</div>
-          ${item.reply ? `
-            <div class="balasan-card">
-              <div class="balasan-label">Balasan:</div>
-              <div class="balasan-teks">${item.reply}</div>
-              ${item.reply_timestamp ? `<div class="balasan-time">${formatWaktuIndo(item.reply_timestamp)}</div>` : ''}
-            </div>
-          ` : ''}
-        `;
-        container.appendChild(card);
-      });
+  <div class="bottom-sheet-content">
+    <button class="close-button" onclick="closeBottomSheetGeneric('bottomSheetScratch')">×</button>
 
-      // Pagination
-      pagination.innerHTML = '';
-      for (let i = 1; i <= totalPages; i++) {
-        const btn = document.createElement('button');
-        btn.textContent = i;
-        if (i === currentPage) btn.disabled = true;
-        btn.onclick = () => {
-          currentPage = i;
-          ambilUcapan();
-        };
-        pagination.appendChild(btn);
-      }
+    <!-- Scratch Card Content -->
+    <div class="scratch-card-wrapper">
+      <img id="scratchRewardImage" src="" alt="Reward" class="reward-image">
+      <canvas id="scratchCanvas"></canvas>
+	  
+	  <div id="scratchProgress" style="text-align: center; margin-top: 10px; font-size: 1rem; color: #666;">
+  Gosok kartu untuk melihat hadiah!
+</div>
 
-      container.appendChild(pagination);
-    })
-    .catch(err => {
-      console.error('Gagal ambil ucapan:', err);
-    });
-}
+      <!-- Progress Bar + Text -->
+      <div id="progressContainer" style="width: 100%; height: 5px; background: #eee; margin-top: 10px; display: none;">
+        <div id="progressBar" style="height: 100%; width: 0; background: #4caf50;"></div>
+      </div>
 
+      <div id="progressText" style="margin-top: 10px; font-size: 14px; color: #777; text-align: center; display: none;">
+        Keep scratching...
+      </div>
+    </div>
 
-function formatTanggal(tanggal) {
-  const d = new Date(tanggal);
-  if (isNaN(d.getTime())) return "Unknown Time";
-  return d.toLocaleString("id-ID", {
-    day: "2-digit", month: "2-digit", year: "numeric",
-    hour: "2-digit", minute: "2-digit"
-  });
-}
+    <p id="scratchResultText" class="scratch-result-text"></p>
+    </div>
+</div>
+
+<audio id="winSound" src="https://undangan-bdg.vercel.app/Asset/win-sound.mp3"></audio>
+<audio id="loseSound" src="https://undangan-bdg.vercel.app/Asset/lose-sound.mp3"></audio>
+
+<!-- BottomSheet Voice Recorder -->
+
+<div id="voiceRecorderSheet" class="bottom-sheet-voice hidden">
+  <div class="bottom-sheet-header">
+    <div id="timerVoice" class="record-timer">00:00</div>
+    <canvas id="voiceWave" class="voice-wave"></canvas> <!-- 🔥 Ini canvas -->
+	<div id="uploadProgress" class="upload-progress hidden">
+  <div class="upload-bar"></div>
+</div>
+  </div>
+
+  <audio id="replayAudio" class="replay-audio" controls style="display:none; margin-top:1em; width:100%;"></audio> <!-- ✅ ini audio -->
+
+  <div class="bottom-sheet-actions">
+    <button id="cancelVoice" class="voice-btn danger" title="Hapus Rekaman">🗑️</button>
+    <button id="pauseVoice" class="voice-btn" title="Pause/Resume Rekaman">⏸️</button>
+    <button id="replayVoice" class="voice-btn" disabled title="Putar Ulang">🔁</button> <!-- ✅ tombol replay -->
+    <button id="sendVoice" class="voice-btn primary" disabled title="Kirim Voice">📤</button>
+  </div>
+</div>
 
 
 
-</script>
-
-<script>
-  const track = document.getElementById('carouselTrack');
-  let isDown = false;
-  let startX;
-  let scrollLeft;
-
-  track.addEventListener('mousedown', (e) => {
-    isDown = true;
-    track.classList.add('active');
-    startX = e.pageX - track.offsetLeft;
-    scrollLeft = track.scrollLeft;
-  });
-
-  track.addEventListener('mouseleave', () => {
-    isDown = false;
-    track.classList.remove('active');
-  });
-
-  track.addEventListener('mouseup', () => {
-    isDown = false;
-    track.classList.remove('active');
-  });
-
-  track.addEventListener('mousemove', (e) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX - track.offsetLeft;
-    const walk = (x - startX) * 1.5;
-    track.scrollLeft = scrollLeft - walk;
-  });
-</script>
 
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("show");
-        observer.unobserve(entry.target); // Biar ga di-observe lagi
-      }
-    });
-  }, { threshold: 0.2 });
 
-  document.querySelectorAll('.fade-in').forEach(el => {
-    observer.observe(el);
-  });
-});
-</script>
 </body>
 
 </html>
