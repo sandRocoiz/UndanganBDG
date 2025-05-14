@@ -1989,7 +1989,7 @@ async function uploadVoiceToVercel(audioBlob) {
     const formData = new FormData();
     formData.append('file', audioBlob, 'voice-note.mp3');
 
-    const res = await fetch('/api/voice-upload', {
+    const res = await fetch('/api/upload-to-blob', {
       method: 'POST',
       body: formData
     });

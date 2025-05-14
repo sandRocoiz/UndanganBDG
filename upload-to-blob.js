@@ -11,7 +11,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const blobToken = process.env.VERCEL_BLOB_TOKEN; // ✅ Ambil dari ENV
+    const blobToken = process.env.BLOB_READ_WRITE_TOKEN; // ✅ Ambil dari ENV
 
     if (!blobToken) {
       throw new Error('Missing Vercel Blob Token');
