@@ -1,0 +1,7 @@
+{
+  "name": "voice-note-upload",
+  "version": "1.0.0",
+  "dependencies": {
+    "formidable": "^3.4.1"
+  }
+}
