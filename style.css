@@ -3150,16 +3150,18 @@ Hi <strong>NamaUser</strong> 👋
 /* BottomSheet Base */
 .bottom-sheet {
   position: fixed;
-  bottom: 0;
   left: 0;
   right: 0;
+  bottom: 0;
+  z-index: 999;
   background: white;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
   padding: 20px;
+  max-height: 80vh;
+  overflow-y: auto;
   transform: translateY(100%);
   transition: transform 0.3s ease;
-  z-index: 999;
 }
 
 /* Overlay abu-abu */
@@ -3780,18 +3782,66 @@ Hi <strong>NamaUser</strong> 👋
   bottom: 0;
   left: 0;
   right: 0;
-  background: #fff;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  padding: 20px;
-  transform: translateY(100%);
+  background: #ffffff;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+  padding: 1em;
   transition: transform 0.3s ease;
-  z-index: 1001; /* lebih tinggi dari bottomsheet lain */
+  transform: translateY(100%);
+  z-index: 999;
 }
 
+
 .bottom-sheet-voice.active {
-  transform: translateY(0%);
+  transform: translateY(0);
 }
+
+.bottom-sheet-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8em;
+}
+
+.record-timer {
+  font-size: 2em;
+  font-weight: bold;
+  color: #333;
+}
+
+.voice-wave {
+  width: 100%;
+  height: 80px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+}
+
+
+.record-wave {
+  width: 100%;
+  height: 50px;
+  background: linear-gradient(to right, #ddd 25%, #eee 50%, #ddd 75%);
+  background-size: 200% 100%;
+  animation: waveAnim 1s linear infinite;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+@keyframes waveAnim {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.bottom-sheet-actions {
+  margin-top: 1em;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+
 
 .bottom-sheet-content {
   display: flex;
@@ -3799,6 +3849,49 @@ Hi <strong>NamaUser</strong> 👋
   align-items: center;
   gap: 1rem;
 }
+
+.voice-btn {
+  background: #f0f0f0;
+  border: none;
+  padding: 0.8em;
+  font-size: 1.5em;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.voice-btn:hover {
+  background: #ddd;
+}
+
+.voice-btn:hover:not(:disabled) {
+  background: #ddd;
+}
+
+.voice-btn.primary {
+  background: #4CAF50;
+  color: white;
+}
+
+.voice-btn.primary:hover {
+  background: #45a049;
+}
+
+.voice-btn.danger {
+  background: #f44336;
+  color: white;
+}
+
+.voice-btn.danger:hover {
+  background: #d32f2f;
+}
+
+.replay-audio {
+  margin-top: 1em;
+  width: 100%;
+  display: none;
+}
+
 
 /* === Timer Voice */
 #timerVoice {
@@ -3862,6 +3955,18 @@ Hi <strong>NamaUser</strong> 👋
   opacity: 0.6;
 }
 
+.empty-voice img {
+  max-width: 200px;
+  margin: 0 auto;
+  display: block;
+}
+
+.empty-voice p {
+  text-align: center;
+  color: #666;
+  margin-top: 1em;
+  font-size: 1em;
+}
 
 /* Saat hidden */
 .hidden {
