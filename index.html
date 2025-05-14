@@ -320,6 +320,12 @@
   </div>
 
 <!-- Form Ucapan -->
+<!-- Tombol Voice (di luar form!) -->
+<button type="button" id="startVoiceButton" class="voice-floating-button" aria-label="Rekam Voice">
+  <img src="https://undangan-bdg.vercel.app/Asset/voice-message.png" alt="Voice" />
+</button>
+
+<!-- Form Ucapan -->
 <form id="formUcapan" onsubmit="submitUcapan(event)" class="form-doa">
   <input type="text" name="nama" id="nama" placeholder="Tulis namamu di sini..." class="input-nama" required>
   <textarea name="ucapan" placeholder="Tulis ucapan dan doa untuk Devi & Sandro..." class="input-ucapan" required></textarea>
@@ -329,15 +335,12 @@
     <button type="submit" id="btnKirimUcapan" class="icon-button">
       <img src="https://undangan-bdg.vercel.app/Asset/message.png" alt="Kirim Ucapan" />
     </button>
-
-    <!-- ✅ Tombol Icon Kirim Voice -->
-    <button type="button" id="startVoiceButton" class="icon-button" aria-label="Rekam Voice">
-      <img src="https://undangan-bdg.vercel.app/Asset/voice-message.png" alt="Voice" />
-    </button>
   </div>
 
   <p id="ucapanStatusMsg" class="status-msg"></p>
 </form>
+
+
 
 
 

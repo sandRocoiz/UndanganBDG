@@ -1756,11 +1756,11 @@ async function loadVoiceNotes() {
 
   try {
     const res = await fetch(endpoint + '?action=listVoice');
-    const urls = await res.json();
+    const voices = await res.json(); // Sekarang voices = array of object
+
     container.innerHTML = "";
 
-    if (urls.length === 0) {
-      // ✅ Tampilkan empty state
+    if (!voices.length) {
       container.innerHTML = `
         <div class="empty-voice">
           <img src="https://undangan-bdg.vercel.app/Asset/no-voice.png" alt="No Voice" style="max-width: 200px; margin: 0 auto; display: block;">
@@ -1770,19 +1770,25 @@ async function loadVoiceNotes() {
       return;
     }
 
-    // ✅ Kalau ada data, render voice list
-    urls.forEach(url => {
+    voices.forEach(item => {
       const card = document.createElement('div');
       card.className = "voice-card";
-      card.innerHTML = `<audio controls src="${url}" style="width: 100%;"></audio>`;
+      card.innerHTML = `
+        <div class="voice-header">
+          🎤 <strong>${item.nama}</strong>
+        </div>
+        <audio controls src="${item.url}" style="width: 100%; margin-top: 0.5em;"></audio>
+      `;
       container.appendChild(card);
     });
 
   } catch (err) {
     console.error("Gagal load voice notes:", err);
-    container.innerHTML = "<p style='text-align:center; color:red;'>❗ Error memuat suara 😢</p>";
+    container.innerHTML = "<p style='text-align:center; color:red;'>Gagal load suara 😢</p>";
   }
 }
+
+
 
 
 // ==== EVENT BINDING ====
