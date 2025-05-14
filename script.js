@@ -15,12 +15,28 @@ let scratchFinished = false;
 
 //Voice Note
 let mediaRecorder;
-let recorder;
 let audioChunks = [];
+let audioBlob = null;
 let recordTimer;
-let recordingStartTime;
-let audioBlob;
 let elapsedSeconds = 0;
+let isPaused = false;
+
+//wave
+let audioContext;
+let analyser;
+let dataArray;
+let animationId;
+let canvas;
+let canvasCtx;
+let waveInterval;
+
+const startBtn = document.getElementById('startVoiceButton');
+const cancelBtn = document.getElementById('cancelVoice');
+const pauseBtn = document.getElementById('pauseVoice');
+const sendBtn = document.getElementById('sendVoice');
+const timerDisplay = document.getElementById('timerVoice');
+const sheetVoice = document.getElementById('voiceRecorderSheet');
+const replayAudio = document.getElementById('replayAudio');
 
 // === USER ID ===
 function generateUserId() {
@@ -1065,41 +1081,24 @@ document.addEventListener("DOMContentLoaded", () => {
   animateSliderOnView();
   animateZoomFoto();
   loadVoiceNotes();
+  
+
+const btnKirimUcapan = document.getElementById('btnKirimUcapan');
+const realSubmitButton = document.getElementById('realSubmitButton');
+const userIdValue = document.getElementById("userIdValue");
+const namaInput = document.getElementById("nama");
+const splash = document.getElementById("splash");
+const mainContent = document.getElementById("mainContent");
+
 
   // ✅ Tombol Icon Kirim Ucapan
-  const btnKirimUcapan = document.getElementById('btnKirimUcapan');
-  const realSubmitButton = document.getElementById('realSubmitButton');
   if (btnKirimUcapan && realSubmitButton) {
     btnKirimUcapan.addEventListener('click', () => {
       realSubmitButton.click(); // 🚀 Trigger form ucapan biasa
     });
   }
 
-  // ✅ Tombol Icon Kirim Voice
-  const sendVoiceButton = document.getElementById('sendVoice');
-if (sendVoiceButton) {
-  sendVoiceButton.addEventListener('click', async () => {
-    if (mediaRecorder && mediaRecorder.state === "recording") {
-      // 🔥 Kalau masih recording, stop dulu
-      mediaRecorder.stop();
-
-      mediaRecorder.addEventListener("stop", async () => {
-        if (!audioBlob) {
-          audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
-        }
-        alert("✅ Rekaman disimpan, klik kirim ulang ya!");
-        // Setelah stop, user harus klik tombol send lagi untuk upload
-      }, { once: true }); // listen hanya sekali
-    } else {
-      // 🔥 Kalau sudah stop, langsung upload
-      if (!audioBlob) {
-        alert("❗ Belum ada rekaman siap dikirim!");
-        return;
-      }
-      await uploadRecording();
-    }
-  });
-}
+ 
 
 
 
@@ -1128,8 +1127,6 @@ if (sendVoiceButton) {
   }
 
   // ✅ Splashscreen dan MainContent
-  const splash = document.getElementById("splash");
-  const mainContent = document.getElementById("mainContent");
   if (splash) splash.style.display = "flex";
   if (mainContent) mainContent.style.display = "none";
 
@@ -1540,6 +1537,7 @@ let startX;
 let scrollLeft;
 let velocity = 0;
 let momentumID = null;
+let isUploading = false;
 
 // === Handle Drag Mouse
 track?.addEventListener('mousedown', (e) => {
@@ -1616,23 +1614,43 @@ document.querySelectorAll(".slider").forEach(slider => {
 
 
 
-const startBtn = document.getElementById('startVoiceButton');
-const cancelBtn = document.getElementById('cancelVoice');
-const sendBtn = document.getElementById('sendVoice');
-const timerDisplay = document.getElementById('timerVoice');
-const sheetVoice = document.getElementById('voiceRecorderSheet');
 
-startBtn.addEventListener('mousedown', startRecording);
-startBtn.addEventListener('touchstart', startRecording);
-startBtn.addEventListener('mouseup', stopRecording);
-startBtn.addEventListener('touchend', stopRecording);
 
+// ==== FORMAT TIMER ====
 function formatTime(seconds) {
   const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
   const secs = (seconds % 60).toString().padStart(2, '0');
   return `${mins}:${secs}`;
 }
 
+// ==== OPEN SHEET ====
+function openVoiceSheet() {
+  sheetVoice.classList.remove('hidden');
+  setTimeout(() => sheetVoice.classList.add('active'), 10);
+}
+
+function closeVoiceSheet() {
+  sheetVoice.classList.remove('active');
+  setTimeout(() => sheetVoice.classList.add('hidden'), 300);
+  timerDisplay.textContent = "00:00";
+  clearInterval(recordTimer);
+  resetRecording();
+}
+
+// ==== RESET ====
+function resetRecording() {
+  if (mediaRecorder && mediaRecorder.state !== "inactive") {
+    mediaRecorder.stop();
+  }
+  mediaRecorder = null;
+  audioChunks = [];
+  audioBlob = null;
+  isPaused = false;
+  elapsedSeconds = 0;
+  replayAudio.src = "";
+}
+
+// ==== START RECORDING ====
 async function startRecording() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -1645,13 +1663,14 @@ async function startRecording() {
 
     mediaRecorder.start();
     
-    openVoiceSheet(); // ✅ langsung tampilkan BottomSheet Voice
+    openVoiceSheet(); // ✅ Buka BottomSheet Voice
+    startWaveAnimation(stream); // 🚀 Mulai wave animation
 
-    // 🔥 Tambahkan ini!!
     mediaRecorder.addEventListener("stop", () => {
-      audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+      audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
       const sendVoiceButton = document.getElementById('sendVoice');
-      if (sendVoiceButton) sendVoiceButton.disabled = false; // ✅ Aktifkan tombol kirim
+      if (sendVoiceButton) sendVoiceButton.disabled = false; // Aktifkan tombol kirim
+      stopWaveAnimation(); // 🚀 Stop wave animation
     });
 
     elapsedSeconds = 0;
@@ -1660,128 +1679,73 @@ async function startRecording() {
       document.getElementById('timerVoice').innerText = formatTime(elapsedSeconds);
 
       if (elapsedSeconds >= 30) {
-        stopRecording(); // auto stop setelah 30s
+        stopRecording(); // Auto stop setelah 30s
       }
     }, 1000);
 
   } catch (err) {
     console.error("Gagal akses mikrofon:", err);
-    alert("❗ Akses mikrofon ditolak atau terjadi error.");
+    alert("❗ Akses mikrofon ditolak atau error.");
   }
 }
-
 
 
 function stopRecording() {
   if (mediaRecorder && mediaRecorder.state === "recording") {
     mediaRecorder.stop();
-    
+	
+	sendBtn.disabled = false; // ✅ Aktifkan tombol kirim setelah stop rekam
+
+
     mediaRecorder.addEventListener("stop", () => {
       audioBlob = new Blob(audioChunks, { type: 'audio/mp3' }); // 🔥 simpan blob
-    });
+      if (sendBtn) sendBtn.disabled = false; // ✅ Enable tombol kirim
+    }, { once: true }); // pastikan hanya sekali jalan
   }
   clearInterval(recordTimer);
 }
 
 
-function openVoiceSheet() {
-  sheetVoice.classList.remove('hidden');
-  setTimeout(() => sheetVoice.classList.add('active'), 10);
-}
 
-function closeVoiceSheet() {
-  sheetVoice.classList.remove('active');
-  setTimeout(() => sheetVoice.classList.add('hidden'), 300);
-  timerDisplay.textContent = "00:00";
-  clearInterval(recordTimer);
-}
-
-function updateTimer() {
-  const update = () => {
-    if (!recordingStartTime) return;
-    const diff = Math.floor((Date.now() - recordingStartTime) / 1000);
-    const mins = String(Math.floor(diff / 60)).padStart(2, '0');
-    const secs = String(diff % 60).padStart(2, '0');
-    timerDisplay.textContent = `${mins}:${secs}`;
-    requestAnimationFrame(update);
-  };
-  requestAnimationFrame(update);
-}
-
-cancelBtn.addEventListener('click', () => {
-  recorder = null;
-  audioBlob = null;
-  closeVoiceSheet();
-});
-
-sendBtn.addEventListener('click', async () => {
-  if (!audioBlob) return;
-  const formData = new FormData();
-  formData.append('file', await blobToBase64(audioBlob));
-  formData.append('action', 'uploadVoice'); // 🔥 Tambahkan action=uploadVoice
-
-  try {
-    const res = await fetch(endpoint, { // tetap pakai endpoint biasa
-      method: 'POST',
-      body: formData
-    });
-    const json = await res.json();
-    if (json.success) {
-      alert('✅ Ucapan suara berhasil dikirim!');
-      closeVoiceSheet();
-      await loadVoiceNotes(); // reload daftar voice
-    } else {
-      alert('❌ Gagal mengirim suara.');
-    }
-  } catch (err) {
-    console.error(err);
-    alert('❌ Error saat upload!');
-  }
-});
-
-
+// ==== BLOB to BASE64 ====
 function blobToBase64(blob) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onloadend = () => resolve(btoa(reader.result.split(',')[1]));
+    reader.onloadend = () => resolve(reader.result.split(',')[1]);
     reader.onerror = reject;
     reader.readAsDataURL(blob);
   });
 }
 
+// ==== UPLOAD ====
 async function uploadRecording() {
   if (!audioBlob) {
-    alert("Belum ada rekaman untuk dikirim! 🎤");
+    alert("Belum ada suara untuk dikirim.");
     return;
   }
 
-  const formData = new FormData();
-  const arrayBuffer = await audioBlob.arrayBuffer();
-  const base64String = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-  formData.append("file", base64String);
-
   try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      body: formData
-    });
+    const formData = new FormData();
+    formData.append('action', 'uploadVoice');
+    formData.append('file', await blobToBase64(audioBlob));
 
-    const result = await response.json();
-    if (result.success) {
+    const res = await fetch(endpoint, { method: 'POST', body: formData });
+    const json = await res.json();
+
+    if (json.success) {
       alert("✅ Voice Note berhasil dikirim!");
-      closeBottomSheetGeneric('voiceRecorderSheet');
-      loadVoiceNotes(); // 🚀 Reload daftar ucapan suara
+      closeVoiceSheet();
+      loadVoiceNotes();
     } else {
-      alert("❗ Gagal upload suara.");
+      alert("❗ Gagal mengirim suara.");
     }
   } catch (err) {
-    console.error("Upload Error:", err);
-    alert("❗ Terjadi error saat upload.");
+    console.error(err);
+    alert("❗ Error saat upload!");
   }
 }
 
-
-
+// ==== LOAD APPROVED VOICES ====
 async function loadVoiceNotes() {
   const container = document.getElementById('voiceList');
   if (!container) return;
@@ -1789,10 +1753,10 @@ async function loadVoiceNotes() {
   container.innerHTML = `<div class="voice-loading"></div>`;
 
   try {
-    const res = await fetch(endpoint + '?action=listVoice'); // 🔥 tambahkan action=listVoice
+    const res = await fetch(endpoint + '?action=listVoice');
     const urls = await res.json();
-
     container.innerHTML = "";
+
     urls.forEach(url => {
       const card = document.createElement('div');
       card.className = "voice-card";
@@ -1806,22 +1770,141 @@ async function loadVoiceNotes() {
   }
 }
 
+// ==== EVENT BINDING ====
+startBtn.addEventListener('mousedown', startRecording);
+startBtn.addEventListener('touchstart', startRecording);
+
+cancelBtn.addEventListener('click', () => {
+  closeVoiceSheet();
+});
+
+pauseBtn.addEventListener('click', () => {
+  if (mediaRecorder && mediaRecorder.state === "recording") {
+    mediaRecorder.pause();
+    isPaused = true;
+    pauseBtn.textContent = "▶️"; // berubah jadi Play icon
+  } else if (mediaRecorder && mediaRecorder.state === "paused") {
+    mediaRecorder.resume();
+    isPaused = false;
+    pauseBtn.textContent = "⏸️"; // kembali jadi Pause icon
+  }
+});
+
+
+sendBtn.addEventListener('click', async () => {
+  if (!audioBlob) return;
+
+  const formData = new FormData();
+  formData.append('file', await blobToBase64(audioBlob));
+  formData.append('action', 'uploadVoice'); // action WAJIB
+  formData.append('userId', getUserId());   // ✅ langsung
+
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      body: formData
+    });
+
+    const contentType = res.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      const json = await res.json();
+      if (json.success) {
+        alert('✅ Ucapan suara berhasil dikirim!');
+        closeBottomSheetGeneric('voiceRecorderSheet');
+        await loadVoiceNotes();
+      } else {
+        alert('❌ Gagal mengirim suara.');
+      }
+    } else {
+      const text = await res.text();
+      if (text.includes("OK")) {
+        alert("✅ Voice Note berhasil dikirim!");
+        closeBottomSheetGeneric('voiceRecorderSheet');
+        await loadVoiceNotes();
+      } else {
+        alert("❗ Gagal upload suara.");
+      }
+    }
+  } catch (err) {
+    console.error(err);
+    alert('❌ Error saat upload!');
+  }
+});
 
 
 
-
-function renderVoiceNotes(urls) {
-  const container = document.getElementById('voiceList');
-  container.innerHTML = "";
-  urls.forEach(url => {
-    const card = document.createElement('div');
-    card.className = "voice-card";
-    card.innerHTML = `
-      <audio controls src="${url}" style="width: 100%;"></audio>
-    `;
-    container.appendChild(card);
-  });
+function initWaveform() {
+  canvas = document.getElementById('voiceWave');
+  if (!canvas) return;
+  canvas.width = canvas.offsetWidth;
+  canvas.height = 80;
+  canvasCtx = canvas.getContext('2d');
 }
+
+function startWaveAnimation(stream) {
+  const voiceWave = document.getElementById('voiceWave');
+  if (!voiceWave) {
+    console.warn('VoiceWave element tidak ditemukan.');
+    return;
+  }
+
+  const context = new (window.AudioContext || window.webkitAudioContext)();
+  const source = context.createMediaStreamSource(stream);
+  const analyser = context.createAnalyser();
+
+  source.connect(analyser);
+  analyser.fftSize = 256;
+  const bufferLength = analyser.frequencyBinCount;
+  const dataArray = new Uint8Array(bufferLength);
+
+  waveInterval = setInterval(() => {
+    analyser.getByteFrequencyData(dataArray);
+    const average = dataArray.reduce((a, b) => a + b, 0) / bufferLength;
+    voiceWave.style.transform = `scaleY(${1 + average / 128})`;
+  }, 100);
+}
+
+function drawWaveform() {
+  animationId = requestAnimationFrame(drawWaveform);
+
+  analyser.getByteTimeDomainData(dataArray);
+
+  canvasCtx.fillStyle = 'white';
+  canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+  canvasCtx.lineWidth = 2;
+  canvasCtx.strokeStyle = '#4CAF50';
+
+  canvasCtx.beginPath();
+
+  const sliceWidth = canvas.width / dataArray.length;
+  let x = 0;
+
+  for (let i = 0; i < dataArray.length; i++) {
+    const v = dataArray[i] / 128.0;
+    const y = (v * canvas.height) / 2;
+
+    if (i === 0) {
+      canvasCtx.moveTo(x, y);
+    } else {
+      canvasCtx.lineTo(x, y);
+    }
+
+    x += sliceWidth;
+  }
+
+  canvasCtx.lineTo(canvas.width, canvas.height / 2);
+  canvasCtx.stroke();
+}
+
+function stopWaveAnimation() {
+  clearInterval(waveInterval);
+  const voiceWave = document.getElementById('voiceWave');
+  if (voiceWave) {
+    voiceWave.style.transform = 'scaleY(1)';
+  }
+}
+
 
 
 

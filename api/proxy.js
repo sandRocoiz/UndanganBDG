@@ -15,11 +15,8 @@ export default async function handler(req, res) {
   });
 
   const fetchOptions = {
-    method: req.method,
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-  };
+  method: req.method,
+};
 
   if (req.method === 'POST') {
     let body = '';

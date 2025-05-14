@@ -319,37 +319,37 @@
     </div>
   </div>
 
-  <!-- Form Ucapan -->
-  <form id="formUcapan" onsubmit="submitUcapan(event)" class="form-doa">
-    <input type="text" name="nama" id="nama" placeholder="Tulis namamu di sini..." class="input-nama" required>
-    <textarea name="ucapan" placeholder="Tulis ucapan dan doa untuk Devi & Sandro..." class="input-ucapan" required></textarea>
+<!-- Form Ucapan -->
+<form id="formUcapan" onsubmit="submitUcapan(event)" class="form-doa">
+  <input type="text" name="nama" id="nama" placeholder="Tulis namamu di sini..." class="input-nama" required>
+  <textarea name="ucapan" placeholder="Tulis ucapan dan doa untuk Devi & Sandro..." class="input-ucapan" required></textarea>
 
-    <div class="icon-send-wrapper">
-      <!-- ✅ Tombol Icon Kirim Ucapan -->
-      <button type="submit" id="btnKirimUcapan" class="icon-button">
-        <img src="https://undangan-bdg.vercel.app/Asset/message.png" alt="Kirim Ucapan" />
-      </button>
+  <div class="icon-send-wrapper">
+    <!-- ✅ Tombol Icon Kirim Ucapan -->
+    <button type="submit" id="btnKirimUcapan" class="icon-button">
+      <img src="https://undangan-bdg.vercel.app/Asset/message.png" alt="Kirim Ucapan" />
+    </button>
 
-      <!-- ✅ Tombol Icon Kirim Voice -->
-      <button type="button" id="startVoiceButton" class="icon-button">
-        <img src="https://undangan-bdg.vercel.app/Asset/voice-message.png" alt="Voice" />
-      </button>
-    </div>
+    <!-- ✅ Tombol Icon Kirim Voice -->
+    <button type="button" id="startVoiceButton" class="icon-button" aria-label="Rekam Voice">
+      <img src="https://undangan-bdg.vercel.app/Asset/voice-message.png" alt="Voice" />
+    </button>
+  </div>
 
-    <p id="ucapanStatusMsg" class="status-msg"></p>
-  </form>
+  <p id="ucapanStatusMsg" class="status-msg"></p>
+</form>
 
   <!-- BottomSheet Voice Recorder -->
-  <div id="voiceRecorderSheet" class="bottom-sheet hidden">
-    <div class="bottom-sheet-content">
-      <h3 id="timerVoice">00:00</h3>
-      <div id="voiceWave" class="wave-placeholder"></div>
-      <div class="voice-actions">
-        <button id="cancelVoice" class="icon-button">🗑️</button>
-        <button id="sendVoice" class="icon-button">📤</button>
-      </div>
+<div id="voiceRecorderSheet" class="bottom-sheet hidden">
+  <div class="bottom-sheet-content">
+    <h3 id="timerVoice">00:00</h3>
+    <div id="voiceWave" class="wave-placeholder"></div>
+    <div class="voice-actions">
+      <button id="cancelVoice" class="icon-button">🗑️</button>
+      <button id="sendVoice" class="icon-button" disabled>📤</button>
     </div>
   </div>
+</div>
 
   <!-- Thank you after ucapan -->
   <div id="ucapanThanks" class="thanks-message" style="display: none;">
@@ -513,17 +513,19 @@
 <audio id="loseSound" src="https://undangan-bdg.vercel.app/Asset/lose-sound.mp3"></audio>
 
 <!-- BottomSheet Voice Recorder -->
-  <div id="voiceRecorderSheet" class="bottom-sheet hidden">
-    <div class="bottom-sheet-content">
-      <h3 id="timerVoice">00:00</h3>
-      <div id="voiceWave" class="wave-placeholder"></div>
-      <div class="voice-actions">
-        <button id="cancelVoice" class="icon-button">🗑️</button>
-        <button id="sendVoice" class="icon-button" disabled>📤</button>
-      </div>
-    </div>
+<!-- ✅ BottomSheet Voice Recorder (NEW) -->
+<div id="voiceRecorderSheet" class="bottom-sheet-voice hidden">
+  <div class="bottom-sheet-content">
+    <h3 id="timerVoice">00:00</h3>
+    <div id="voiceWave" class="wave-placeholder"></div>
+    <div class="voice-actions">
+  <button id="cancelVoice" class="icon-button">🗑️</button>
+  <button id="pauseVoice" class="icon-button">⏸️</button> <!-- ✅ Tambah tombol pause -->
+  <button id="sendVoice" class="icon-button" disabled>📤</button>
+</div>
   </div>
-</section>
+</div>
+
 
 
 </body>
