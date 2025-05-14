@@ -1838,39 +1838,66 @@ replayBtn.addEventListener('click', () => {
   }
 });
 
+function showUploadProgress() {
+  const progress = document.getElementById('uploadProgress');
+  if (progress) progress.classList.add('show');
+}
+
+function hideUploadProgress() {
+  const progress = document.getElementById('uploadProgress');
+  if (progress) progress.classList.remove('show');
+}
 
 
 sendBtn.addEventListener('click', async () => {
   if (!audioBlob) {
-    //alert("Tidak ada suara yang bisa dikirim.");
-	showToast("Tidak ada suara yang bisa dikirim.", "error");
+    alert('❗ Belum ada suara yang direkam!');
     return;
   }
 
-  const formData = new FormData();
-  formData.append('action', 'uploadVoice');
-  formData.append('file', await blobToBase64(audioBlob));
-  formData.append('userId', getUserId());
+  showUploadProgress(); // ✅ Start Progress
 
-  try {
-    const res = await fetch(endpoint, { method: 'POST', body: formData });
-    const result = await res.json();
+  const url = await uploadVoiceToVercel(audioBlob);
 
-    if (result.success) {
-      //alert("✅ Voice note berhasil dikirim!");
-	  showToast("✅ Voice note berhasil dikirim!", "success");
-      closeVoiceSheet();
-      loadVoiceNotes();
-    } else {
-      //alert("❌ Gagal kirim voice note.");
-	  showToast("❌ Gagal kirim voice note.", "error");
+  hideUploadProgress(); // ✅ Stop Progress
+
+  if (url) {
+    console.log('✅ Upload ke Blob sukses:', url);
+
+    const userId = getUserId();
+    const namaUser = localStorage.getItem('nama') || userId;
+
+    const payload = new FormData();
+    payload.append('action', 'saveVoice');
+    payload.append('url', url);
+    payload.append('userId', userId);
+    payload.append('nama', namaUser);
+
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        body: payload
+      });
+
+      const result = await res.text();
+      if (result.includes('OK')) {
+        alert('✅ Voice Note berhasil disimpan!');
+        closeBottomSheetGeneric('voiceRecorderSheet');
+        loadVoiceNotes();
+      } else {
+        alert('❗ Gagal simpan ke database.');
+      }
+    } catch (err) {
+      console.error('❗ Error saat kirim ke Sheets:', err);
+      alert('❗ Gagal kirim data voice.');
     }
-  } catch (err) {
-    console.error(err);
-    //alert("❌ Error upload voice note!");
-	showToast("❌ Error upload voice note!", "error");
+  } else {
+    alert('❗ Upload ke Blob gagal.');
   }
 });
+
+
+
 
 
 
@@ -1952,6 +1979,42 @@ function stopWaveAnimation() {
   }
 }
 
+async function uploadVoiceToVercel(audioBlob) {
+  try {
+    if (!audioBlob) {
+      alert('❗ Tidak ada audio yang siap diupload.');
+      return null;
+    }
+
+    const formData = new FormData();
+    formData.append('file', audioBlob, 'voice-note.mp3');
+
+    const res = await fetch('/api/voice-upload', {
+      method: 'POST',
+      body: formData
+    });
+
+    const contentType = res.headers.get('content-type') || '';
+
+    if (contentType.includes('application/json')) {
+      const json = await res.json();
+      if (json.url) {
+        console.log('✅ Upload sukses:', json.url);
+        return json.url; // URL file yang bisa dipakai FE
+      } else {
+        console.error('❌ Upload response tidak valid:', json);
+        return null;
+      }
+    } else {
+      const text = await res.text();
+      console.error('❌ Response bukan JSON:', text);
+      return null;
+    }
+  } catch (err) {
+    console.error('❌ Upload error:', err);
+    return null;
+  }
+}
 
 
 
