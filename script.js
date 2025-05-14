@@ -1747,6 +1747,15 @@ async function uploadRecording() {
   }
 }
 
+// === VOICE HELPER ===
+function convertToDirectGoogleDrive(url) {
+  const match = url.match(/\/d\/([^/]+)\//);
+  if (match && match[1]) {
+    return `https://docs.google.com/uc?export=download&id=${match[1]}`;
+  }
+  return url; // fallback
+}
+
 // ==== LOAD APPROVED VOICES ====
 async function loadVoiceNotes() {
   const container = document.getElementById('voiceList');
@@ -1756,28 +1765,24 @@ async function loadVoiceNotes() {
 
   try {
     const res = await fetch(endpoint + '?action=listVoice');
-    const voices = await res.json(); // Sekarang voices = array of object
-
+    const data = await res.json();
     container.innerHTML = "";
 
-    if (!voices.length) {
-      container.innerHTML = `
-        <div class="empty-voice">
-          <img src="https://undangan-bdg.vercel.app/Asset/no-voice.png" alt="No Voice" style="max-width: 200px; margin: 0 auto; display: block;">
-          <p style="text-align: center; color: #666; margin-top: 1em;">Belum ada voice note tersedia. Yuk kirim suaramu! 🎤</p>
-        </div>
-      `;
+    if (data.length === 0) {
+      container.innerHTML = "<p style='text-align:center; opacity:0.6;'>Belum ada suara masuk 🎧</p>";
       return;
     }
 
-    voices.forEach(item => {
+    data.forEach(({ url, nama, userId }) => {
+      const fixedUrl = url.includes('/file/d/')
+        ? `https://drive.google.com/uc?export=download&id=${url.split('/d/')[1].split('/')[0]}`
+        : url;
+
       const card = document.createElement('div');
       card.className = "voice-card";
       card.innerHTML = `
-        <div class="voice-header">
-          🎤 <strong>${item.nama}</strong>
-        </div>
-        <audio controls src="${item.url}" style="width: 100%; margin-top: 0.5em;"></audio>
+        <div class="voice-card-name">${nama || userId}</div>
+        <audio controls src="${fixedUrl}" style="width: 100%;"></audio>
       `;
       container.appendChild(card);
     });
@@ -1787,6 +1792,8 @@ async function loadVoiceNotes() {
     container.innerHTML = "<p style='text-align:center; color:red;'>Gagal load suara 😢</p>";
   }
 }
+
+
 
 
 
