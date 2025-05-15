@@ -1635,7 +1635,7 @@ function formatTime(seconds) {
   return `${mins}:${secs}`;
 }
 
-// ==== OPEN SHEET ====
+// ==== BOTTOM SHEET CONTROL ====
 function openVoiceSheet() {
   sheetVoice.classList.remove('hidden');
   setTimeout(() => sheetVoice.classList.add('active'), 10);
@@ -1649,7 +1649,6 @@ function closeVoiceSheet() {
   resetRecording();
 }
 
-// ==== RESET ====
 function resetRecording() {
   if (mediaRecorder && mediaRecorder.state !== "inactive") {
     mediaRecorder.stop();
@@ -1662,7 +1661,7 @@ function resetRecording() {
   replayAudio.src = "";
 }
 
-// ==== START RECORDING ====
+// ==== RECORDING ====
 async function startRecording() {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -1678,7 +1677,7 @@ async function startRecording() {
     mediaRecorder.addEventListener("stop", () => {
       audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
       sendBtn.disabled = false;
-      replayBtn.disabled = false; // ✅ aktifkan tombol replay
+      replayBtn.disabled = false;
       stopWaveAnimation();
     });
 
@@ -1690,7 +1689,6 @@ async function startRecording() {
     recordTimer = setInterval(() => {
       elapsedSeconds++;
       timerDisplay.innerText = formatTime(elapsedSeconds);
-
       if (elapsedSeconds >= 30) {
         stopRecording();
       }
@@ -1698,12 +1696,9 @@ async function startRecording() {
 
   } catch (err) {
     console.error("Microphone error:", err);
-    //alert("❗ Mikrofon error atau akses ditolak.");
-	showToast("❗ Mikrofon error atau akses ditolak.", "error");
+    showToast("❗ Mikrofon error atau akses ditolak.", "error");
   }
 }
-
-
 
 function stopRecording() {
   if (mediaRecorder && (mediaRecorder.state === "recording" || mediaRecorder.state === "paused")) {
@@ -1712,58 +1707,112 @@ function stopRecording() {
   clearInterval(recordTimer);
 }
 
-
-
-
-// ==== BLOB to BASE64 ====
-function blobToBase64(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result.split(',')[1]);
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
+// ==== WAVEFORM ====
+function initWaveform() {
+  canvas = document.getElementById('voiceWave');
+  if (!canvas) return;
+  canvas.width = canvas.offsetWidth;
+  canvas.height = 80;
+  canvasCtx = canvas.getContext('2d');
 }
 
-// ==== UPLOAD ====
-async function uploadRecording() {
+function startWaveAnimation(stream) {
+  canvas = document.getElementById('voiceWave');
+  if (!canvas) return;
+  canvasCtx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth;
+  canvas.height = 80;
+
+  audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  sourceNode = audioContext.createMediaStreamSource(stream);
+  analyserNode = audioContext.createAnalyser();
+
+  sourceNode.connect(analyserNode);
+  analyserNode.fftSize = 2048;
+
+  dataArray = new Uint8Array(analyserNode.fftSize);
+  drawWaveform();
+}
+
+function drawWaveform() {
+  animationFrameId = requestAnimationFrame(drawWaveform);
+  analyserNode.getByteTimeDomainData(dataArray);
+
+  canvasCtx.fillStyle = "#fff";
+  canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+  canvasCtx.lineWidth = 2;
+  canvasCtx.strokeStyle = "#4CAF50";
+  canvasCtx.beginPath();
+
+  const sliceWidth = canvas.width * 1.0 / dataArray.length;
+  let x = 0;
+  for (let i = 0; i < dataArray.length; i++) {
+    const v = dataArray[i] / 128.0;
+    const y = v * canvas.height / 2;
+    if (i === 0) {
+      canvasCtx.moveTo(x, y);
+    } else {
+      canvasCtx.lineTo(x, y);
+    }
+    x += sliceWidth;
+  }
+  canvasCtx.lineTo(canvas.width, canvas.height / 2);
+  canvasCtx.stroke();
+}
+
+function stopWaveAnimation() {
+  if (animationFrameId) cancelAnimationFrame(animationFrameId);
+  if (audioContext) audioContext.close();
+}
+
+// ==== UPLOAD VOICE ====
+async function uploadVoiceToVercel() {
   if (!audioBlob) {
-    //alert("Belum ada suara untuk dikirim.");
-	showToast("Belum ada suara untuk dikirim.", "error");
+    showToast("❗ Tidak ada rekaman suara untuk dikirim.", "error");
     return;
   }
 
+  const filename = `voice-${Date.now()}.mp3`;
+
   try {
-    const formData = new FormData();
-    formData.append('action', 'uploadVoice');
-    formData.append('file', await blobToBase64(audioBlob));
+    // Step 1: Upload to Vercel Blob
+    const uploadRes = await fetch(`${endpointvoice}/api/upload-to-blob?filename=${filename}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'audio/mpeg' },
+      body: audioBlob
+    });
 
-    const res = await fetch(endpoint, { method: 'POST', body: formData });
-    const json = await res.json();
-
-    if (json.success) {
-      //alert("✅ Voice Note berhasil dikirim!");
-	  showToast("✅ Voice Note berhasil dikirim!", "success");
-      closeVoiceSheet();
-      loadVoiceNotes();
-    } else {
-      //alert("❗ Gagal mengirim suara.");
-	  showToast("❗ Gagal mengirim suara.", "error");
+    if (!uploadRes.ok) {
+      throw new Error(`❌ Upload ke Blob gagal: ${await uploadRes.text()}`);
     }
-  } catch (err) {
-    console.error(err);
-    //alert("❗ Error saat upload!");
-	showToast("❗ Error saat upload!", "error");
-  }
-}
 
-// === VOICE HELPER ===
-function convertToDirectGoogleDrive(url) {
-  const match = url.match(/\/d\/([^/]+)\//);
-  if (match && match[1]) {
-    return `https://docs.google.com/uc?export=download&id=${match[1]}`;
+    const { url } = await uploadRes.json();
+    console.log('✅ Upload sukses ke Vercel Blob:', url);
+
+    // Step 2: Save URL to Sheets
+    const saveRes = await fetch(endpoint, {
+      method: 'POST',
+      body: new URLSearchParams({
+        action: 'uploadVoice',
+        userId: getUserId(),
+        url: url
+      })
+    });
+
+    const saveResult = await saveRes.json();
+    if (saveResult.success) {
+      showToast('✅ Voice berhasil dikirim dan dicatat!', "success");
+      closeVoiceSheet();
+      await loadVoiceNotes();
+    } else {
+      throw new Error('❌ Gagal simpan ke Sheets.');
+    }
+
+  } catch (err) {
+    console.error('❌ Upload error:', err);
+    showToast('❌ Upload gagal: ' + err.message, "error");
   }
-  return url; // fallback
 }
 
 // ==== LOAD APPROVED VOICES ====
@@ -1784,7 +1833,7 @@ async function loadVoiceNotes() {
     }
 
     data.forEach(({ url, nama, userId }) => {
-      const fixedUrl = url.includes('/file/d/')
+      const fixedUrl = url.includes('/file/d/') 
         ? `https://drive.google.com/uc?export=download&id=${url.split('/d/')[1].split('/')[0]}`
         : url;
 
@@ -1803,33 +1852,23 @@ async function loadVoiceNotes() {
   }
 }
 
-
-
-
-
-
-// ==== EVENT BINDING ====
+// ==== BUTTON EVENT BINDING ====
 startBtn.addEventListener('mousedown', startRecording);
 startBtn.addEventListener('touchstart', startRecording);
 
-cancelBtn.addEventListener('click', () => {
-  closeVoiceSheet();
-});
+cancelBtn.addEventListener('click', closeVoiceSheet);
 
 pauseBtn.addEventListener('click', () => {
   if (!mediaRecorder) return;
-
   if (mediaRecorder.state === "recording") {
     mediaRecorder.pause();
     clearInterval(recordTimer);
     pauseBtn.innerHTML = "▶️";
   } else if (mediaRecorder.state === "paused") {
     mediaRecorder.resume();
-    elapsedSeconds--; // biar timer ga loncat
     recordTimer = setInterval(() => {
       elapsedSeconds++;
       timerDisplay.innerText = formatTime(elapsedSeconds);
-
       if (elapsedSeconds >= 30) {
         stopRecording();
       }
@@ -1837,7 +1876,6 @@ pauseBtn.addEventListener('click', () => {
     pauseBtn.innerHTML = "⏸️";
   }
 });
-
 
 replayBtn.addEventListener('click', () => {
   if (audioBlob) {
@@ -1848,6 +1886,17 @@ replayBtn.addEventListener('click', () => {
   }
 });
 
+sendBtn.addEventListener('click', async () => {
+  if (!audioBlob) {
+    showToast('❗ Belum ada suara untuk dikirim.', "error");
+    return;
+  }
+  showUploadProgress();
+  await uploadVoiceToVercel();
+  hideUploadProgress();
+});
+
+// ==== UPLOAD PROGRESS ====
 function showUploadProgress() {
   const progress = document.getElementById('uploadProgress');
   if (progress) progress.classList.add('show');
@@ -1858,218 +1907,6 @@ function hideUploadProgress() {
   if (progress) progress.classList.remove('show');
 }
 
-
-sendBtn.addEventListener('click', async () => {
-  if (!audioBlob) {
-    alert('❗ Belum ada suara yang direkam!');
-    return;
-  }
-
-  showUploadProgress(); // ✅ Start Progress
-
-  const url = await uploadVoiceToVercel(audioBlob);
-
-  hideUploadProgress(); // ✅ Stop Progress
-
-  if (url) {
-    console.log('✅ Upload ke Blob sukses:', url);
-
-    const userId = getUserId();
-    const namaUser = localStorage.getItem('nama') || userId;
-
-    const payload = new FormData();
-    payload.append('action', 'saveVoice');
-    payload.append('url', url);
-    payload.append('userId', userId);
-    payload.append('nama', namaUser);
-
-    try {
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        body: payload
-      });
-
-      const result = await res.text();
-      if (result.includes('OK')) {
-        alert('✅ Voice Note berhasil disimpan!');
-        closeBottomSheetGeneric('voiceRecorderSheet');
-        loadVoiceNotes();
-      } else {
-        alert('❗ Gagal simpan ke database.');
-      }
-    } catch (err) {
-      console.error('❗ Error saat kirim ke Sheets:', err);
-      alert('❗ Gagal kirim data voice.');
-    }
-  } else {
-    alert('❗ Upload ke Blob gagal.');
-  }
-});
-
-
-
-
-
-
-
-function initWaveform() {
-  canvas = document.getElementById('voiceWave');
-  if (!canvas) return;
-  canvas.width = canvas.offsetWidth;
-  canvas.height = 80;
-  canvasCtx = canvas.getContext('2d');
-}
-
-
-
-function startWaveAnimation(stream) {
-  canvas = document.getElementById('voiceWave');
-  if (!canvas) {
-    console.warn('Canvas voiceWave tidak ditemukan.');
-    return;
-  }
-
-  canvasCtx = canvas.getContext('2d');
-  canvas.width = canvas.offsetWidth;
-  canvas.height = 80; // Sesuai CSS
-
-  audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  sourceNode = audioContext.createMediaStreamSource(stream);
-  analyserNode = audioContext.createAnalyser();
-
-  sourceNode.connect(analyserNode);
-  analyserNode.fftSize = 2048;
-
-  const bufferLength = analyserNode.fftSize;
-  dataArray = new Uint8Array(bufferLength);
-
-  drawWaveform();
-}
-
-function drawWaveform() {
-  animationFrameId = requestAnimationFrame(drawWaveform);
-
-  analyserNode.getByteTimeDomainData(dataArray);
-
-  canvasCtx.fillStyle = "#fff";
-  canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
-
-  canvasCtx.lineWidth = 2;
-  canvasCtx.strokeStyle = "#4CAF50";
-  canvasCtx.beginPath();
-
-  const sliceWidth = canvas.width * 1.0 / dataArray.length;
-  let x = 0;
-
-  for (let i = 0; i < dataArray.length; i++) {
-    const v = dataArray[i] / 128.0;
-    const y = v * canvas.height / 2;
-
-    if (i === 0) {
-      canvasCtx.moveTo(x, y);
-    } else {
-      canvasCtx.lineTo(x, y);
-    }
-
-    x += sliceWidth;
-  }
-
-  canvasCtx.lineTo(canvas.width, canvas.height / 2);
-  canvasCtx.stroke();
-}
-
-function stopWaveAnimation() {
-  if (animationFrameId) {
-    cancelAnimationFrame(animationFrameId);
-    animationFrameId = null;
-  }
-  if (audioContext) {
-    audioContext.close();
-    audioContext = null;
-  }
-}
-
-
-
-async function uploadVoiceToVercel() {
-  if (!audioBlob) {
-    alert("❗ Tidak ada rekaman suara untuk dikirim.");
-    return;
-  }
-
-  const filename = `voice-${Date.now()}.mp3`;
-
-  try {
-    // 🔥 Step 1: Upload ke Vercel Blob
-    const uploadRes = await fetch(`${endpointvoice}/api/upload-to-blob?filename=${filename}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'audio/mpeg' },
-      body: audioBlob
-    });
-
-    if (!uploadRes.ok) {
-      throw new Error(`❌ Upload ke Blob gagal: ${await uploadRes.text()}`);
-    }
-
-    const { url } = await uploadRes.json();
-    console.log('✅ Upload sukses ke Vercel Blob:', url);
-
-    // 🔥 Step 2: Save URL ke Google Sheets
-    const saveRes = await fetch(endpoint, {
-      method: 'POST',
-      body: new URLSearchParams({
-        action: 'uploadVoice',
-        userId: getUserId(),
-        url: url
-      })
-    });
-
-    const saveResult = await saveRes.json();
-    if (saveResult.success) {
-      console.log('✅ Voice berhasil disimpan di Sheets');
-      alert('✅ Voice berhasil dikirim dan dicatat!');
-      await loadVoiceNotes(); // 🚀 Reload daftar voice notes
-    } else {
-      throw new Error('❌ Gagal simpan ke Sheets.');
-    }
-
-  } catch (err) {
-    console.error('❌ Upload error:', err);
-    alert('❌ Upload gagal: ' + err.message);
-  }
-}
-
-
-
-
-
-
-async function saveVoiceToSheets(url) {
-  const payload = new URLSearchParams();
-  payload.append('action', 'uploadVoic
-  payload.append('userId', getUserId());
-  payload.append('url', url);
-
-  try {
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: payload,
-    });
-
-    const result = await res.json();
-    if (result.success) {
-      console.log('✅ Voice note berhasil disimpan!');
-      await loadVoiceNotes(); // 🔥 Kalau mau auto refresh daftar voice
-    } else {
-      console.error('❌ Gagal simpan Voice Note:', result.message || result);
-    }
-  } catch (err) {
-    console.error('❌ Error saat save Voice Note:', err);
-  }
-}
 
 
 
