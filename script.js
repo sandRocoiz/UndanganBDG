@@ -1,5 +1,6 @@
 // === 1. KONSTANTA DAN UTILITAS ===
 const endpoint = "https://undangan-bdg.vercel.app/api/proxy";
+const endpointvoice = "https://undangan-bdg.vercel.app/api/upload-to-blob";
 const perPage = 5;
 let currentPage = 1;
 const maxWinners = 10;
