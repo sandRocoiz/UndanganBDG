@@ -1993,22 +1993,39 @@ async function uploadVoiceToVercel() {
   const filename = `voice-${Date.now()}.mp3`;
 
   try {
-    const res = await fetch(`${endpointvoice}/api/upload-to-blob?filename=${filename}`, {
+    // 🔥 Step 1: Upload ke Vercel Blob
+    const uploadRes = await fetch(`${endpointvoice}/api/upload-to-blob?filename=${filename}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'audio/mpeg' // MIME type mp3
-      },
+      headers: { 'Content-Type': 'audio/mpeg' },
       body: audioBlob
     });
 
-    if (!res.ok) {
-      throw new Error(`❌ Upload ke Blob gagal: ${await res.text()}`);
+    if (!uploadRes.ok) {
+      throw new Error(`❌ Upload ke Blob gagal: ${await uploadRes.text()}`);
     }
 
-    const { url } = await res.json();
-    console.log('✅ Upload sukses:', url);
+    const { url } = await uploadRes.json();
+    console.log('✅ Upload sukses ke Vercel Blob:', url);
 
-    // lanjut save ke Sheets atau apapun
+    // 🔥 Step 2: Save URL ke Google Sheets
+    const saveRes = await fetch(endpoint, {
+      method: 'POST',
+      body: new URLSearchParams({
+        action: 'uploadVoice',
+        userId: getUserId(),
+        url: url
+      })
+    });
+
+    const saveResult = await saveRes.json();
+    if (saveResult.success) {
+      console.log('✅ Voice berhasil disimpan di Sheets');
+      alert('✅ Voice berhasil dikirim dan dicatat!');
+      await loadVoiceNotes(); // 🚀 Reload daftar voice notes
+    } else {
+      throw new Error('❌ Gagal simpan ke Sheets.');
+    }
+
   } catch (err) {
     console.error('❌ Upload error:', err);
     alert('❌ Upload gagal: ' + err.message);
@@ -2019,25 +2036,34 @@ async function uploadVoiceToVercel() {
 
 
 
+
 async function saveVoiceToSheets(url) {
-  const formData = new FormData();
-  formData.append('action', 'uploadVoice');
-  formData.append('file', url); // kirim URL file
-  formData.append('userId', getUserId()); // dari localStorage kamu
+  const payload = new URLSearchParams();
+  payload.append('action', 'uploadVoice');
+  payload.append('userId', getUserId());
+  payload.append('url', url);
 
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    body: formData,
-  });
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: payload,
+    });
 
-  const result = await res.json();
-  if (result.success) {
-    console.log('✅ Voice note saved to Sheets');
-    await loadVoiceNotes();
-  } else {
-    console.error('❌ Gagal save ke Sheets');
+    const result = await res.json();
+    if (result.success) {
+      console.log('✅ Voice note berhasil disimpan!');
+      await loadVoiceNotes(); // 🔥 Kalau mau auto refresh daftar voice
+    } else {
+      console.error('❌ Gagal simpan Voice Note:', result.message || result);
+    }
+  } catch (err) {
+    console.error('❌ Error saat save Voice Note:', err);
   }
 }
+
 
 
 
