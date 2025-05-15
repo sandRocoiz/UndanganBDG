@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/upload-to-blob.js": {
+      "runtime": "edge"
+    }
+  }
+}
