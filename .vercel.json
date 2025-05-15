@@ -1,7 +1,1 @@
-{
-  "functions": {
-    "api/upload-to-blob.js": {
-      "runtime": "nodejs18.x"
-    }
-  }
-}
+{}
