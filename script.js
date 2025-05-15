@@ -1849,18 +1849,18 @@ async function uploadVoiceToVercel() {
   }
 
   const filename = `voice-${Date.now()}.mp3`;
-  const formData = new FormData();
-  formData.append('file', audioBlob);
 
   try {
     showUploadProgress();
 
-    const uploadRes = await fetch(`${endpointvoice}/api/upload-to-blob?filename=${filename}`, {
+    const uploadRes = await fetch('https://api.vercel.com/v2/blob/upload', {
       method: 'POST',
-      body: audioBlob,
       headers: {
-        'Content-Type': 'audio/mpeg'
-      }
+        Authorization: `Bearer vercel_blob_rw_RrG4Xm4BXI0KUISA_4FSRlslldCKCWZXg5hEI1oA3Hjw0Eg`, // ← langsung isi token disini (temporary buat test)
+        'x-vercel-filename': `voice-note/${filename}`,
+        'Content-Type': 'application/octet-stream'
+      },
+      body: audioBlob,
     });
 
     hideUploadProgress();
@@ -1903,6 +1903,7 @@ async function uploadVoiceToVercel() {
     showToast('❌ Upload gagal: ' + err.message, "error");
   }
 }
+
 
 
 
