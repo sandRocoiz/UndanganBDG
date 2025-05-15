@@ -9,8 +9,8 @@
     "start": "next start"
   },
   "dependencies": {
-    "formidable": "^3.4.1",
-    "form-data": "^4.0.0"
+    "form-data": "^4.0.2",
+    "formidable": "^3.4.1"
   },
   "license": "MIT"
 }
