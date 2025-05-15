@@ -1849,23 +1849,42 @@ async function uploadVoiceToVercel() {
   }
 
   const filename = `voice-${Date.now()}.mp3`;
-  sendBtn.disabled = true;
-  showUploadProgress();
-
   const formData = new FormData();
-  formData.append('file', audioBlob, filename);
+  formData.append('file', audioBlob);
 
   try {
-    // Step 1: Upload ke Vercel Blob pakai XHR
-    const blobUrl = await uploadToVercelWithProgress(formData, filename);
+    showUploadProgress();
 
-    // Step 2: Save URL ke Google Sheets
+    const uploadRes = await fetch(`${endpointvoice}/api/upload-to-blob?filename=${filename}`, {
+      method: 'POST',
+      body: audioBlob,
+      headers: {
+        'Content-Type': 'audio/mpeg'
+      }
+    });
+
+    hideUploadProgress();
+
+    if (!uploadRes.ok) {
+      const errorText = await uploadRes.text();
+      throw new Error(`Upload ke Blob gagal: ${errorText}`);
+    }
+
+    const { url } = await uploadRes.json();
+
+    if (!url) {
+      throw new Error('Upload sukses tapi tidak dapat URL.');
+    }
+
+    console.log('✅ Upload sukses ke Vercel Blob:', url);
+
+    // 🚀 SIMPAN KE SHEETS
     const saveRes = await fetch(endpoint, {
       method: 'POST',
       body: new URLSearchParams({
         action: 'uploadVoice',
         userId: getUserId(),
-        url: blobUrl
+        url: url
       })
     });
 
@@ -1879,13 +1898,12 @@ async function uploadVoiceToVercel() {
     }
 
   } catch (err) {
+    hideUploadProgress();
     console.error('❌ Upload error:', err);
     showToast('❌ Upload gagal: ' + err.message, "error");
-  } finally {
-    hideUploadProgress();
-    sendBtn.disabled = false;
   }
 }
+
 
 
 function uploadToVercelWithProgress(formData, filename) {
