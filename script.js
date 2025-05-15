@@ -7,6 +7,8 @@ const maxWinners = 10;
 const hadiahKey = "scratchWin";
 const namaReservasiKey = "namaReservasi";
 
+const storageToken = "vercel_blob_rw_RrG4Xm4BXI0KUISA_4FSRlslldCKCWZXg5hEI1oA3Hjw0Eg";
+
 
 
 // === POLLING CONTROL ===
@@ -1848,61 +1850,99 @@ async function uploadVoiceToVercel() {
     return;
   }
 
-  const filename = `voice-${Date.now()}.mp3`;
+  const filename = `voice-note/voice-${Date.now()}.mp3`;
+  console.log("✅ audioBlob detected:", audioBlob);
 
   try {
     showUploadProgress();
 
-    const uploadRes = await fetch('https://api.vercel.com/v2/blob/upload', {
-      method: 'POST',
+    // Step 1: Get presigned URL
+    const prepareRes = await fetch(`${endpointvoice}/api/upload-to-blob`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        filename: filename,
+        contentType: "audio/mpeg",
+      }),
+    });
+
+    const prepareData = await prepareRes.json();
+    if (!prepareRes.ok) throw new Error(prepareData.error?.message || "Failed prepare-upload.");
+
+    console.log("✅ Uploading to:", prepareData.uploadUrl);
+
+    // Step 2: PUT upload ke presigned URL
+    const uploadRes = await fetch(prepareData.uploadUrl, {
+      method: "PUT",
       headers: {
-        Authorization: `Bearer vercel_blob_rw_RrG4Xm4BXI0KUISA_4FSRlslldCKCWZXg5hEI1oA3Hjw0Eg`, // ← langsung isi token disini (temporary buat test)
-        'x-vercel-filename': `voice-note/${filename}`,
-        'Content-Type': 'application/octet-stream'
+        "Content-Type": "audio/mpeg",
+        "x-content-length": audioBlob.size,
       },
       body: audioBlob,
     });
 
-    hideUploadProgress();
-
     if (!uploadRes.ok) {
-      const errorText = await uploadRes.text();
-      throw new Error(`Upload ke Blob gagal: ${errorText}`);
+      const text = await uploadRes.text();
+      throw new Error(`Upload ke Blob gagal: ${text}`);
     }
 
-    const { url } = await uploadRes.json();
+    console.log("✅ Upload sukses:", prepareData.publicUrl);
 
-    if (!url) {
-      throw new Error('Upload sukses tapi tidak dapat URL.');
-    }
-
-    console.log('✅ Upload sukses ke Vercel Blob:', url);
-
-    // 🚀 SIMPAN KE SHEETS
+    // Step 3: Save public URL to Google Sheets
     const saveRes = await fetch(endpoint, {
       method: 'POST',
       body: new URLSearchParams({
         action: 'uploadVoice',
         userId: getUserId(),
+        url: prepareData.publicUrl,
+      }),
+    });
+
+    const saveData = await saveRes.json();
+    if (!saveData.success) throw new Error("Gagal simpan ke Sheets.");
+
+    console.log("✅ URL voice berhasil disimpan ke Sheets");
+    showToast("✅ Voice berhasil dikirim!", "success");
+
+    closeVoiceSheet();
+    await loadVoiceNotes(); // Refresh daftar suara
+
+  } catch (err) {
+    console.error("❌ Upload error:", err);
+    showToast("❌ Upload gagal: " + err.message, "error");
+  } finally {
+    hideUploadProgress();
+  }
+}
+
+
+// === SAVE URL KE SHEETS ===
+async function saveVoiceURL(url) {
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      body: new URLSearchParams({
+        action: 'uploadVoice',
+        userId: getUserId(), // atau function kamu buat dapetin user ID
         url: url
       })
     });
 
-    const saveResult = await saveRes.json();
-    if (saveResult.success) {
-      showToast('✅ Voice berhasil dikirim dan dicatat!', "success");
-      closeVoiceSheet();
-      await loadVoiceNotes();
-    } else {
-      throw new Error('❌ Gagal simpan ke Sheets.');
-    }
+    const result = await res.json();
 
+    if (result.success) {
+      console.log('✅ URL voice berhasil disimpan ke Sheets');
+    } else {
+      throw new Error('Gagal simpan URL ke Sheets.');
+    }
   } catch (err) {
-    hideUploadProgress();
-    console.error('❌ Upload error:', err);
-    showToast('❌ Upload gagal: ' + err.message, "error");
+    console.error('❌ Error save ke Sheets:', err);
+    alert('❌ Gagal menyimpan URL.');
   }
 }
+
+
+
 
 
 
