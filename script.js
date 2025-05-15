@@ -1630,10 +1630,11 @@ document.querySelectorAll(".slider").forEach(slider => {
 
 // ==== FORMAT TIMER ====
 function formatTime(seconds) {
-  const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-  const secs = (seconds % 60).toString().padStart(2, '0');
-  return `${mins}:${secs}`;
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
 }
+
 
 // ==== BOTTOM SHEET CONTROL ====
 function openVoiceSheet() {
@@ -1661,6 +1662,47 @@ function resetRecording() {
   replayAudio.src = "";
 }
 
+function forceStopRecording(message = "") {
+  if (mediaRecorder && (mediaRecorder.state === "recording" || mediaRecorder.state === "paused")) {
+    mediaRecorder.stop(); // ✅ STOP, bukan pause
+  }
+  if (recordTimer) {
+    clearInterval(recordTimer);
+    recordTimer = null;
+  }
+  if (pauseBtn) {
+    pauseBtn.innerHTML = "▶️";
+    pauseBtn.disabled = true;
+  }
+  if (replayBtn) replayBtn.disabled = false;
+  if (sendBtn) sendBtn.disabled = false;
+
+  if (message) {
+    showToast(message, "warning");
+  }
+}
+
+function forcePauseRecording(message = "") {
+  if (mediaRecorder && mediaRecorder.state === "recording") {
+    mediaRecorder.pause();
+  }
+  if (recordTimer !== null) { // pastikan timer masih aktif
+    clearInterval(recordTimer);
+    recordTimer = null;
+  }
+  pauseBtn.innerHTML = "▶️";
+  pauseBtn.disabled = true;
+  replayBtn.disabled = false;
+  sendBtn.disabled = false;
+
+  if (message) {
+    showToast(message, "warning");
+  }
+}
+
+
+
+
 // ==== RECORDING ====
 async function startRecording() {
   try {
@@ -1678,19 +1720,28 @@ async function startRecording() {
       audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
       sendBtn.disabled = false;
       replayBtn.disabled = false;
-      stopWaveAnimation();
+      stopWaveAnimation(); // ✅ Panggil ini di onStop
     });
 
     mediaRecorder.start();
     openVoiceSheet();
-    startWaveAnimation(stream);
+    startWaveAnimation(stream); // ✅ Panggil ini di startRecording, pakai stream dari getUserMedia
 
     elapsedSeconds = 0;
+    timerDisplay.innerText = formatTime(elapsedSeconds);
+
     recordTimer = setInterval(() => {
+      if (!mediaRecorder || mediaRecorder.state !== "recording") {
+        clearInterval(recordTimer);
+        recordTimer = null;
+        return;
+      }
       elapsedSeconds++;
       timerDisplay.innerText = formatTime(elapsedSeconds);
+
       if (elapsedSeconds >= 30) {
-        stopRecording();
+        forceStopRecording("⏳ Maksimal 30 detik tercapai. Rekaman disimpan.");
+        return;
       }
     }, 1000);
 
@@ -1699,6 +1750,9 @@ async function startRecording() {
     showToast("❗ Mikrofon error atau akses ditolak.", "error");
   }
 }
+
+
+
 
 function stopRecording() {
   if (mediaRecorder && (mediaRecorder.state === "recording" || mediaRecorder.state === "paused")) {
@@ -1766,6 +1820,27 @@ function stopWaveAnimation() {
   if (audioContext) audioContext.close();
 }
 
+function startWaveAnimationFromAudioElement(audioElement) {
+  canvas = document.getElementById('voiceWave');
+  if (!canvas) return;
+  canvasCtx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth;
+  canvas.height = 80;
+
+  audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  const sourceNode = audioContext.createMediaElementSource(audioElement);
+  analyserNode = audioContext.createAnalyser();
+
+  sourceNode.connect(analyserNode);
+  analyserNode.connect(audioContext.destination); // supaya suara tetap kedengeran
+
+  analyserNode.fftSize = 2048;
+  dataArray = new Uint8Array(analyserNode.fftSize);
+
+  drawWaveform();
+}
+
+
 // ==== UPLOAD VOICE ====
 async function uploadVoiceToVercel() {
   if (!audioBlob) {
@@ -1774,29 +1849,23 @@ async function uploadVoiceToVercel() {
   }
 
   const filename = `voice-${Date.now()}.mp3`;
+  sendBtn.disabled = true;
+  showUploadProgress();
+
+  const formData = new FormData();
+  formData.append('file', audioBlob, filename);
 
   try {
-    // Step 1: Upload to Vercel Blob
-    const uploadRes = await fetch(`${endpointvoice}/api/upload-to-blob?filename=${filename}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'audio/mpeg' },
-      body: audioBlob
-    });
+    // Step 1: Upload ke Vercel Blob pakai XHR
+    const blobUrl = await uploadToVercelWithProgress(formData, filename);
 
-    if (!uploadRes.ok) {
-      throw new Error(`❌ Upload ke Blob gagal: ${await uploadRes.text()}`);
-    }
-
-    const { url } = await uploadRes.json();
-    console.log('✅ Upload sukses ke Vercel Blob:', url);
-
-    // Step 2: Save URL to Sheets
+    // Step 2: Save URL ke Google Sheets
     const saveRes = await fetch(endpoint, {
       method: 'POST',
       body: new URLSearchParams({
         action: 'uploadVoice',
         userId: getUserId(),
-        url: url
+        url: blobUrl
       })
     });
 
@@ -1812,8 +1881,54 @@ async function uploadVoiceToVercel() {
   } catch (err) {
     console.error('❌ Upload error:', err);
     showToast('❌ Upload gagal: ' + err.message, "error");
+  } finally {
+    hideUploadProgress();
+    sendBtn.disabled = false;
   }
 }
+
+
+function uploadToVercelWithProgress(formData, filename) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+
+    xhr.open('POST', `${endpointvoice}/api/upload-to-blob?filename=${filename}`, true);
+
+    xhr.upload.onprogress = function(event) {
+      if (event.lengthComputable) {
+        const percent = (event.loaded / event.total) * 100;
+        const bar = document.querySelector('#uploadProgress .upload-bar');
+        if (bar) {
+          bar.style.width = percent + "%"; // ✅ Real Progress
+        }
+      }
+    };
+
+    xhr.onload = function() {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          const json = JSON.parse(xhr.responseText);
+          if (json.url) {
+            resolve(json.url);
+          } else {
+            reject(new Error('Upload sukses tapi tidak dapat URL.'));
+          }
+        } catch (e) {
+          reject(new Error('Gagal parsing response JSON.'));
+        }
+      } else {
+        reject(new Error('Upload ke Blob gagal. Status: ' + xhr.status));
+      }
+    };
+
+    xhr.onerror = function() {
+      reject(new Error('Error saat upload.'));
+    };
+
+    xhr.send(formData);
+  });
+}
+
 
 // ==== LOAD APPROVED VOICES ====
 async function loadVoiceNotes() {
@@ -1853,29 +1968,33 @@ async function loadVoiceNotes() {
 }
 
 // ==== BUTTON EVENT BINDING ====
-startBtn.addEventListener('mousedown', startRecording);
-startBtn.addEventListener('touchstart', startRecording);
+startBtn.addEventListener('mousedown', () => {
+  if (!mediaRecorder || mediaRecorder.state === "inactive") {
+    startRecording();
+  }
+});
+
+startBtn.addEventListener('touchstart', () => {
+  if (!mediaRecorder || mediaRecorder.state === "inactive") {
+    startRecording();
+  }
+});
+
+startBtn.addEventListener('mouseup', () => {
+  forceStopRecording("Rekaman berhenti setelah 30 detik");
+});
+
+startBtn.addEventListener('touchend', () => {
+  forceStopRecording("Rekaman berhenti setelah 30 detik");
+});
 
 cancelBtn.addEventListener('click', closeVoiceSheet);
 
-pauseBtn.addEventListener('click', () => {
-  if (!mediaRecorder) return;
-  if (mediaRecorder.state === "recording") {
-    mediaRecorder.pause();
-    clearInterval(recordTimer);
-    pauseBtn.innerHTML = "▶️";
-  } else if (mediaRecorder.state === "paused") {
-    mediaRecorder.resume();
-    recordTimer = setInterval(() => {
-      elapsedSeconds++;
-      timerDisplay.innerText = formatTime(elapsedSeconds);
-      if (elapsedSeconds >= 30) {
-        stopRecording();
-      }
-    }, 1000);
-    pauseBtn.innerHTML = "⏸️";
-  }
+pauseBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  showToast("⏸️ Fitur pause tidak tersedia. Rekaman otomatis dipause saat lepas atau 30 detik.", "warning");
 });
+
 
 replayBtn.addEventListener('click', () => {
   if (audioBlob) {
@@ -1883,8 +2002,17 @@ replayBtn.addEventListener('click', () => {
     replayAudio.src = audioUrl;
     replayAudio.style.display = "block";
     replayAudio.play();
+
+    // Mulai animasi wave dari audio replay
+    startWaveAnimationFromAudioElement(replayAudio);
+
+    // Ketika audio selesai, stop waveform replay
+    replayAudio.onended = () => {
+      stopWaveAnimation();
+    };
   }
 });
+
 
 sendBtn.addEventListener('click', async () => {
   if (!audioBlob) {
@@ -1899,12 +2027,20 @@ sendBtn.addEventListener('click', async () => {
 // ==== UPLOAD PROGRESS ====
 function showUploadProgress() {
   const progress = document.getElementById('uploadProgress');
-  if (progress) progress.classList.add('show');
+  const bar = document.querySelector('#uploadProgress .upload-bar');
+  if (progress && bar) {
+    progress.classList.add('show');
+    bar.style.width = '0%'; // Mulai dari nol
+  }
 }
 
 function hideUploadProgress() {
   const progress = document.getElementById('uploadProgress');
-  if (progress) progress.classList.remove('show');
+  const bar = document.querySelector('#uploadProgress .upload-bar');
+  if (progress && bar) {
+    progress.classList.remove('show');
+    bar.style.width = '0%'; // Reset
+  }
 }
 
 

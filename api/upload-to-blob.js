@@ -1,3 +1,11 @@
+import { buffer } from 'micro';
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 export default async function handler(req, res) {
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -21,21 +29,24 @@ export default async function handler(req, res) {
     const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
     const uploadUrl = `https://api.vercel.com/v2/blob/upload?teamId=${process.env.VERCEL_TEAM_ID || ''}`;
 
+    // ✅ Ini patch utama: baca buffer dulu
+    const rawBuffer = await buffer(req);
+
     const uploadRes = await fetch(uploadUrl, {
-  method: 'POST',
-  headers: {
-    Authorization: `Bearer ${blobToken}`,
-    'Content-Type': req.headers['content-type'] || 'application/octet-stream',
-  },
-  body: req,
-  duplex: 'half' // 🔥 WAJIB ada ini supaya Node.js 18+ support stream upload!
-});
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${blobToken}`,
+        'Content-Type': req.headers['content-type'] || 'application/octet-stream',
+        'Content-Length': rawBuffer.length,
+      },
+      body: rawBuffer,
+    });
 
     const result = await uploadRes.json();
 
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.status(200).json(result);
-    
+
   } catch (error) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.status(500).json({ error: error.message });
