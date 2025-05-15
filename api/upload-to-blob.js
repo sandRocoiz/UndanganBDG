@@ -22,13 +22,14 @@ export default async function handler(req, res) {
     const uploadUrl = `https://api.vercel.com/v2/blob/upload?teamId=${process.env.VERCEL_TEAM_ID || ''}`;
 
     const uploadRes = await fetch(uploadUrl, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${blobToken}`,
-        'Content-Type': req.headers['content-type'] || 'application/octet-stream',
-      },
-      body: req,
-    });
+  method: 'POST',
+  headers: {
+    Authorization: `Bearer ${blobToken}`,
+    'Content-Type': req.headers['content-type'] || 'application/octet-stream',
+  },
+  body: req,
+  duplex: 'half' // 🔥 WAJIB ada ini supaya Node.js 18+ support stream upload!
+});
 
     const result = await uploadRes.json();
 
