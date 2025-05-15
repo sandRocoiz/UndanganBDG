@@ -40,7 +40,7 @@ export default async function handler(req) {
     }
 
     // === UPLOAD KE VERCEL BLOB ===
-    const uploadRes = await fetch('https://blob.vercel-storage.com/upload', {
+    const uploadRes = await fetch('https://api.vercel.com/v2/blob/upload', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
