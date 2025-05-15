@@ -1,54 +1,59 @@
-import { buffer } from 'micro';
+import { put } from '@vercel/blob';
 
 export const config = {
-  api: {
-    bodyParser: false,
-  },
+  runtime: 'edge', // ✅ WAJIB EDGE runtime
 };
 
-export default async function handler(req, res) {
+export default async function handler(req) {
   if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    return res.status(200).end();
+    return new Response('', {
+      status: 204,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      },
+    });
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   }
 
   try {
-    const { searchParams } = new URL(req.url, `http://${req.headers.host}`);
+    const { searchParams } = new URL(req.url);
     const filename = searchParams.get('filename');
 
     if (!filename) {
       throw new Error('Missing filename');
     }
 
-    const blobToken = process.env.BLOB_READ_WRITE_TOKEN;
-    const uploadUrl = `https://api.vercel.com/v2/blob/upload?teamId=${process.env.VERCEL_TEAM_ID || ''}`;
+    const arrayBuffer = await req.arrayBuffer(); // ✅ Ambil body sebagai arrayBuffer
+    const buffer = Buffer.from(arrayBuffer);
 
-    // ✅ Ini patch utama: baca buffer dulu
-    const rawBuffer = await buffer(req);
-
-    const uploadRes = await fetch(uploadUrl, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${blobToken}`,
-        'Content-Type': req.headers['content-type'] || 'application/octet-stream',
-        'Content-Length': rawBuffer.length,
-      },
-      body: rawBuffer,
+    const blob = await put(`voice-note/${filename}`, buffer, {
+      access: 'public',
     });
 
-    const result = await uploadRes.json();
-
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.status(200).json(result);
+    return new Response(JSON.stringify({ url: blob.url }), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      },
+    });
 
   } catch (error) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.status(500).json({ error: error.message });
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      },
+    });
   }
 }
