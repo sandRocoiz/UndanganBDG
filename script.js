@@ -1,11 +1,14 @@
 // === 1. KONSTANTA DAN UTILITAS ===
 const endpoint = "https://undangan-bdg.vercel.app/api/proxy";
-const endpointvoice = "https://undangan-bdg.vercel.app/api/upload-to-blob";
 const perPage = 5;
 let currentPage = 1;
 const maxWinners = 10;
 const hadiahKey = "scratchWin";
 const namaReservasiKey = "namaReservasi";
+
+import { put } from "@vercel/blob"; // Pastikan ini ada di atas file kamu
+
+const endpointvoice = "https://undangan-bdg.vercel.app"; // Ini base URL project kamu (nanti untuk save ke Sheet, kalau mau)
 
 // === POLLING CONTROL ===
 let pollingInterval = null;
@@ -1980,9 +1983,7 @@ function stopWaveAnimation() {
   }
 }
 
-import { put } from "@vercel/blob"; // Pastikan ini ada di atas file kamu
 
-const endpointvoice = "https://undangan-bdg.vercel.app"; // Ini base URL project kamu (nanti untuk save ke Sheet, kalau mau)
 
 async function uploadVoiceToVercel() {
   if (!audioBlob) {
