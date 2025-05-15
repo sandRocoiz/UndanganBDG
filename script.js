@@ -6,9 +6,9 @@ const maxWinners = 10;
 const hadiahKey = "scratchWin";
 const namaReservasiKey = "namaReservasi";
 
-import { put } from "@vercel/blob"; // Pastikan ini ada di atas file kamu
-
-const endpointvoice = "https://undangan-bdg.vercel.app"; // Ini base URL project kamu (nanti untuk save ke Sheet, kalau mau)
+const blobToken = "YOUR_BLOB_READ_WRITE_TOKEN"; // ✅ Token vercel_blob_rw_xxx
+const sheetEndpoint = "https://undangan-bdg.vercel.app/api/proxy"; // ✅ endpoint untuk save ke Sheets
+const uploadBlobEndpoint = "https://api.vercel.com/v2/blob/upload";
 
 // === POLLING CONTROL ===
 let pollingInterval = null;
@@ -1992,59 +1992,57 @@ async function uploadVoiceToVercel() {
   }
 
   try {
-    const file = new File([audioBlob], `voice_${Date.now()}.mp3`, { type: 'audio/mpeg' });
+    // 1. Upload ke Vercel Blob
+    const formData = new FormData();
+    formData.append('file', audioBlob, 'voice-note.mp3');
 
-    const { url } = await put(file.name, file, {
-      access: 'public'
+    const res = await fetch(uploadBlobEndpoint, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${blobToken}`
+      },
+      body: formData
     });
 
-    console.log("✅ Upload success:", url);
+    const result = await res.json();
 
-    alert("✅ Suara berhasil diupload ke Cloud Storage!");
+    if (!result.url) {
+      throw new Error("❌ Upload ke Blob gagal.");
+    }
 
-    // Kalau mau: kirim URL ke Google Sheets juga
-    // await saveVoiceToSheet(url);
+    console.log("✅ Upload ke Blob berhasil:", result.url);
 
-    // Kalau mau reload daftar Guestbook Voice
-    await loadVoiceNotes();
+    // 2. Save info ke Google Sheets
+    await saveVoiceToSheets(result.url);
 
+    alert("✅ Suara berhasil dikirim!");
+    closeBottomSheetGeneric('voiceRecorderSheet');
+    loadVoiceNotes(); // 🔄 Refresh daftar suara
   } catch (err) {
-    console.error("❌ Error upload:", err);
-    alert("❌ Gagal upload suara!");
+    console.error("❌ Upload error:", err);
+    alert("❌ Error saat upload suara.");
   }
 }
 
 
 async function saveVoiceToSheets(url) {
-  const userId = getUserId(); // ✅ ambil dari localStorage
+  const userId = localStorage.getItem("userId") || generateUserId();
+  const nama = localStorage.getItem("nama") || userId;
 
-  const formData = new FormData();
-  formData.append('action', 'uploadVoice');
-  formData.append('file', 'dummy'); // isi dummy karena backend perlu
-  formData.append('userId', userId);
-  formData.append('url', url); // 🔥 kirim link file Vercel Blob
+  const data = new FormData();
+  data.append('action', 'saveVoice');
+  data.append('userId', userId);
+  data.append('nama', nama);
+  data.append('url', url);
 
-  try {
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      body: formData,
-    });
+  const res = await fetch(sheetEndpoint, {
+    method: 'POST',
+    body: data
+  });
 
-    const contentType = res.headers.get('content-type') || '';
-
-    if (contentType.includes('application/json')) {
-      const result = await res.json();
-      if (result.success) {
-        console.log("✅ Voice Note berhasil disimpan ke Sheets.");
-      } else {
-        console.error("❌ Gagal simpan Voice ke Sheets:", result.message);
-      }
-    } else {
-      const text = await res.text();
-      console.error("❌ Response bukan JSON:", text);
-    }
-  } catch (err) {
-    console.error("❌ Error saat simpan Voice ke Sheets:", err);
+  const text = await res.text();
+  if (!text.includes("OK")) {
+    throw new Error("❌ Gagal save ke Sheets.");
   }
 }
 
