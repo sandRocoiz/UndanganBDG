@@ -1914,7 +1914,7 @@ function uploadToVercelWithProgress(formData, filename) {
             reject(new Error('Upload sukses tapi tidak dapat URL.'));
           }
         } catch (e) {
-          reject(new Error('Gagal parsing response JSON.'));
+          reject(new Error('Gagal parsing response .JSON.'));
         }
       } else {
         reject(new Error('Upload ke Blob gagal. Status: ' + xhr.status));
