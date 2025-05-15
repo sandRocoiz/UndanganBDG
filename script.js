@@ -1972,37 +1972,97 @@ async function loadVoiceNotes() {
   const container = document.getElementById('voiceList');
   if (!container) return;
 
-  container.innerHTML = `<div class="voice-loading"></div>`;
+  container.innerHTML = "Loading...";
 
   try {
     const res = await fetch(endpoint + '?action=listVoice');
     const data = await res.json();
     container.innerHTML = "";
 
-    if (data.length === 0) {
-      container.innerHTML = "<p style='text-align:center; opacity:0.6;'>Belum ada suara masuk 🎧</p>";
+    if (!data.length) {
+      container.innerHTML = "<p style='text-align:center;'>Belum ada suara masuk 🎧</p>";
       return;
     }
 
+    let currentAudio = null;
+    let currentInterval = null;
+
     data.forEach(({ url, nama, userId }) => {
-      const fixedUrl = url.includes('/file/d/') 
+      const audioUrl = url.includes('/file/d/')
         ? `https://drive.google.com/uc?export=download&id=${url.split('/d/')[1].split('/')[0]}`
         : url;
 
       const card = document.createElement('div');
       card.className = "voice-card";
+
       card.innerHTML = `
-        <div class="voice-card-name">${nama || userId}</div>
-        <audio controls src="${fixedUrl}" style="width: 100%;"></audio>
+        <div class="voice-header">${nama || userId}</div>
+        <div class="voice-body">
+          <button class="play-pause-btn">▶️</button>
+          <div class="voice-progress">
+            <div class="voice-progress-bar"></div>
+          </div>
+          <div class="voice-duration">0:00</div>
+        </div>
       `;
+
+      const audio = new Audio(audioUrl);
+      const playBtn = card.querySelector('.play-pause-btn');
+      const progressBar = card.querySelector('.voice-progress-bar');
+      const durationText = card.querySelector('.voice-duration');
+
+      playBtn.addEventListener('click', () => {
+        if (currentAudio && currentAudio !== audio) {
+          currentAudio.pause();
+          if (currentAudio.button) currentAudio.button.textContent = '▶️';
+          clearInterval(currentInterval);
+        }
+
+        if (audio.paused) {
+          audio.play();
+          playBtn.textContent = '⏸️';
+          currentAudio = audio;
+          currentAudio.button = playBtn;
+          currentInterval = setInterval(() => {
+            const percent = (audio.currentTime / (audio.duration || 1)) * 100;
+            progressBar.style.width = percent + '%';
+            durationText.textContent = formatTime(audio.currentTime);
+          }, 200);
+        } else {
+          audio.pause();
+          playBtn.textContent = '▶️';
+          clearInterval(currentInterval);
+        }
+      });
+
+      audio.addEventListener('ended', () => {
+        playBtn.textContent = '▶️';
+        clearInterval(currentInterval);
+        progressBar.style.width = '0%';
+        durationText.textContent = '0:00';
+      });
+
       container.appendChild(card);
     });
 
   } catch (err) {
-    console.error("Gagal load voice notes:", err);
-    container.innerHTML = "<p style='text-align:center; color:red;'>Gagal load suara 😢</p>";
+    console.error("Error loading voice notes:", err);
+    container.innerHTML = "Gagal memuat suara.";
   }
 }
+
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
 
 // ==== BUTTON EVENT BINDING ====
 startBtn.addEventListener('mousedown', () => {
@@ -2083,6 +2143,57 @@ function hideUploadProgress() {
 
 
 
+const voiceButton = document.getElementById('startVoiceButton');
+
+let isDragging = false;
+let offsetX, offsetY;
+
+voiceButton.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  offsetX = e.clientX - voiceButton.getBoundingClientRect().left;
+  offsetY = e.clientY - voiceButton.getBoundingClientRect().top;
+  voiceButton.style.transition = "none"; // supaya smooth pas drag
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (isDragging) {
+    const x = e.clientX - offsetX;
+    const y = e.clientY - offsetY;
+    voiceButton.style.left = `${x}px`;
+    voiceButton.style.top = `${y}px`;
+    voiceButton.style.position = 'fixed'; // penting! jadi dia bebas
+  }
+});
+
+document.addEventListener('mouseup', () => {
+  isDragging = false;
+  voiceButton.style.transition = "all 0.2s ease"; // balikin transition smooth
+});
+
+// ✅ Tambahan untuk support touchscreen mobile
+voiceButton.addEventListener('touchstart', (e) => {
+  isDragging = true;
+  const touch = e.touches[0];
+  offsetX = touch.clientX - voiceButton.getBoundingClientRect().left;
+  offsetY = touch.clientY - voiceButton.getBoundingClientRect().top;
+  voiceButton.style.transition = "none";
+});
+
+document.addEventListener('touchmove', (e) => {
+  if (isDragging) {
+    const touch = e.touches[0];
+    const x = touch.clientX - offsetX;
+    const y = touch.clientY - offsetY;
+    voiceButton.style.left = `${x}px`;
+    voiceButton.style.top = `${y}px`;
+    voiceButton.style.position = 'fixed';
+  }
+});
+
+document.addEventListener('touchend', () => {
+  isDragging = false;
+  voiceButton.style.transition = "all 0.2s ease";
+});
 
 
 
