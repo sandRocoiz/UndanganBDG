@@ -476,19 +476,26 @@ function scratch(e) {
 
 function playSound(url) {
   const audio = new Audio(url);
-  audio.volume = 0; // Mulai dari 0
-  audio.play().then(() => {
-    // Fade in perlahan
-    let vol = 0;
-    const fade = setInterval(() => {
-      if (vol < 0.8) { // Batas volume 0.8 (lebih empuk)
-        vol += 0.05;
-        audio.volume = vol;
-      } else {
-        clearInterval(fade);
-      }
-    }, 50); // setiap 50ms naikin volume
-  }).catch(() => {});
+
+  if (document.readyState === "complete" && document.hasFocus()) {
+    // Kalau user sudah aktif di halaman
+    audio.volume = 0; // Mulai dari 0
+    audio.play().then(() => {
+      let vol = 0;
+      const fade = setInterval(() => {
+        if (vol < 0.8) {
+          vol += 0.05;
+          audio.volume = vol;
+        } else {
+          clearInterval(fade);
+        }
+      }, 50);
+    }).catch(err => {
+      console.warn("Audio play blocked:", err);
+    });
+  } else {
+    console.warn("User belum interaksi, audio play dibatalkan.");
+  }
 }
 
 
@@ -2039,7 +2046,7 @@ async function uploadVoiceToVercel() {
 
 async function saveVoiceToSheets(url) {
   const payload = new URLSearchParams();
-  payload.append('action', 'uploadVoice');
+  payload.append('action', 'uploadVoic
   payload.append('userId', getUserId());
   payload.append('url', url);
 
