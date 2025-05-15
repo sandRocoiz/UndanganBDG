@@ -1989,30 +1989,31 @@ async function uploadVoiceToVercel() {
     return;
   }
 
-  const formData = new FormData();
-  formData.append('file', audioBlob, 'voice.mp3'); // kirim blob audio
-  
+  const filename = `voice-${Date.now()}.mp3`;
+
   try {
-    const res = await fetch("/api/upload-to-blob?filename=voice-" + Date.now() + ".mp3", {
+    const res = await fetch(`${endpointvoice}/api/upload-to-blob?filename=${filename}`, {
       method: 'POST',
-      body: audioBlob, // BUKAN formData, tapi langsung blob!
+      headers: {
+        'Content-Type': 'audio/mpeg' // MIME type mp3
+      },
+      body: audioBlob
     });
 
     if (!res.ok) {
-      throw new Error(`❌ Upload ke Blob gagal: ${res.statusText}`);
+      throw new Error(`❌ Upload ke Blob gagal: ${await res.text()}`);
     }
 
-    const { url } = await res.json(); // URL hasil upload ke Vercel Blob
-    console.log("✅ File uploaded to:", url);
+    const { url } = await res.json();
+    console.log('✅ Upload sukses:', url);
 
-    // ⬇️ Lanjutkan, misal save ke Sheets
-    await saveVoiceToSheets(url);
-
+    // lanjut save ke Sheets atau apapun
   } catch (err) {
-    console.error("❌ Upload error:", err);
-    alert("❗ Gagal mengupload file voice.");
+    console.error('❌ Upload error:', err);
+    alert('❌ Upload gagal: ' + err.message);
   }
 }
+
 
 
 

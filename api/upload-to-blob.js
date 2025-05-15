@@ -1,24 +1,25 @@
-import { put } from '@vercel/blob';
+import { put } from "@vercel/blob";
 
-export default async function handler(req) {
+export const config = {
+  runtime: 'nodejs18.x',
+};
+
+export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405 });
+    return res.status(405).send('Method Not Allowed');
   }
 
   try {
-    const { searchParams } = new URL(req.url);
+    const { searchParams } = new URL(req.url, `http://${req.headers.host}`);
     const filename = searchParams.get('filename') || `voice-${Date.now()}.mp3`;
 
-    const { url } = await put(filename, req.body, {
+    const { url } = await put(filename, req, {
       access: 'public',
     });
 
-    return new Response(JSON.stringify({ url }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    res.status(200).json({ url });
   } catch (err) {
-    console.error('❌ Upload error:', err);
-    return new Response('Internal Server Error', { status: 500 });
+    console.error('Upload error:', err);
+    res.status(500).send('Internal Server Error');
   }
 }
