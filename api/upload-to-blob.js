@@ -4,9 +4,6 @@ export const config = {
 
 import { put } from '@vercel/blob';
 
-export const config = {
-  runtime: 'edge', // wajib edge runtime di Vercel
-};
 
 export default async function handler(req) {
   if (req.method !== 'POST') {
