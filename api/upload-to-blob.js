@@ -1,7 +1,7 @@
 import { put } from '@vercel/blob';
 
 export const config = {
-  runtime: 'edge', // ✅ WAJIB EDGE runtime
+  runtime: 'edge',
 };
 
 export default async function handler(req) {
@@ -19,9 +19,7 @@ export default async function handler(req) {
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
       status: 405,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 
@@ -33,7 +31,7 @@ export default async function handler(req) {
       throw new Error('Missing filename');
     }
 
-    const arrayBuffer = await req.arrayBuffer(); // ✅ Ambil body sebagai arrayBuffer
+    const arrayBuffer = await req.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
     const blob = await put(`voice-note/${filename}`, buffer, {
