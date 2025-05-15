@@ -1,16 +1,11 @@
 {
   "name": "undangan-bdg-voice-note",
   "version": "1.0.0",
-  "description": "Upload voice note ke Vercel Blob dan save ke Google Sheets",
-  "main": "api/upload-to-blob.js",
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
-  },
   "dependencies": {
-    "form-data": "^4.0.2",
-    "formidable": "^3.4.1"
+    "form-data": "^4.0.0"
   },
-  "license": "MIT"
+  "scripts": {
+    "build": "echo 'No build needed'",
+    "start": "vercel dev"
+  }
 }
