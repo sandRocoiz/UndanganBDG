@@ -41,14 +41,15 @@ export default async function handler(req) {
 
     // === UPLOAD KE VERCEL BLOB ===
     const uploadRes = await fetch('https://api.vercel.com/v2/blob/upload', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'x-vercel-filename': `voice-note/${filename}`,
-        'Content-Type': 'application/octet-stream',
-      },
-      body: arrayBuffer,
-    });
+  method: 'POST',
+  headers: {
+    Authorization: `Bearer ${token}`,
+    'x-vercel-filename': `voice-note/${filename}`,
+    'Content-Type': 'application/octet-stream',
+    'x-vercel-project-id': 'prj_OLTmx0i2yV02RuA0AmuqWDTAVJmw' // 🛑 ganti dengan Project ID kamu beneran dari Vercel!
+  },
+  body: arrayBuffer,
+});
 
     // === HANDLE JIKA ERROR UPLOAD ===
     if (!uploadRes.ok) {
