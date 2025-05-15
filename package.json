@@ -2,6 +2,7 @@
   "name": "undangan-bdg-voice-note",
   "version": "1.0.0",
   "dependencies": {
+    "@vercel/blob": "^1.0.1",
     "form-data": "^4.0.0"
   },
   "scripts": {

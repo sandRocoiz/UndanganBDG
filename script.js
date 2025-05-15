@@ -1980,42 +1980,39 @@ function stopWaveAnimation() {
   }
 }
 
+import { put } from "@vercel/blob"; // Pastikan ini ada di atas file kamu
+
+const endpointvoice = "https://undangan-bdg.vercel.app"; // Ini base URL project kamu (nanti untuk save ke Sheet, kalau mau)
+
 async function uploadVoiceToVercel() {
   if (!audioBlob) {
     alert("❗ Tidak ada rekaman suara untuk dikirim.");
     return;
   }
 
-  const formData = new FormData();
-  formData.append('file', audioBlob, 'voice.mp3'); // ✅ Kirim audioBlob
-
   try {
-    const res = await fetch(endpointvoice, {
-      method: 'POST',
-      body: formData,
+    const file = new File([audioBlob], `voice_${Date.now()}.mp3`, { type: 'audio/mpeg' });
+
+    const { url } = await put(file.name, file, {
+      access: 'public'
     });
 
-    const contentType = res.headers.get('content-type') || '';
+    console.log("✅ Upload success:", url);
 
-    if (contentType.includes('application/json')) {
-      const result = await res.json();
-      if (result && result.url) {
-        console.log("✅ File berhasil diupload ke Vercel Blob:", result.url);
-        await saveVoiceToSheets(result.url); // 🚀 langsung simpan ke Google Sheets
-        alert("✅ Ucapan suara berhasil dikirim!");
-        closeBottomSheetGeneric('voiceRecorderSheet');
-        await loadVoiceNotes(); // reload daftar voice
-      } else {
-        console.error("❌ Upload response tidak valid:", result);
-      }
-    } else {
-      const text = await res.text();
-      console.error("❌ Response bukan JSON:", text);
-    }
+    alert("✅ Suara berhasil diupload ke Cloud Storage!");
+
+    // Kalau mau: kirim URL ke Google Sheets juga
+    // await saveVoiceToSheet(url);
+
+    // Kalau mau reload daftar Guestbook Voice
+    await loadVoiceNotes();
+
   } catch (err) {
-    console.error("❌ Error saat upload ke Vercel Blob:", err);
+    console.error("❌ Error upload:", err);
+    alert("❌ Gagal upload suara!");
   }
 }
+
 
 async function saveVoiceToSheets(url) {
   const userId = getUserId(); // ✅ ambil dari localStorage
