@@ -6,9 +6,7 @@ const maxWinners = 10;
 const hadiahKey = "scratchWin";
 const namaReservasiKey = "namaReservasi";
 
-const blobToken = "YOUR_BLOB_READ_WRITE_TOKEN"; // ✅ Token vercel_blob_rw_xxx
-const sheetEndpoint = "https://undangan-bdg.vercel.app/api/proxy"; // ✅ endpoint untuk save ke Sheets
-const uploadBlobEndpoint = "https://api.vercel.com/v2/blob/upload";
+
 
 // === POLLING CONTROL ===
 let pollingInterval = null;
@@ -1991,60 +1989,54 @@ async function uploadVoiceToVercel() {
     return;
   }
 
+  const formData = new FormData();
+  formData.append('file', audioBlob, 'voice.mp3'); // kirim blob audio
+  
   try {
-    // 1. Upload ke Vercel Blob
-    const formData = new FormData();
-    formData.append('file', audioBlob, 'voice-note.mp3');
-
-    const res = await fetch(uploadBlobEndpoint, {
+    const res = await fetch("/api/upload-to-blob?filename=voice-" + Date.now() + ".mp3", {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${blobToken}`
-      },
-      body: formData
+      body: audioBlob, // BUKAN formData, tapi langsung blob!
     });
 
-    const result = await res.json();
-
-    if (!result.url) {
-      throw new Error("❌ Upload ke Blob gagal.");
+    if (!res.ok) {
+      throw new Error(`❌ Upload ke Blob gagal: ${res.statusText}`);
     }
 
-    console.log("✅ Upload ke Blob berhasil:", result.url);
+    const { url } = await res.json(); // URL hasil upload ke Vercel Blob
+    console.log("✅ File uploaded to:", url);
 
-    // 2. Save info ke Google Sheets
-    await saveVoiceToSheets(result.url);
+    // ⬇️ Lanjutkan, misal save ke Sheets
+    await saveVoiceToSheets(url);
 
-    alert("✅ Suara berhasil dikirim!");
-    closeBottomSheetGeneric('voiceRecorderSheet');
-    loadVoiceNotes(); // 🔄 Refresh daftar suara
   } catch (err) {
     console.error("❌ Upload error:", err);
-    alert("❌ Error saat upload suara.");
+    alert("❗ Gagal mengupload file voice.");
   }
 }
+
+
 
 
 async function saveVoiceToSheets(url) {
-  const userId = localStorage.getItem("userId") || generateUserId();
-  const nama = localStorage.getItem("nama") || userId;
+  const formData = new FormData();
+  formData.append('action', 'uploadVoice');
+  formData.append('file', url); // kirim URL file
+  formData.append('userId', getUserId()); // dari localStorage kamu
 
-  const data = new FormData();
-  data.append('action', 'saveVoice');
-  data.append('userId', userId);
-  data.append('nama', nama);
-  data.append('url', url);
-
-  const res = await fetch(sheetEndpoint, {
+  const res = await fetch(endpoint, {
     method: 'POST',
-    body: data
+    body: formData,
   });
 
-  const text = await res.text();
-  if (!text.includes("OK")) {
-    throw new Error("❌ Gagal save ke Sheets.");
+  const result = await res.json();
+  if (result.success) {
+    console.log('✅ Voice note saved to Sheets');
+    await loadVoiceNotes();
+  } else {
+    console.error('❌ Gagal save ke Sheets');
   }
 }
+
 
 
 
