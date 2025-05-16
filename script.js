@@ -1460,6 +1460,10 @@ function openBottomSheetGeneric(sheetId) {
   setTimeout(() => {
     sheet.classList.add("active");
     vibrateShort();
+	
+	const quickMenu = document.getElementById("quickAccessMenu");
+    if (quickMenu) quickMenu.classList.add("hide");
+	
   }, 10);
 
   const content = sheet.querySelector('.bottom-sheet-content');
@@ -1510,6 +1514,8 @@ function closeBottomSheetGeneric(sheetId) {
     sheet.classList.remove('active');
     setTimeout(() => {
       sheet.classList.add('hidden');
+	  const quickMenu = document.getElementById("quickAccessMenu");
+      if (quickMenu) quickMenu.classList.remove("hide");
     }, 300);
   }
 }
