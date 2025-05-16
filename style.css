@@ -4155,6 +4155,25 @@ Hi <strong>NamaUser</strong> 👋
   100% { width: 0%; }
 }
 
+#toggleMusicButton {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  background: transparent;
+  border: none;
+  z-index: 1000;
+  cursor: pointer;
+  padding: 0;
+}
+
+#toggleMusicButton img {
+  width: 100%;
+  height: 100%;
+  transition: filter 0.2s ease;
+}
+
 /* Ikon normal (musik on) */
 #toggleMusicButton.music-on img {
   filter: none;
