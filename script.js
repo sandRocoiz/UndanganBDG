@@ -82,22 +82,16 @@ function openInvitation() {
   sessionStorage.setItem("invitationOpened", "true");
   isSplashActive = false;
 
-  if (bgm && !bgm.paused) {
-    bgm.pause();
-    bgm.currentTime = 0;
-  }
-
   document.getElementById('splash').style.display = 'none';
   document.getElementById('mainContent').style.display = 'block';
 
-
-  
-
   startCountdown();
   ambilUcapan();
-  
   animateLetterDropById("weddingNames");
+
+  playBGM(); // ✅ Musik baru nyala saat masuk mainContent
 }
+
 
 // === 3. COUNTDOWN HANDLER ===
 function startCountdown() {
@@ -1120,7 +1114,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (sessionStorage.getItem("invitationOpened") !== "true") {
     isSplashActive = true;
-    playBGM(); // ✅ hanya saat splash
+    //playBGM(); // ✅ hanya saat splash
   }
 
   
