@@ -2252,6 +2252,7 @@ async function cekSyaratSebelumRekam() {
 
     recordingAllowed = true;
     openVoiceSheet();
+	startRecording();
 
   } catch (err) {
     console.error("Gagal cek eligibility:", err);
