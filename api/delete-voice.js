@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     const response = await fetch(`https://api.vercel.com/v2/blobs/${blobName}`, {
       method: "DELETE",
       headers: {
-        Authorization: `Bearer ${process.env.VERCEL_BLOB_TOKEN}`
+        Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`
       }
     });
 

@@ -1521,7 +1521,7 @@ function closeBottomSheetGeneric(sheetId) {
 
 // ✨ Vibration Short
 function vibrateShort() {
-  if (navigator.vibrate) {
+  if (document.hasFocus() && navigator.vibrate) {
     navigator.vibrate(50);
   }
 }
