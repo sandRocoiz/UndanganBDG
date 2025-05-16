@@ -138,7 +138,7 @@ body {
   align-items: center;
   position: relative;
   padding: 80px 20px 100px; /* ⬅️ padding bawah ditambah agar aman dari installBtn */
-  overflow: hidden;
+  overflow: visible;
   text-align: center;
 }
 
