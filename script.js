@@ -1610,11 +1610,8 @@ track?.addEventListener('mousemove', (e) => {
 
 // === Tambahan Support Scroll Mouse (Wheel)
 track?.addEventListener('wheel', (e) => {
-  if (e.deltaY !== 0) {
-    e.preventDefault();
-    track.scrollLeft += e.deltaY * 1.2;
-  }
-});
+  track.scrollLeft += e.deltaY * 1.2;
+}, { passive: true });
 
 // === Momentum Scroll After Drag Release
 function startMomentum() {
@@ -2210,7 +2207,7 @@ voiceButton.addEventListener('touchstart', (e) => {
   offsetX = touch.clientX - voiceButton.getBoundingClientRect().left;
   offsetY = touch.clientY - voiceButton.getBoundingClientRect().top;
   voiceButton.style.transition = "none";
-});
+}, { passive: true });
 
 document.addEventListener('touchmove', (e) => {
   if (isDragging) {
@@ -2221,7 +2218,7 @@ document.addEventListener('touchmove', (e) => {
     voiceButton.style.top = `${y}px`;
     voiceButton.style.position = 'fixed';
   }
-});
+}, { passive: true });
 
 document.addEventListener('touchend', () => {
   isDragging = false;
