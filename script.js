@@ -90,6 +90,14 @@ function openInvitation() {
 
   document.getElementById('splash').style.display = 'none';
   document.getElementById('mainContent').style.display = 'block';
+  
+  // ✅ Aktifkan scroll kembali
+  document.body.style.overflow = "auto";
+  document.documentElement.style.overflow = "auto";
+
+  // Sembunyikan install button
+  const installBtn = document.getElementById("installBtn");
+  if (installBtn) installBtn.style.display = "none";
 
   startCountdown();
   ambilUcapan();
