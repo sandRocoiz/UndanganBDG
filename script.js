@@ -36,7 +36,7 @@ let waveInterval;
 let sourceNode, analyserNode, animationFrameId;
 
 let recordingAllowed = false;
-let isSplashActive = false;
+
 
 const startBtn = document.getElementById('startVoiceButton');
 const cancelBtn = document.getElementById('cancelVoice');
@@ -80,7 +80,7 @@ function isEligibleForScratch() {
 // === 2. SPLASH & INVITATION HANDLING ===
 function openInvitation() {
   sessionStorage.setItem("invitationOpened", "true");
-  isSplashActive = false;
+  
 
   document.getElementById('splash').style.display = 'none';
   document.getElementById('mainContent').style.display = 'block';
@@ -1090,7 +1090,7 @@ function playBGM() {
   bgm.play().then(() => {
     let vol = 0;
     const fadeIn = setInterval(() => {
-      if (vol < 0.2 && isSplashActive) {
+      if (vol < 0.2) {
         vol += 0.02;
         bgm.volume = Math.min(vol, 0.2);
       } else {
@@ -1112,10 +1112,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
   
 
-  if (sessionStorage.getItem("invitationOpened") !== "true") {
-    isSplashActive = true;
-    //playBGM(); // ✅ hanya saat splash
-  }
+  
 
   
 
@@ -2276,8 +2273,8 @@ document.addEventListener("visibilitychange", () => {
       pollingInterval = null;
     }
   } else {
-    // ✅ Hanya play BGM lagi kalau masih splash
-    if (isSplashActive && typeof bgm.play === "function") {
+    // ✅ Mainkan kembali BGM jika user kembali ke tab
+    if (typeof bgm?.play === "function") {
       bgm.play().catch(err => console.warn("Autoplay gagal saat kembali ke tab:", err));
     }
 
@@ -2286,6 +2283,7 @@ document.addEventListener("visibilitychange", () => {
     }
   }
 });
+
 
 
 
