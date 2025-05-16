@@ -2332,6 +2332,15 @@ musicButton.addEventListener('click', () => {
 
 //--end
 
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+function backToSplash() {
+  sessionStorage.removeItem("invitationOpened");
+  location.reload(); // 🔁 Refresh agar splash muncul kembali
+}
 
 // === Background Handling
 
