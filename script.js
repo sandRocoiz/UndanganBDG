@@ -47,6 +47,8 @@ const sheetVoice = document.getElementById('voiceRecorderSheet');
 const replayAudio = document.getElementById('replayAudio');
 const replayBtn = document.getElementById('replayVoice');
 
+const bgm = document.getElementById("bgm");
+
 
 
 // === USER ID ===
@@ -1112,7 +1114,7 @@ document.addEventListener("DOMContentLoaded", () => {
   animateZoomFoto();
   loadVoiceNotes();
   
-  const bgm = document.getElementById("bgm");
+  
 
   if (sessionStorage.getItem("invitationOpened") !== "true") {
     isSplashActive = true;
