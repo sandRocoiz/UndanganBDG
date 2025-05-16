@@ -274,7 +274,7 @@ body {
   overflow: hidden;
   flex-direction: column;
   text-align: center;
-  background: url('https://undangan-bdg.vercel.app/Asset/bg-countdown.jpg') no-repeat center/cover;
+  background: url('https://undangan-bdg.vercel.app/Asset/cou4.jpg') no-repeat center/cover;
 }
 
 #countdown-section h1 span {
@@ -3273,15 +3273,15 @@ Hi <strong>NamaUser</strong> 👋
 
 /* Konten BottomSheet */
 .bottom-sheet-content {
-  background: white;
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  padding: 24px;
+  max-height: 90vh; /* tetap batasi maksimal */
   width: 100%;
-  max-width: 500px;
-  height: 90vh; /* ✅ 90% tinggi layar */
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  padding: 20px;
-  overflow-y: auto; /* ✅ scroll kalau isi panjang */
-  box-shadow: 0 -4px 10px rgba(0,0,0,0.2);
+  box-sizing: border-box;
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+  display: inline-block;
 }
 
 /* Tombol close (X) */
