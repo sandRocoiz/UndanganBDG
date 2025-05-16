@@ -2266,7 +2266,7 @@ async function cekSyaratSebelumRekam() {
 
 
 // === Background Handling
-const bgm = document.getElementById("bgm");
+
 
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
