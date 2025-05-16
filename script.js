@@ -35,6 +35,8 @@ let canvasCtx;
 let waveInterval;
 let sourceNode, analyserNode, animationFrameId;
 
+let recordingAllowed = false;
+
 const startBtn = document.getElementById('startVoiceButton');
 const cancelBtn = document.getElementById('cancelVoice');
 const pauseBtn = document.getElementById('pauseVoice');
@@ -1425,9 +1427,11 @@ function playPopSound() {
 }
 
 const bottomSheetConfigs = {
-  bottomSheet: 60,       // ID "bottomSheet" (RSVP) swipe threshold 60px
-  bottomSheetDoa: 50,    // ID "bottomSheetDoa" (Ucapan & Doa) swipe threshold 50px
-  bottomSheetScratch: 40 // ID "bottomSheetScratch" (Scratch & Win) swipe threshold 40px
+  bottomSheet: 60,       // ID "bottomSheet" (RSVP) swipe threshold
+  bottomSheetDoa: 50,    // ID "bottomSheetDoa" (Ucapan & Doa) swipe threshold
+  bottomSheetScratch: 40,// ID "bottomSheetScratch" (Scratch & Win)
+  bottomSheetReservasi: 50, // ✅ Tambahkan reservasi
+  bottomSheetVoiceSent: 50  // ✅ Tambahkan voice already sent
 };
 
 function openBottomSheetGeneric(sheetId) {
@@ -1444,9 +1448,8 @@ function openBottomSheetGeneric(sheetId) {
   let startY = 0;
   let isSwiping = false;
 
-  // 🔥 Clean event listener dulu supaya tidak dobel
   if (content) {
-    // Remove previous listeners by cloning node
+    // 🔥 Clean event listener
     const newContent = content.cloneNode(true);
     content.parentNode.replaceChild(newContent, content);
 
@@ -1461,9 +1464,9 @@ function openBottomSheetGeneric(sheetId) {
       const swipeThreshold = bottomSheetConfigs[sheetId] || 60;
 
       if (currentY - startY > swipeThreshold) {
-        if (sheetId === 'bottomSheetScratch' && !scratchFinished) {
-          //alert("Selesaikan scratch dulu ya sebelum menutup! 🎯");
-		  showToast("Selesaikan scratch dulu ya sebelum menutup! 🎯", "error");
+        // ❗ Protection khusus untuk Scratch
+        if (sheetId === 'bottomSheetScratch' && typeof scratchFinished !== "undefined" && !scratchFinished) {
+          showToast("Selesaikan scratch dulu ya sebelum menutup! 🎯", "error");
           isSwiping = false;
           return;
         }
@@ -1478,31 +1481,28 @@ function openBottomSheetGeneric(sheetId) {
   }
 }
 
-
-function closeBottomSheetGeneric(id) {
-  if (id === 'bottomSheetScratch' && !scratchFinished) {
-    // Kalau sheet scratch dan belum selesai ➔ blokir
-    //alert("Selesaikan scratch dulu ya sebelum menutup! 🎯");
-	showToast("Selesaikan scratch dulu ya sebelum menutup! 🎯", "error");
+function closeBottomSheetGeneric(sheetId) {
+  if (sheetId === 'bottomSheetScratch' && typeof scratchFinished !== "undefined" && !scratchFinished) {
+    showToast("Selesaikan scratch dulu ya sebelum menutup! 🎯", "error");
     return;
   }
-  
-  const sheet = document.getElementById(id);
+
+  const sheet = document.getElementById(sheetId);
   if (sheet) {
     sheet.classList.remove('active');
     setTimeout(() => {
       sheet.classList.add('hidden');
-    }, 300); // sesuai animasi fade
+    }, 300);
   }
 }
-
 
 // ✨ Vibration Short
 function vibrateShort() {
   if (navigator.vibrate) {
-    navigator.vibrate(50); // 50ms
+    navigator.vibrate(50);
   }
 }
+
 
 
 
@@ -2066,26 +2066,34 @@ function formatTime(seconds) {
 
 // ==== BUTTON EVENT BINDING ====
 startBtn.addEventListener('mousedown', () => {
-  if (!mediaRecorder || mediaRecorder.state === "inactive") {
+  if (recordingAllowed && (!mediaRecorder || mediaRecorder.state === "inactive")) {
     startRecording();
   }
 });
 
 startBtn.addEventListener('touchstart', () => {
-  if (!mediaRecorder || mediaRecorder.state === "inactive") {
+  if (recordingAllowed && (!mediaRecorder || mediaRecorder.state === "inactive")) {
     startRecording();
   }
 });
 
 startBtn.addEventListener('mouseup', () => {
-  forceStopRecording("Rekaman berhenti setelah 30 detik");
+  if (recordingAllowed) {
+    forceStopRecording("Rekaman berhenti setelah 30 detik");
+  }
 });
 
 startBtn.addEventListener('touchend', () => {
-  forceStopRecording("Rekaman berhenti setelah 30 detik");
+  if (recordingAllowed) {
+    forceStopRecording("Rekaman berhenti setelah 30 detik");
+  }
 });
 
-cancelBtn.addEventListener('click', closeVoiceSheet);
+cancelBtn.addEventListener('click', () => {
+  recordingAllowed = false; // ✅ Reset flag
+  closeVoiceSheet();
+  forceStopRecording();
+});
 
 pauseBtn.addEventListener('click', (e) => {
   e.preventDefault();
@@ -2100,10 +2108,8 @@ replayBtn.addEventListener('click', () => {
     replayAudio.style.display = "block";
     replayAudio.play();
 
-    // Mulai animasi wave dari audio replay
     startWaveAnimationFromAudioElement(replayAudio);
 
-    // Ketika audio selesai, stop waveform replay
     replayAudio.onended = () => {
       stopWaveAnimation();
     };
@@ -2194,6 +2200,47 @@ document.addEventListener('touchend', () => {
   isDragging = false;
   voiceButton.style.transition = "all 0.2s ease";
 });
+
+
+
+document.getElementById('startVoiceButton').addEventListener('click', cekSyaratSebelumRekam);
+
+async function cekSyaratSebelumRekam() {
+  const userId = getUserId();
+  if (!userId) {
+    console.warn("User ID tidak ditemukan.");
+    return;
+  }
+
+  try {
+    // 🔥 Tambahkan ?_=${Date.now()} untuk bust cache
+    const res = await fetch(`${endpoint}?action=checkVoiceEligibility&userId=${userId}&_=${Date.now()}`);
+    const result = await res.json();
+
+    if (!result.reserved) {
+      recordingAllowed = false;
+      closeVoiceSheet();
+      forceStopRecording();
+      openBottomSheetGeneric('bottomSheetReservasi');
+      return;
+    }
+
+    if (result.hasVoice) {
+      recordingAllowed = false;
+      closeVoiceSheet();
+      forceStopRecording();
+      openBottomSheetGeneric('bottomSheetVoiceSent');
+      return;
+    }
+
+    recordingAllowed = true;
+    startVoiceRecorder();
+
+  } catch (err) {
+    console.error("Gagal cek eligibility:", err);
+  }
+}
+
 
 
 

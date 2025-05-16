@@ -505,6 +505,26 @@
 <audio id="winSound" src="https://undangan-bdg.vercel.app/Asset/win-sound.mp3"></audio>
 <audio id="loseSound" src="https://undangan-bdg.vercel.app/Asset/lose-sound.mp3"></audio>
 
+
+<div id="bottomSheetReservasi" class="bottom-sheet hidden">
+  <div class="bottom-sheet-overlay" onclick="closeBottomSheetGeneric('bottomSheetReservasi')"></div>
+  <div class="bottom-sheet-content">
+    <button class="close-button" onclick="closeBottomSheetGeneric('bottomSheetReservasi')">×</button>
+    <h3>Reservasi Diperlukan</h3>
+    <p>Untuk mengirim Voice Note, kamu perlu melakukan reservasi terlebih dahulu. 🙌<br>Silakan isi reservasi dan kembali lagi ya! 🎉</p>
+  </div>
+</div>
+
+<div id="bottomSheetVoiceSent" class="bottom-sheet hidden">
+  <div class="bottom-sheet-overlay" onclick="closeBottomSheetGeneric('bottomSheetVoiceSent')"></div>
+  <div class="bottom-sheet-content">
+    <button class="close-button" onclick="closeBottomSheetGeneric('bottomSheetVoiceSent')">×</button>
+    <h3>Voice Note Sudah Dikirim</h3>
+    <p>Voice Note kamu sudah kami catat sebelumnya. ✨<br>Sayangnya, 1 tamu hanya bisa mengirim 1 voice note ya. 🙏</p>
+  </div>
+</div>
+
+
 <!-- BottomSheet Voice Recorder -->
 
 <div id="voiceRecorderSheet" class="bottom-sheet-voice hidden">
