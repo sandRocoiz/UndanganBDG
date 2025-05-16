@@ -82,8 +82,10 @@ function openInvitation() {
   sessionStorage.setItem("invitationOpened", "true");
   isSplashActive = false;
 
-  bgm?.pause();          // ✅ stop BGM
-  bgm.currentTime = 0;   // 🔁 reset ke awal
+  if (bgm && !bgm.paused) {
+    bgm.pause();
+    bgm.currentTime = 0;
+  }
 
   document.getElementById('splash').style.display = 'none';
   document.getElementById('mainContent').style.display = 'block';
@@ -2099,7 +2101,7 @@ startBtn.addEventListener('touchstart', () => {
   if (recordingAllowed && (!mediaRecorder || mediaRecorder.state === "inactive")) {
     startRecording();
   }
-});
+}, { passive: true });
 
 startBtn.addEventListener('mouseup', () => {
   if (recordingAllowed) {
