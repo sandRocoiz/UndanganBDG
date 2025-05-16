@@ -2003,8 +2003,12 @@ async function loadVoiceNotes() {
     container.innerHTML = "";
 
     if (!data.length) {
-      container.innerHTML = "<p style='text-align:center;'>Belum ada suara masuk 🎧</p>";
-      return;
+      container.innerHTML = `
+        <div class="empty-voice">
+          <img src="https://undangan-bdg.vercel.app/Asset/no-voice.png" alt="No Voice" style="max-width: 200px; margin: 0 auto; display: block;">
+          <p style="text-align: center; color: #666; margin-top: 1em;">Belum ada voice note tersedia. Yuk kirim suaramu! 🎤</p>
+        </div>
+      `;return;
     }
 
     let currentAudio = null;
