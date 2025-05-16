@@ -91,14 +91,6 @@ function openInvitation() {
   document.getElementById('splash').style.display = 'none';
   document.getElementById('mainContent').style.display = 'block';
   
-  // ✅ Aktifkan scroll kembali
-  document.body.style.overflow = "auto";
-  document.documentElement.style.overflow = "auto";
-
-  // Sembunyikan install button
-  const installBtn = document.getElementById("installBtn");
-  if (installBtn) installBtn.style.display = "none";
-
   startCountdown();
   ambilUcapan();
   animateLetterDropById("weddingNames");
@@ -2444,53 +2436,7 @@ if ('serviceWorker' in navigator) {
 }
 
 
-let deferredPrompt;
-const installBtn = document.getElementById('installBtn');
 
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault(); // ⛔ Blok default Chrome prompt
-  deferredPrompt = e;
-
-  if (installBtn) {
-    installBtn.style.display = 'block'; // ✅ Tampilkan tombol manual
-  }
-});
-
-if (installBtn) {
-  installBtn.addEventListener('click', () => {
-    if (!deferredPrompt) return;
-
-    // 🧨 Tampilkan prompt
-    deferredPrompt.prompt();
-
-    deferredPrompt.userChoice.then((choiceResult) => {
-      if (choiceResult.outcome === 'accepted') {
-        console.log('✅ User accepted install prompt');
-      } else {
-        console.log('❌ User dismissed install prompt');
-      }
-      installBtn.style.display = 'none'; // sembunyikan tombol
-      deferredPrompt = null;
-    });
-  });
-}
-
-
-// Tampilkan banner hanya jika belum diinstal
-window.addEventListener('load', () => {
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-    || window.navigator.standalone === true;
-
-  const banner = document.getElementById('pwaBanner');
-  if (banner && !isStandalone) {
-    banner.style.display = 'block';
-
-    // Sembunyikan otomatis setelah 8 detik
-    setTimeout(() => {
-      banner.style.display = 'none';
-    }, 8000);
-  }
-});
 
 
 
