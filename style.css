@@ -4155,7 +4155,19 @@ Hi <strong>NamaUser</strong> 👋
   100% { width: 0%; }
 }
 
+/* Ikon normal (musik on) */
+#toggleMusicButton.music-on img {
+  filter: none;
+  transform: scale(1);
+  opacity: 1;
+}
 
+/* Ikon musik off */
+#toggleMusicButton.music-off img {
+  filter: grayscale(100%) brightness(60%);
+  transform: scale(0.9);
+  opacity: 0.6;
+}
 
 
 /* Saat hidden */

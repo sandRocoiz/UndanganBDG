@@ -2258,7 +2258,78 @@ async function cekSyaratSebelumRekam() {
   }
 }
 
+//---start
+// === MUSIC TOGGLE BUTTON ===
+const musicButton = document.getElementById('toggleMusicButton');
+const musicIcon = document.getElementById('musicIcon');
 
+let isDraggingMusic = false;
+let offsetMusicX = 0, offsetMusicY = 0;
+
+musicButton.addEventListener('mousedown', (e) => {
+  isDraggingMusic = true;
+  offsetMusicX = e.clientX - musicButton.getBoundingClientRect().left;
+  offsetMusicY = e.clientY - musicButton.getBoundingClientRect().top;
+  musicButton.style.transition = 'none';
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (isDraggingMusic) {
+    const x = e.clientX - offsetMusicX;
+    const y = e.clientY - offsetMusicY;
+    musicButton.style.left = `${x}px`;
+    musicButton.style.top = `${y}px`;
+    musicButton.style.position = 'fixed';
+  }
+});
+
+document.addEventListener('mouseup', () => {
+  isDraggingMusic = false;
+  musicButton.style.transition = 'all 0.2s ease';
+});
+
+// === Touch support
+musicButton.addEventListener('touchstart', (e) => {
+  isDraggingMusic = true;
+  const touch = e.touches[0];
+  offsetMusicX = touch.clientX - musicButton.getBoundingClientRect().left;
+  offsetMusicY = touch.clientY - musicButton.getBoundingClientRect().top;
+  musicButton.style.transition = 'none';
+});
+
+document.addEventListener('touchmove', (e) => {
+  if (isDraggingMusic) {
+    const touch = e.touches[0];
+    const x = touch.clientX - offsetMusicX;
+    const y = touch.clientY - offsetMusicY;
+    musicButton.style.left = `${x}px`;
+    musicButton.style.top = `${y}px`;
+    musicButton.style.position = 'fixed';
+  }
+});
+
+document.addEventListener('touchend', () => {
+  isDraggingMusic = false;
+  musicButton.style.transition = 'all 0.2s ease';
+});
+
+// === Toggle BGM play/pause
+musicButton.addEventListener('click', () => {
+  if (!bgm) return;
+
+  if (bgm.paused) {
+    bgm.play().then(() => {
+      musicButton.classList.remove("music-off");
+      musicButton.classList.add("music-on");
+    }).catch(err => console.warn("Gagal play musik:", err));
+  } else {
+    bgm.pause();
+    musicButton.classList.remove("music-on");
+    musicButton.classList.add("music-off");
+  }
+});
+
+//--end
 
 
 // === Background Handling
