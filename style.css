@@ -121,32 +121,39 @@ body {
   overflow-x: hidden;
 }
 
+/* === INITIAL STATE === */
 .splash, .main-content {
   display: none;
   text-align: center;
   padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
 
+/* === SPLASH SCREEN === */
 .splash {
   background: url('https://undangan-bdg.vercel.app/Asset/invitation.jpg') no-repeat center/cover;
   height: 100vh;
+  width: 100vw;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   position: relative;
-  text-align: center;
-  padding: 100px 20px 80px;
+  padding: 80px 20px 100px; /* ⬅️ padding bawah ditambah agar aman dari installBtn */
   overflow: hidden;
+  text-align: center;
 }
 
+/* Overlay hitam transparan */
 .splash-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.4); /* ✅ layer hitam tipis */
+  background: rgba(0,0,0,0.4);
   z-index: 0;
 }
 
+/* Judul utama */
 .splash-title {
   font-family: 'Great Vibes', cursive;
   font-size: 3em;
@@ -158,6 +165,7 @@ body {
   z-index: 1;
 }
 
+/* Subjudul */
 .splash-subtitle {
   font-family: 'Great Vibes', cursive;
   font-size: 1.5em;
@@ -169,17 +177,21 @@ body {
   z-index: 1;
 }
 
+/* Deskripsi */
 .splash-desc {
   font-family: 'Playfair Display', serif;
   font-size: 1em;
   color: #ddd;
   margin-bottom: 2em;
+  max-width: 360px;
   animation: fadeIn 1s ease forwards;
   animation-delay: 0.9s;
   opacity: 0;
   z-index: 1;
+  line-height: 1.5;
 }
 
+/* Tombol utama splash */
 .splash-button {
   padding: 14px 28px;
   font-size: 1em;
@@ -197,6 +209,7 @@ body {
   opacity: 0;
   z-index: 1;
 }
+
 .splash-button:hover {
   transform: scale(1.05);
   background: #f7f7f7;
@@ -206,8 +219,9 @@ body {
 /* Animasi FadeIn */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
+
 
 .judul-wedding {
   font-family: 'Great Vibes', cursive;
