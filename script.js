@@ -36,6 +36,7 @@ let waveInterval;
 let sourceNode, analyserNode, animationFrameId;
 
 let recordingAllowed = false;
+let isSplashActive = false;
 
 const startBtn = document.getElementById('startVoiceButton');
 const cancelBtn = document.getElementById('cancelVoice');
@@ -77,25 +78,16 @@ function isEligibleForScratch() {
 // === 2. SPLASH & INVITATION HANDLING ===
 function openInvitation() {
   sessionStorage.setItem("invitationOpened", "true");
+  isSplashActive = false;
+
+  bgm?.pause();          // ✅ stop BGM
+  bgm.currentTime = 0;   // 🔁 reset ke awal
+
   document.getElementById('splash').style.display = 'none';
   document.getElementById('mainContent').style.display = 'block';
+}
 
-  // === AUDIO PLAY BGM with Fade-in
-  const bgm = document.getElementById('bgm');
-  if (bgm && typeof bgm.play === "function") {
-    bgm.volume = 0;
-    bgm.play().then(() => {
-      let vol = 0;
-      const fadeIn = setInterval(() => {
-        if (vol < 0.2) {
-          vol += 0.02;
-          bgm.volume = Math.min(vol, 0.2);
-        } else {
-          clearInterval(fadeIn);
-        }
-      }, 200);
-    }).catch(err => console.warn("Autoplay gagal:", err));
-  }
+  
 
   startCountdown();
   ambilUcapan();
@@ -483,18 +475,22 @@ function playSound(url) {
   const audio = new Audio(url);
 
   if (document.readyState === "complete" && document.hasFocus()) {
-    // Kalau user sudah aktif di halaman
-    audio.volume = 0; // Mulai dari 0
+    audio.volume = 0;
     audio.play().then(() => {
       let vol = 0;
       const fade = setInterval(() => {
         if (vol < 0.8) {
           vol += 0.05;
-          audio.volume = vol;
+          audio.volume = Math.min(vol, 0.8);
         } else {
           clearInterval(fade);
         }
       }, 50);
+
+      // Optional: auto-destroy element on end
+      audio.onended = () => {
+        audio.remove(); // cleanup
+      };
     }).catch(err => {
       console.warn("Audio play blocked:", err);
     });
@@ -502,6 +498,7 @@ function playSound(url) {
     console.warn("User belum interaksi, audio play dibatalkan.");
   }
 }
+
 
 
 
@@ -1088,6 +1085,22 @@ function animateZoomFoto() {
 
 
 
+function playBGM() {
+  if (!bgm || typeof bgm.play !== "function") return;
+  bgm.volume = 0;
+
+  bgm.play().then(() => {
+    let vol = 0;
+    const fadeIn = setInterval(() => {
+      if (vol < 0.2 && isSplashActive) {
+        vol += 0.02;
+        bgm.volume = Math.min(vol, 0.2);
+      } else {
+        clearInterval(fadeIn);
+      }
+    }, 200);
+  }).catch(err => console.warn("Autoplay gagal:", err));
+}
 
 
 
@@ -1098,6 +1111,14 @@ document.addEventListener("DOMContentLoaded", () => {
   animateSliderOnView();
   animateZoomFoto();
   loadVoiceNotes();
+  
+  const bgm = document.getElementById("bgm");
+
+  if (sessionStorage.getItem("invitationOpened") !== "true") {
+    isSplashActive = true;
+    playBGM(); // ✅ hanya saat splash
+  }
+});
   
 
 const btnKirimUcapan = document.getElementById('btnKirimUcapan');
@@ -2249,26 +2270,24 @@ const bgm = document.getElementById("bgm");
 
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
-    // Kalau user keluar tab
     bgm?.pause();
-    
-    // ❗ Stop polling ucapan
+
     if (pollingInterval) {
       clearInterval(pollingInterval);
       pollingInterval = null;
     }
   } else {
-    // Kalau user balik ke tab
-    if (sessionStorage.getItem("invitationOpened") === "true") {
-      bgm?.play().catch(err => console.warn("Autoplay gagal saat kembali ke tab:", err));
+    // ✅ Hanya play BGM lagi kalau masih splash
+    if (isSplashActive && typeof bgm.play === "function") {
+      bgm.play().catch(err => console.warn("Autoplay gagal saat kembali ke tab:", err));
     }
 
-    // ❗ Mulai polling ucapan lagi (pastikan polling belum jalan)
     if (!pollingInterval) {
       startPollingUcapan();
     }
   }
 });
+
 
 
 
