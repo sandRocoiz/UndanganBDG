@@ -2436,6 +2436,44 @@ if ('serviceWorker' in navigator) {
 }
 
 
+let deferredPrompt;
+const installBtn = document.getElementById('installBtn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault(); // ⛔ Blok default Chrome prompt
+  deferredPrompt = e;
+
+  if (installBtn) {
+    installBtn.style.display = 'block'; // ✅ Tampilkan tombol manual
+  }
+});
+
+if (installBtn) {
+  installBtn.addEventListener('click', () => {
+    if (!deferredPrompt) return;
+
+    // 🧨 Tampilkan prompt
+    deferredPrompt.prompt();
+
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('✅ User accepted install prompt');
+      } else {
+        console.log('❌ User dismissed install prompt');
+      }
+      installBtn.style.display = 'none'; // sembunyikan tombol
+      deferredPrompt = null;
+    });
+  });
+}
+
+
+setTimeout(() => {
+  const banner = document.getElementById('pwaBanner');
+  if (banner) banner.style.display = 'none';
+}, 8000); // Sembunyikan setelah 8 detik
+
+
 
 
 
