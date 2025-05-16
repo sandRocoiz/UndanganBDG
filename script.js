@@ -2370,8 +2370,23 @@ window.addEventListener("scroll", () => {
   }, 1000);
 });
 
+//--
+let logoHeader = document.getElementById("floatingLogoHeader");
+let lastScroll = window.scrollY;
 
+window.addEventListener("scroll", () => {
+  let currentScroll = window.scrollY;
 
+  if (currentScroll > lastScroll) {
+    // Scroll down -> sembunyikan
+    logoHeader.classList.add("hide");
+  } else {
+    // Scroll up -> munculkan
+    logoHeader.classList.remove("hide");
+  }
+
+  lastScroll = currentScroll;
+});
 
 // === Background Handling
 

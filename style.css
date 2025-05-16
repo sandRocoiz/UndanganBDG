@@ -4227,6 +4227,32 @@ Hi <strong>NamaUser</strong> 👋
   transition: opacity 0.3s ease;
 }
 
+#floatingLogoHeader {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160px;
+  padding: 10px;
+  z-index: 9998;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.95), rgba(255,255,255,0));
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  transition: transform 0.5s ease, opacity 0.4s ease;
+}
+
+#floatingLogoHeader img {
+  max-width: 100%;
+  height: auto;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.1));
+}
+
+/* Saat disembunyikan */
+#floatingLogoHeader.hide {
+  transform: translate(-50%, -100%);
+  opacity: 0;
+}
+
 /* Saat hidden */
 .hidden {
   display: none;
