@@ -12,6 +12,8 @@
   box-sizing: border-box;
 }
 
+
+
 html, body {
   margin: 0;
   padding: 0;
@@ -22,6 +24,9 @@ html, body {
   height: auto;
   overflow-x: hidden;
   scroll-behavior: smooth;
+  /* ✅ Tambahan biar seperti mobile app */
+  height: calc(var(--vh, 1vh) * 100);
+  overflow: hidden; /* Opsional, biar nggak scroll overshoot */
 }
 
 #userIdDisplay {

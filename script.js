@@ -50,7 +50,12 @@ const replayBtn = document.getElementById('replayVoice');
 
 const bgm = document.getElementById("bgm");
 
-
+function setRealVh() {
+  let vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+window.addEventListener('resize', setRealVh);
+setRealVh();
 
 // === USER ID ===
 function generateUserId() {

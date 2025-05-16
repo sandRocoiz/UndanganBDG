@@ -1,0 +1,20 @@
+{
+  "name": "Devi & Sandro Wedding",
+  "short_name": "Wedding",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/Asset/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/Asset/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
