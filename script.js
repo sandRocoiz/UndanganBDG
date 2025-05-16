@@ -38,6 +38,7 @@ let sourceNode, analyserNode, animationFrameId;
 let recordingAllowed = false;
 
 
+
 const startBtn = document.getElementById('startVoiceButton');
 const cancelBtn = document.getElementById('cancelVoice');
 const pauseBtn = document.getElementById('pauseVoice');
@@ -1108,7 +1109,8 @@ function playBGM() {
 document.addEventListener("DOMContentLoaded", () => {
   animateSliderOnView();
   animateZoomFoto();
-  loadVoiceNotes();
+  loadVoiceNotes();     
+  
   
   
 
@@ -2332,15 +2334,44 @@ musicButton.addEventListener('click', () => {
 
 //--end
 
+
+
 function scrollToSection(id) {
+
   const el = document.getElementById(id);
+
   if (el) el.scrollIntoView({ behavior: 'smooth' });
+
 }
 
+
+
 function backToSplash() {
+
   sessionStorage.removeItem("invitationOpened");
+
   location.reload(); // 🔁 Refresh agar splash muncul kembali
+
 }
+
+let quickAccessMenu = document.getElementById("quickAccessMenu");
+let scrollTimeout;
+
+window.addEventListener("scroll", () => {
+  // Sembunyikan menu saat scroll
+  quickAccessMenu.classList.add("hide");
+
+  // Hapus timeout sebelumnya
+  clearTimeout(scrollTimeout);
+
+  // Munculkan lagi setelah 1 detik tidak scroll
+  scrollTimeout = setTimeout(() => {
+    quickAccessMenu.classList.remove("hide");
+  }, 1000);
+});
+
+
+
 
 // === Background Handling
 
