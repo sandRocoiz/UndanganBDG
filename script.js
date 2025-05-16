@@ -85,7 +85,7 @@ function openInvitation() {
 
   document.getElementById('splash').style.display = 'none';
   document.getElementById('mainContent').style.display = 'block';
-}
+
 
   
 
@@ -1118,7 +1118,7 @@ document.addEventListener("DOMContentLoaded", () => {
     isSplashActive = true;
     playBGM(); // ✅ hanya saat splash
   }
-});
+
   
 
 const btnKirimUcapan = document.getElementById('btnKirimUcapan');
