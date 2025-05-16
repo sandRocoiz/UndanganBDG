@@ -2468,10 +2468,21 @@ if (installBtn) {
 }
 
 
-setTimeout(() => {
+// Tampilkan banner hanya jika belum diinstal
+window.addEventListener('load', () => {
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+    || window.navigator.standalone === true;
+
   const banner = document.getElementById('pwaBanner');
-  if (banner) banner.style.display = 'none';
-}, 8000); // Sembunyikan setelah 8 detik
+  if (banner && !isStandalone) {
+    banner.style.display = 'block';
+
+    // Sembunyikan otomatis setelah 8 detik
+    setTimeout(() => {
+      banner.style.display = 'none';
+    }, 8000);
+  }
+});
 
 
 

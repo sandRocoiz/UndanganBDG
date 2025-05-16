@@ -4257,6 +4257,27 @@ Hi <strong>NamaUser</strong> 👋
   opacity: 0;
 }
 
+.install-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px; /* ⬅️ dipindah ke pojok bawah kanan */
+  padding: 10px 14px;
+  background-color: #1e88e5;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.8em;
+  font-family: 'Playfair Display', serif;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  cursor: pointer;
+  z-index: 9999;
+  animation: fadeIn 0.6s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
 
 
 /* Saat hidden */
@@ -4269,19 +4290,23 @@ html {
   scroll-behavior: smooth;
 }
 
-.pwa-banner {
+#pwaBanner {
   position: fixed;
-  bottom: 20px;
+  bottom: 100px; /* ⬅️ Jarak aman dari splash-button */
   left: 50%;
   transform: translateX(-50%);
-  background: #fff;
+  background: rgba(255, 255, 255, 0.95);
   color: #333;
-  padding: 12px 16px;
-  border-radius: 14px;
-  font-size: 0.9em;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-  z-index: 9999;
+  padding: 10px 16px;
+  border-radius: 16px;
+  font-size: 0.85em;
+  font-family: 'Playfair Display', serif;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  z-index: 10;
   animation: fadeIn 0.6s ease;
+  max-width: 90%;
+  text-align: center;
+  line-height: 1.4;
 }
 
 @keyframes fadeIn {
