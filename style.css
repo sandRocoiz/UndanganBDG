@@ -23,9 +23,7 @@ html, body {
   scroll-behavior: smooth;
   height: auto;
   overflow-x: hidden;
-  scroll-behavior: smooth;
-  /* ✅ Tambahan biar seperti mobile app */
-  
+  scroll-behavior: smooth; 
 }
 
 #userIdDisplay {
