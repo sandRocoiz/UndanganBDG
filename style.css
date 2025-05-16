@@ -136,7 +136,7 @@ body {
   justify-content: center;
   position: relative;
   text-align: center;
-  padding: 2em;
+  padding: 100px 20px 80px;
   overflow: hidden;
 }
 
@@ -4257,21 +4257,7 @@ Hi <strong>NamaUser</strong> 👋
   opacity: 0;
 }
 
-.install-btn {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 12px 20px;
-  background-color: #1e88e5;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  font-size: 14px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  cursor: pointer;
-  z-index: 9999;
-}
+
 
 /* Saat hidden */
 .hidden {
